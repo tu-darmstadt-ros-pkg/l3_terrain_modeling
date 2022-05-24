@@ -1,0 +1,112 @@
+plugin_sets:
+  example:
+    ### FILTERS ###
+    pcl_pass_through_box_filter:
+      params:
+        field_name: z
+        limit_min: -1.0
+        limit_max:  1.0
+
+    pcl_pass_through_ellipse_filter:
+      params:
+        radius_x: 4.0
+        radius_y: 2.0
+
+    pcl_voxel_grid_filter:
+      params:
+        lx: 0.02
+        ly: 0.02
+        lz: 0.05
+
+    ### Periodic Processes ###
+    periodic_publisher:
+      import: periodic_process
+      params:
+        rate: 1.0
+        process_chain:
+          - surface_mesh_publisher
+
+    ### Sensors ###
+    generic_lidar_sensor:
+      params:
+        topic: point_cloud_update
+        filter_chain:
+          - pcl_pass_through_box_filter
+          - pcl_pass_through_ellipse_filter
+        process_chain:
+          - 01_octree_generator
+          - 01_elevation_map_generator
+          - 02_normals_cloud_generator
+          - 03_surface_mesh_generator
+          - processed_cloud_publisher
+
+    image_map_sensor:
+      params:
+        topic: raw_image_map
+        sensor_frame: map
+        resolution: 0.02 # Map resolution based on image pixels [m]
+        min_height: 0.0 # Height of the min greyscale color on image (Black: 0;0;0) in [m]
+        max_height: 1.0 # Height of the max greyscale color on image (White: 255;255;255) in [m]
+        filter_chain:
+          - pcl_pass_through_box_filter
+        process_chain:
+          - 01_octree_generator
+          - 01_elevation_map_generator
+          - 02_normals_cloud_generator
+          - 03_surface_mesh_generator
+          - processed_cloud_publisher
+        
+    ### Generators ###
+    01_octree_generator:
+      import: octree_generator
+      params:
+        resolution: 0.02
+        update_weight: 0.75
+        process_chain:
+          - octree_publisher
+
+    01_elevation_map_generator:
+      import: elevation_map_generator
+      params:
+        resolution: 0.02
+        update_weight: 0.75
+        process_chain:
+          - grid_map_publisher
+
+    02_normals_cloud_generator:
+      import: normals_cloud_generator
+      params:
+        resolution: 0.02
+        update_weight: 0.75
+        filter_mask: 11
+        ne_radius: 0.05
+        voxel_grid_size: [0.02, 0.02, 0.05]
+        process_chain:
+          - normals_cloud_publisher
+          - normals_publisher
+          - terrain_model_publisher
+
+    03_surface_mesh_generator:
+      import: surface_mesh_generator
+      params:
+        rate: 0.1
+
+    ### Publisher ###
+    processed_cloud_publisher:
+      import: point_cloud_publisher
+      params:
+        topic: processed_cloud
+    terrain_model_publisher: none
+    grid_map_publisher: none
+    octree_publisher: none
+    normals_cloud_publisher:
+      import: point_cloud_publisher
+      params:
+        topic: normals_cloud
+        input_data: normals_cloud
+    normals_publisher:
+      params:
+        topic: normals
+        input_data: normals_cloud
+    surface_mesh_publisher: none
+

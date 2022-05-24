@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="ns" default="l3/terrain_model" />
+  <arg name="args" default="" />
+  <arg name="pcl_file" default="$(find l3_terrain_model_generator)/pcl/ramp.pcd" />
+
+  <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True" />
+
+  <group ns="$(arg ns)">
+    <node name="l3_point_cloud_portioner" pkg="l3_terrain_model_generator" type="point_cloud_portioner_node" output="screen">
+      <rosparam file="$(find l3_terrain_model_generator)/config/point_cloud_portioner.yaml" command="load" />
+      <param name="pcl_file" value="$(arg pcl_file)" />
+    </node>
+  </group>
+
+  <node name="world_map_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 world map 100" />
+  <node name="map_odom_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 map odom 100" />
+  <node name="odom_lidar_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 odom lidar 100" />
+</launch>

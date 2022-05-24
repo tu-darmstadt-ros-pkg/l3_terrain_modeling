@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="ns" default="l3/terrain_model" />
+  <arg name="args" default="" />
+  <arg name="pcl_file" default="$(find l3_terrain_model_generator)/pcl/ramp.pcd" />
+
+  <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True">
+    <arg name="args" value="-loadTestCloud $(arg args)" />
+  </include>
+
+  <node type="static_transform_publisher" pkg="tf" name="world_odom_tf_static_publisher" args="0 0 0 0 0 0 1 world odom 100" />
+</launch>

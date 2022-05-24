@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="ns" default="l3/terrain_model" />
+  <arg name="args" default="" />
+
+  <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True" />
+
+  <!-- Load the image. -->
+  <group ns="$(arg ns)">
+    <node pkg="l3_terrain_model_generator" type="image_map_publisher.py" name="image_map_publisher" output="screen">
+      <param name="image_path" value="$(find l3_terrain_model_generator)/image/stairs.png" />
+    </node>
+  </group>
+
+  <node name="world_map_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 world map 100" />
+  <node name="map_odom_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 map odom 100" />
+</launch>
