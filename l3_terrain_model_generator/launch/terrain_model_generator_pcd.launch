@@ -3,14 +3,15 @@
 <launch>
   <arg name="ns" default="l3/terrain_model" />
   <arg name="args" default="" />
-  <arg name="pcl_file" default="$(find l3_terrain_model_generator)/pcl/ramp.pcd" />
+  <arg name="pcd_file" default="$(dirname)/../pcd/ramp.pcd" />
 
   <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True" />
 
+  <!-- load the pcd -->
   <group ns="$(arg ns)">
     <node name="l3_point_cloud_portioner" pkg="l3_terrain_model_generator" type="point_cloud_portioner_node" output="screen">
-      <rosparam file="$(find l3_terrain_model_generator)/config/point_cloud_portioner.yaml" command="load" />
-      <param name="pcl_file" value="$(arg pcl_file)" />
+      <rosparam file="$(dirname)/../config/point_cloud_portioner.yaml" command="load" />
+      <param name="pcd_file" value="$(arg pcd_file)" />
     </node>
   </group>
 

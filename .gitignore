@@ -3,6 +3,7 @@ build
 devel
 bin
 lib
+pcd
 msg_gen
 srv_gen
 qtcreator-build

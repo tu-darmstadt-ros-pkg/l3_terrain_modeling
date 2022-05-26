@@ -3,13 +3,14 @@
 <launch>
   <arg name="ns" default="l3/terrain_model" />
   <arg name="args" default="" />
+  <arg name="image_file" default="$(dirname)/../image/stairs.png" />
 
   <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True" />
 
-  <!-- Load the image. -->
+  <!-- load the image -->
   <group ns="$(arg ns)">
     <node pkg="l3_terrain_model_generator" type="image_map_publisher.py" name="image_map_publisher" output="screen">
-      <param name="image_path" value="$(find l3_terrain_model_generator)/image/stairs.png" />
+      <param name="image_path" value="$(arg image_file)" />
     </node>
   </group>
 

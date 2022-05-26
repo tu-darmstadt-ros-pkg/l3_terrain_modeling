@@ -18,13 +18,13 @@ PointCloudPortionerNode::PointCloudPortionerNode(ros::NodeHandle& nh)
   // publish topics
   point_cloud_pub_ = nh.advertise<sensor_msgs::PointCloud2>("point_cloud_update", 1);
 
-  if (!pnh.hasParam("pcl_file"))
+  if (!pnh.hasParam("pcd_file"))
   {
-    ROS_ERROR("No PCL file given. Please start node with argument 'pcl_file:=<path to file>'");
+    ROS_ERROR("No PCD file given. Please start node with argument 'pcd_file:=<path to file>'");
     exit(0);
   }
 
-  loadPointCloud(pnh.param("pcl_file", std::string()));
+  loadPointCloud(pnh.param("pcd_file", std::string()));
 
   publish_timer_ = nh.createTimer(ros::Duration(1.0 / publish_rate), &PointCloudPortionerNode::update, this);
 }
