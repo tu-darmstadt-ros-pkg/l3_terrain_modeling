@@ -65,6 +65,7 @@ private:
   DataHandle::Ptr cloud_handle_;
 
   grid_map::GridMap image_map_;
+  std::string layer_;
 
   double resolution_;
   float min_height_;

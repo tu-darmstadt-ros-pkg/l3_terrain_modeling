@@ -22,6 +22,8 @@ bool ImageMapSensor::initialize(const vigir_generic_params::ParameterSet& params
   max_height_ = param("max_height", 1.0);
 
   std::string topic = param("topic", std::string("image"), true);
+  layer_ = param("layer", std::string("elevation"), true);
+
   image_sub_ = nh_.subscribe(topic, 1, &ImageMapSensor::imageCb, this);
 
   return true;
@@ -35,11 +37,11 @@ void ImageMapSensor::imageCb(const sensor_msgs::Image& msg)
   // generate grid map from image
   grid_map::GridMapRosConverter::initializeFromImage(msg, resolution_, image_map_);
   ROS_INFO("Initialized map with size %f x %f m (%i x %i cells).", image_map_.getLength().x(), image_map_.getLength().y(), image_map_.getSize().x(), image_map_.getSize().y());
-  grid_map::GridMapRosConverter::addLayerFromImage(msg, "elevation", image_map_, min_height_, max_height_);
+  grid_map::GridMapRosConverter::addLayerFromImage(msg, layer_, image_map_, min_height_, max_height_);
 
   // convert grid map to point cloud
   sensor_msgs::PointCloud2 point_cloud_msg;
-  grid_map::GridMapRosConverter::toPointCloud(image_map_, "elevation", point_cloud_msg);
+  grid_map::GridMapRosConverter::toPointCloud(image_map_, layer_, point_cloud_msg);
   point_cloud_msg.header.frame_id = getMapFrame();
   point_cloud_msg.header.stamp = ros::Time::now();
 
