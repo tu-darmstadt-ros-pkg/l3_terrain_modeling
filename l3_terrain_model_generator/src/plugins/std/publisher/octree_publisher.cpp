@@ -27,8 +27,8 @@ bool OctreePublisher::initialize(const vigir_generic_params::ParameterSet& param
     return false;
 
   std::string topic = param("topic", std::string("octree"), true);
-  cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>(topic + "_cloud", 1, true);
-  markers_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(topic + "_markers", 1, true);
+  cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>(topic + "_cloud", 1, latch_topics_);
+  markers_pub_ = nh_.advertise<visualization_msgs::MarkerArray>(topic + "_markers", 1, latch_topics_);
 
   return true;
 }

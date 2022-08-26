@@ -16,7 +16,7 @@ bool TerrainModelPublisher::initialize(const vigir_generic_params::ParameterSet&
     return false;
 
   std::string topic = param("topic", std::string("/terrain_model"), true);
-  terrain_model_pub_ = nh_.advertise<l3_terrain_modeling::TerrainModelMsg>(topic, 1, true);
+  terrain_model_pub_ = nh_.advertise<l3_terrain_modeling::TerrainModelMsg>(topic, 1, latch_topics_);
 
   return true;
 }

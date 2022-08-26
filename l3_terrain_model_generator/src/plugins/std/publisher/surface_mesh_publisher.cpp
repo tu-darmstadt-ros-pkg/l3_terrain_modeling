@@ -27,9 +27,8 @@ bool SurfaceMeshPublisher::initialize(const vigir_generic_params::ParameterSet& 
     return false;
 
   std::string topic = param("topic", std::string("surface_mesh"), true);
-
-  surface_mesh_pub_ = nh_.advertise<pcl_msgs::PolygonMesh>(topic, 1, true);
-  surface_mesh_marker_pub_ = nh_.advertise<visualization_msgs::Marker>(topic + "_marker", 1, true);
+  surface_mesh_pub_ = nh_.advertise<pcl_msgs::PolygonMesh>(topic, 1, latch_topics_);
+  surface_mesh_marker_pub_ = nh_.advertise<visualization_msgs::Marker>(topic + "_marker", 1, latch_topics_);
 
   return true;
 }

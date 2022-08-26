@@ -28,8 +28,7 @@ bool NormalsPublisher::initialize(const vigir_generic_params::ParameterSet& para
     return false;
 
   std::string topic = param("topic", std::string("normals"), true);
-
-  normals_pub_ = nh_.advertise<geometry_msgs::PoseArray>(topic, 1, true);
+  normals_pub_ = nh_.advertise<geometry_msgs::PoseArray>(topic, 1, latch_topics_);
 
   return true;
 }

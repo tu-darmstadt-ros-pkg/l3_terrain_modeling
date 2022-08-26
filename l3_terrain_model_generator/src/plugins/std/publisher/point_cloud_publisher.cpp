@@ -24,7 +24,7 @@ bool PointCloudPublisher::initialize(const vigir_generic_params::ParameterSet& p
     return false;
 
   std::string topic = param("topic", std::string("cloud"), true);
-  cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>(topic, 1, true);
+  cloud_pub_ = nh_.advertise<sensor_msgs::PointCloud2>(topic, 1, latch_topics_);
 
   return true;
 }
