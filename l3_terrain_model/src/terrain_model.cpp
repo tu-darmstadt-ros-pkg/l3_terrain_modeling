@@ -9,6 +9,7 @@ namespace l3_terrain_modeling
 {
 TerrainModel::TerrainModel(const grid_map::GridMap& grid_map)
   : grid_map_(grid_map)
+  , has_normals_(false)
 {
 }
 
@@ -27,6 +28,7 @@ void TerrainModel::reset()
 void TerrainModel::fromMsg(const TerrainModelMsg& terrain_model)
 {
   grid_map::GridMapRosConverter::fromMessage(terrain_model.map, grid_map_);
+  has_normals_ = grid_map_.exists(NORMAL_LAYER_PREFIX + "x") && grid_map_.exists(NORMAL_LAYER_PREFIX + "y") && grid_map_.exists(NORMAL_LAYER_PREFIX + "z");
 }
 
 void TerrainModel::toMsg(TerrainModelMsg& terrain_model) const

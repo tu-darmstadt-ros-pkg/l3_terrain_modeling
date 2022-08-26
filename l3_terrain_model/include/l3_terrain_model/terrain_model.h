@@ -73,7 +73,7 @@ public:
   bool getNormal(const T& pose, l3::Vector3& normal) const
   {
     grid_map::Index index;
-    if (!grid_map_.getIndex(l3::Position2D(pose.x(), pose.y()), index))
+    if (!has_normals_ || !grid_map_.getIndex(l3::Position2D(pose.x(), pose.y()), index))
       return false;
 
     return grid_map_.getVector(NORMAL_LAYER_PREFIX, index, normal);
@@ -94,7 +94,7 @@ public:
 
     // get roll and pitch
     l3::Vector3 normal;
-    if (!grid_map_.getVector(NORMAL_LAYER_PREFIX, index, normal))
+    if (has_normals_ && !grid_map_.getVector(NORMAL_LAYER_PREFIX, index, normal))
       return false;
 
     double roll;
@@ -108,6 +108,8 @@ public:
 
 protected:
   grid_map::GridMap grid_map_;
+
+  bool has_normals_;
 };
 
 template <>
