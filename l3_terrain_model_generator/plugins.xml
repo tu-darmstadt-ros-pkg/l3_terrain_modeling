@@ -7,9 +7,14 @@
       A generic lidar sensor handler.
     </description>
   </class>
+  <class name="grid_map_sensor" type="l3_terrain_modeling::GridMapSensor" base_class_type="l3_terrain_modeling::SensorPlugin">
+    <description>
+      A pseudo sensor faking data based on input grid map.
+    </description>
+  </class>
   <class name="image_map_sensor" type="l3_terrain_modeling::ImageMapSensor" base_class_type="l3_terrain_modeling::SensorPlugin">
     <description>
-      A pseudo sensor faking data bases on greyscaled images.
+      A pseudo sensor faking data based on greyscaled images.
     </description>
   </class>
   
