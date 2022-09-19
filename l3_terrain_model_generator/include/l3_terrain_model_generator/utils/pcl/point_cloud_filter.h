@@ -41,6 +41,8 @@
 
 #include <l3_libs/types/typedefs.h>
 
+#include <l3_math/math.h>
+
 namespace l3_terrain_modeling
 {
 template <typename PointT>
@@ -75,21 +77,13 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::Poi
   cloud_filtered->header = cloud->header;
   cloud_filtered->reserve(cloud->size());
 
-  double cos_o = cos(center.yaw());
-  double sin_o = sin(center.yaw());
+  l3::Point size(rx, ry, 0.0);
+  double cos_yaw = cos(center.yaw());
+  double sin_yaw = sin(center.yaw());
 
   for (typename pcl::PointCloud<PointT>::const_iterator itr = cloud->begin(); itr != cloud->end(); itr++)
   {
-    double dx = itr->x - center.x();
-    double dy = itr->y - center.y();
-
-    double a = (cos_o * dx + sin_o * dy) / rx;
-    a = a * a;
-
-    double b = (sin_o * dx - cos_o * dy) / ry;
-    b = b * b;
-
-    if (a + b <= 1)
+    if (l3::isPointInEllipse(l3::Point(itr->x, itr->y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
       cloud_filtered->push_back(*itr);
   }
 
