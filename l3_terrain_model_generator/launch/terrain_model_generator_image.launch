@@ -2,7 +2,6 @@
 
 <launch>
   <arg name="ns" default="l3/terrain_model" />
-  <arg name="args" default="" />
   <arg name="image_file" default="$(dirname)/../image/stairs.png" />
 
   <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True" />

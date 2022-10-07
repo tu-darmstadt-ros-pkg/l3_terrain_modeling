@@ -2,10 +2,9 @@
 
 <launch>
   <arg name="ns" default="johnny5/terrain_model" />
-  <arg name="args" default="" />
 
   <group ns="$(arg ns)">
-    <node name="l3_terrain_model_generator" pkg="l3_terrain_model_generator" type="terrain_model_generator_node" args="$(arg args)" respawn="true" output="screen">
+    <node name="l3_terrain_model_generator" pkg="l3_terrain_model_generator" type="terrain_model_generator_node" respawn="true" output="screen">
       <rosparam file="$(dirname)/../config/terrain_model_generator.yaml" command="load" />
       <remap from="point_cloud_update" to="/johnny5/scan_cloud_filtered" />
       <remap from="/l3/footstep_planning/generate_feet_pose" to="/johnny5/footstep_planning/generate_feet_pose" />
