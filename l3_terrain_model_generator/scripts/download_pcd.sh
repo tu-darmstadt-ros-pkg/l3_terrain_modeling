@@ -13,19 +13,25 @@ fi
 
 # Downloading pcd files
 echo_info ">>> Downloading pcd files..."
-mkdir -p ${script_dir}/../pcd
-cd ${script_dir}/../pcd
-wget http://www.sim.informatik.tu-darmstadt.de/~stumpf/footstep_planning_test_pcl.zip
+cd ${script_dir}
+wget https://github.com/astumpf/l3_terrain_examples/archive/refs/heads/master.zip
 echo
 
 # Unpack files
 echo_info ">>> Unpack files..."
-unzip footstep_planning_test_pcl.zip
-mv -v pcl/* .
+unzip master.zip
+echo
+
+echo_info ">>> Move files..."
+mkdir -p ../pcd/
+mv -v l3_terrain_examples-master/pcd/* ../pcd/
+
+mkdir -p ../bags/
+mv -v l3_terrain_examples-master/bags/* ../bags/
 echo
 
 # Cleanup
 echo_info ">>> Cleanup..."
-rm -rf pcl
-rm -f footstep_planning_test_pcl.zip
+rm -rf l3_terrain_examples-master
+rm -f master.zip
 echo
