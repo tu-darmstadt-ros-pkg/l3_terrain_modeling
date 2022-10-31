@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="ns" default="l3/terrain_model" />
-  <arg name="plugin_set" default="example" />
-  <arg name="args" default="" />
+  <arg name="ns"                    default="l3/terrain_model" />
+  <arg name="plugin_set_file"       default="$(dirname)/../config/example_plugin_sets.yaml" />
+  <arg name="plugin_set"            default="example" />
+  <arg name="grid_map_vis_config"   default="$(dirname)/../config/grid_map_vis.yaml" />
+  <arg name="args"                  default="" />
 
   <group ns="$(arg ns)">
     <!-- load plugin sets from YAML file to parameter server -->
-    <rosparam file="$(dirname)/../config/example_plugin_sets.yaml" command="load" />
+    <rosparam file="$(arg plugin_set_file)" command="load" />
 
     <!-- start terrain model generator node -->
     <node name="l3_terrain_model_generator" pkg="l3_terrain_model_generator" type="terrain_model_generator_node" args="$(arg args)" respawn="true" output="screen">
@@ -16,7 +18,7 @@
     
     <!-- launch grid_map vis node -->
     <node name="l3_terrain_model_grid_map_vis" pkg="grid_map_visualization" type="grid_map_visualization" output="screen">
-      <rosparam file="$(dirname)/../config/grid_map_vis.yaml" command="load" />
+      <rosparam file="$(arg grid_map_vis_config)" command="load" />
     </node>
   </group>
 </launch>
