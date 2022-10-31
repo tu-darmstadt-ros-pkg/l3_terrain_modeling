@@ -29,10 +29,12 @@ plugin_sets:
     ### Sensors ###
     generic_lidar_sensor:
       params:
+        sensor_frame: map
         topic: point_cloud_update
         filter_chain:
           - pcl_pass_through_box_filter
           - pcl_pass_through_ellipse_filter
+          #- pcl_voxel_grid_filter
         process_chain:
           - 01_octree_generator
           - 01_elevation_map_generator
