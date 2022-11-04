@@ -76,21 +76,22 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::Poi
     return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
-  typename pcl::PointCloud<PointT>::Ptr cloud_filtered = boost::make_shared<pcl::PointCloud<PointT>>();
-  cloud_filtered->header = cloud->header;
-  cloud_filtered->reserve(cloud->size());
-
   l3::Point size(rx, ry, 0.0);
   double cos_yaw = cos(center.yaw());
   double sin_yaw = sin(center.yaw());
 
-  for (const PointT& p : *cloud)
+  std::vector<int> indices;
+  indices.reserve(cloud->size());
+
+  for (int i = 0; i < cloud->size(); i++)
   {
+    const PointT& p = cloud->at(i);
+
     if (l3::isPointInEllipse(l3::Point(p.x, p.y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
-      cloud_filtered->push_back(p);
+      indices.push_back(i);
   }
 
-  return cloud_filtered;
+  return boost::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
 }
 
 template <typename PointT>
@@ -217,17 +218,18 @@ typename pcl::PointCloud<PointT>::Ptr filterInGridMap(typename pcl::PointCloud<P
     return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
   }
 
-  typename pcl::PointCloud<PointT>::Ptr cloud_filtered = boost::make_shared<pcl::PointCloud<PointT>>();
-  cloud_filtered->header = cloud->header;
-  cloud_filtered->reserve(cloud->size());
+  std::vector<int> indices;
+  indices.reserve(cloud->size());
 
-  for (const PointT& p : *cloud)
+  for (int i = 0; i < cloud->size(); i++)
   {
+    const PointT& p = cloud->at(i);
+
     if (map.isInside(grid_map::Position(p.x, p.y)))
-      cloud_filtered->push_back(p);
+      indices.push_back(i);
   }
 
-  return cloud_filtered;
+  return boost::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
 }
 
 template <typename PointT>
