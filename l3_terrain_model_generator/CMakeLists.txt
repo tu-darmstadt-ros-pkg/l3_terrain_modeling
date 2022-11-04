@@ -128,6 +128,7 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/std/publisher/surface_mesh_publisher.h
   include/${PROJECT_NAME}/plugins/std/publisher/terrain_model_publisher.h
   include/${PROJECT_NAME}/plugins/std/sensor/generic_lidar_sensor.h
+  include/${PROJECT_NAME}/plugins/std/sensor/generic_rgbd_sensor.h
   include/${PROJECT_NAME}/plugins/std/sensor/grid_map_sensor.h
   include/${PROJECT_NAME}/plugins/std/sensor/image_map_sensor.h
   include/${PROJECT_NAME}/plugins/std/periodic_process.h
@@ -174,6 +175,7 @@ set(SOURCES
   src/plugins/std/publisher/surface_mesh_publisher.cpp
   src/plugins/std/publisher/terrain_model_publisher.cpp
   src/plugins/std/sensor/generic_lidar_sensor.cpp
+  src/plugins/std/sensor/generic_rgbd_sensor.cpp
   src/plugins/std/sensor/grid_map_sensor.cpp
   src/plugins/std/sensor/image_map_sensor.cpp
   src/plugins/std/periodic_process.cpp

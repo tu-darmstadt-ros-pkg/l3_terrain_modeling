@@ -7,6 +7,11 @@
       A generic lidar sensor handler.
     </description>
   </class>
+  <class name="generic_rgbd_sensor" type="l3_terrain_modeling::GenericRGBDSensor" base_class_type="l3_terrain_modeling::SensorPlugin">
+    <description>
+      A generic RGBD sensor handler.
+    </description>
+  </class>
   <class name="grid_map_sensor" type="l3_terrain_modeling::GridMapSensor" base_class_type="l3_terrain_modeling::SensorPlugin">
     <description>
       A pseudo sensor faking data based on input grid map.

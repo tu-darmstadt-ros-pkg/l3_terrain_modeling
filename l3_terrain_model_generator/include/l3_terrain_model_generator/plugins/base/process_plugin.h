@@ -64,7 +64,7 @@ public:
 
   /**
    * @brief Triggers processing of this plugin. Afterward subsequent processes are called.
-   * Subprocesses may only triggerd when a pre-configured time is elapsed.
+   * Processing is only performed when a pre-configured time is elapsed.
    * @param timer Timing data
    * @param updates Pointers of data handles whose data have been updated
    * @param sensor Sensor on which the data is based (may be nullptr)
@@ -82,7 +82,7 @@ protected:
   virtual void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) {}
 
   /**
-   * @brief Checks if new sensor data should be processed based on configured
+   * @brief Checks if new data should be processed based on configured
    * processing frequency. This method can be overwritten to alter the default
    * behavior.
    * @param time Current time [msec]

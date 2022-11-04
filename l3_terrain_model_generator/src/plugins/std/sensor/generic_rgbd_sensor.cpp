@@ -1,12 +1,12 @@
-#include <l3_terrain_model_generator/plugins/std/sensor/generic_lidar_sensor.h>
+#include <l3_terrain_model_generator/plugins/std/sensor/generic_rgbd_sensor.h>
 
 namespace l3_terrain_modeling
 {
-GenericLidarSensor::GenericLidarSensor()
-  : SensorPlugin("generic_lidar_sensor")
+GenericRGBDSensor::GenericRGBDSensor()
+  : SensorPlugin("generic_rgbd_sensor")
 {}
 
-bool GenericLidarSensor::initialize(const vigir_generic_params::ParameterSet& params)
+bool GenericRGBDSensor::initialize(const vigir_generic_params::ParameterSet& params)
 {
   if (!SensorPlugin::initialize(params))
     return false;
@@ -23,15 +23,18 @@ bool GenericLidarSensor::initialize(const vigir_generic_params::ParameterSet& pa
   }
 
   std::string topic = param("topic", std::string("cloud"), true);
-  pointcloud_sub_ = nh_.subscribe(topic, 1, &GenericLidarSensor::pointcloudCb, this);
+  pointcloud_sub_ = nh_.subscribe(topic, 1, &GenericRGBDSensor::pointcloudCb, this);
 
   return true;
 }
 
-void GenericLidarSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg)
+void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg)
 {
   if (msg->data.empty())
     return;
+
+  if (msg->height == 1)
+    ROS_WARN_ONCE("[%s] Received unorganized data. This warning is printed only once.", getName().c_str());
 
   // extract xyzrbg pointcloud if possible
   for (const sensor_msgs::PointField& field : msg->fields)
@@ -63,4 +66,4 @@ void GenericLidarSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr m
 }  // namespace l3_terrain_modeling
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::GenericLidarSensor, l3_terrain_modeling::SensorPlugin)
+PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::GenericRGBDSensor, l3_terrain_modeling::SensorPlugin)

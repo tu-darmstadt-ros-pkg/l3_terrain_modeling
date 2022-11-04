@@ -42,8 +42,23 @@ public:
   GeneratorPlugin(const std::string& name);
 
 protected:
+  /**
+   * @brief Pre-defined default routines for generator plugins. Calls update(...)
+   * for plugin specific tasks.
+   * This method is automatically called by process(...).
+   * @param timer Timing data
+   * @param updates Pointers of data handles whose data have been updated
+   * @param sensor Sensor on which the data is based (may be nullptr)
+   */
   void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override { update(timer, input, sensor); }
 
+  /**
+   * @brief Method stub for concrete implementation of this process plugin.
+   * This method is automatically called by processImpl(...).
+   * @param timer Timing data
+   * @param updates Pointers of data handles whose data have been updated
+   * @param sensor Sensor on which the data is based (may be nullptr)
+   */
   virtual void update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) = 0;
 };
 }  // namespace l3_terrain_modeling
