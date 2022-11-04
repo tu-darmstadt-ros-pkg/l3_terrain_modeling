@@ -47,6 +47,68 @@
 
 namespace l3_terrain_modeling
 {
+/**
+ * @brief Function caller to filter a point cloud. The resulting
+ * point cloud does not contain any invalid points (inf or nans values).
+ * @param cloud to filter
+ * @param filter Functor to filter; Must return true when point should be kept
+ * @return filtered cloud
+ */
+template <typename PointT>
+typename pcl::PointCloud<PointT>::Ptr filterDense(typename pcl::PointCloud<PointT>::ConstPtr cloud, std::function<bool(const l3::Point&)> filter)
+{
+  if (!cloud)
+  {
+    ROS_ERROR("[filterDense] Nullptr to point cloud was given! Fix it immediatly!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+  }
+
+  std::vector<int> indices;
+  indices.reserve(cloud->size());
+
+  for (int i = 0; i < cloud->size(); i++)
+  {
+    const PointT& p = cloud->at(i);
+
+    if (filter(l3::Point(p.x, p.y, p.z)))
+      indices.push_back(i);
+  }
+
+  return boost::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
+}
+
+/**
+ * @brief Function caller to filter a point cloud. The resulting
+ * point cloud may contain invalid points (inf or nans values) and
+ * preserves the organization. This method is usually more efficient
+ * than filterDense as it does not perform a deep copy.
+ * @param cloud Input and output variable of the cloud to filter
+ * @param filter Functor to filter; Must return true when point should be kept
+ * @return filtered cloud
+ */
+template <typename PointT>
+typename pcl::PointCloud<PointT>::Ptr filterOrganized(typename pcl::PointCloud<PointT>::Ptr cloud, std::function<bool(const l3::Point&)> filter)
+{
+  if (!cloud)
+  {
+    ROS_ERROR("[filterOrganized] Nullptr to point cloud was given! Fix it immediatly!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+  }
+
+  // generate point with nan fields
+  PointT nan_point = createNanPoint<PointT>();
+
+  for (PointT& p : *cloud)
+  {
+    if (!filter(l3::Point(p.x, p.y, p.z)))
+      p = nan_point;
+  }
+
+  cloud->is_dense = false;
+
+  return cloud;
+}
+
 template <typename PointT>
 typename pcl::PointCloud<PointT>::Ptr filterPassThroughBox(typename pcl::PointCloud<PointT>::ConstPtr cloud, const std::string& field_name, double min, double max)
 {
@@ -58,7 +120,7 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughBox(typename pcl::PointCl
 
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
   pcl::PassThrough<PointT> pass;
-  pass.setKeepOrganized(cloud->isOrganized());
+  pass.setKeepOrganized(cloud->isOrganized() || !cloud->is_dense);
   pass.setInputCloud(cloud);
   pass.setFilterFieldName(field_name);
   pass.setFilterLimits(min, max);
@@ -68,7 +130,7 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughBox(typename pcl::PointCl
 }
 
 template <typename PointT>
-typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::PointCloud<PointT>::ConstPtr cloud, const l3::Pose& center, double rx, double ry)
+typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::PointCloud<PointT>::Ptr cloud, const l3::Pose& center, double rx, double ry)
 {
   if (!cloud)
   {
@@ -76,53 +138,17 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::Poi
     return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
+  // setup filter
   l3::Point size(rx, ry, 0.0);
   double cos_yaw = cos(center.yaw());
   double sin_yaw = sin(center.yaw());
+  auto filter = [&](const l3::Point& p) -> bool { return l3::isPointInEllipse(p, center.getPosition(), size, cos_yaw, sin_yaw); };
 
-  std::vector<int> indices;
-  indices.reserve(cloud->size());
-
-  for (int i = 0; i < cloud->size(); i++)
-  {
-    const PointT& p = cloud->at(i);
-
-    if (l3::isPointInEllipse(l3::Point(p.x, p.y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
-      indices.push_back(i);
-  }
-
-  return boost::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
-}
-
-template <typename PointT>
-typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipseOrganized(typename pcl::PointCloud<PointT>::Ptr cloud, const l3::Pose& center, double rx, double ry)
-{
-  if (!cloud)
-  {
-    ROS_ERROR("[filterPassThroughEllipseOrganized] No point cloud is available!");
-    return cloud;
-  }
-
-  if (!cloud->isOrganized())
-  {
-    ROS_ERROR("[filterPassThroughEllipseOrganized] Point cloud is not organized!");
-    return cloud;
-  }
-
-  // generate point with nan fields
-  PointT nan_point = createNanPoint<PointT>();
-
-  l3::Point size(rx, ry, 0.0);
-  double cos_yaw = cos(center.yaw());
-  double sin_yaw = sin(center.yaw());
-
-  for (PointT& p : *cloud)
-  {
-    if (!l3::isPointInEllipse(l3::Point(p.x, p.y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
-      p = nan_point;
-  }
-
-  return cloud;
+  // filter
+  if (cloud->isOrganized() || !cloud->is_dense)
+    return filterOrganized<PointT>(cloud, filter);
+  else
+    return filterDense<PointT>(cloud, filter);
 }
 
 template <typename PointT>
@@ -204,7 +230,7 @@ typename pcl::PointCloud<PointT>::Ptr filterStatisticalOutlier(typename pcl::Poi
 }
 
 template <typename PointT>
-typename pcl::PointCloud<PointT>::Ptr filterInGridMap(typename pcl::PointCloud<PointT>::ConstPtr cloud, const grid_map::GridMap& map)
+typename pcl::PointCloud<PointT>::Ptr filterInGridMap(typename pcl::PointCloud<PointT>::Ptr cloud, const grid_map::GridMap& map)
 {
   if (!cloud)
   {
@@ -218,50 +244,13 @@ typename pcl::PointCloud<PointT>::Ptr filterInGridMap(typename pcl::PointCloud<P
     return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
   }
 
-  std::vector<int> indices;
-  indices.reserve(cloud->size());
+  // setup filter
+  auto filter = [&](const l3::Point& p) -> bool { return map.isInside(grid_map::Position(p.x(), p.y())); };
 
-  for (int i = 0; i < cloud->size(); i++)
-  {
-    const PointT& p = cloud->at(i);
-
-    if (map.isInside(grid_map::Position(p.x, p.y)))
-      indices.push_back(i);
-  }
-
-  return boost::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
-}
-
-template <typename PointT>
-typename pcl::PointCloud<PointT>::Ptr filterInGridMapOrganized(typename pcl::PointCloud<PointT>::Ptr cloud, const grid_map::GridMap& map)
-{
-  if (!cloud)
-  {
-    ROS_ERROR("[filterInGridMapOrganized] No point cloud is available!");
-    return cloud;
-  }
-
-  if (!cloud->isOrganized())
-  {
-    ROS_ERROR("[filterInGridMapOrganized] Point cloud is not organized!");
-    return cloud;
-  }
-
-  if (cloud->header.frame_id != map.getFrameId())
-  {
-    ROS_ERROR("[filterInGridMapOrganized] Cloud (%s) and grid map (%s) frame id are different!", cloud->header.frame_id.c_str(), map.getFrameId().c_str());
-    return cloud;
-  }
-
-  // generate point with nan fields
-  PointT nan_point = createNanPoint<PointT>();
-
-  for (PointT& p : *cloud)
-  {
-    if (!map.isInside(grid_map::Position(p.x, p.y)))
-      p = nan_point;
-  }
-
-  return cloud;
+  // filter
+  if (cloud->isOrganized() || !cloud->is_dense)
+    return filterOrganized<PointT>(cloud, filter);
+  else
+    return filterDense<PointT>(cloud, filter);
 }
 }  // namespace l3_terrain_modeling
