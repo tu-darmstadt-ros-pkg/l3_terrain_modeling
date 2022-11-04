@@ -32,6 +32,7 @@
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/for_each_type.h>
 #include <pcl/PolygonMesh.h>
 
 #include <l3_libs/types/types.h>
@@ -46,6 +47,18 @@ namespace l3_terrain_modeling
  * @param consistent_vertex_ordering ifset to true, the input mesh's vertices of each facet are consistently ordered (normals are pointing in the same direction)
  */
 void fromPCL(const pcl::PolygonMesh& mesh, visualization_msgs::Marker& marker, const std_msgs::ColorRGBA& color, bool consistent_vertex_ordering = false);
+
+template <typename PointT>
+PointT createNanPoint()
+{
+  // generate point with nan fields
+  PointT p;
+  using FieldList = typename pcl::traits::fieldList<PointT>::type;
+  pcl::for_each_type<FieldList>(pcl::SetIfFieldExists<PointT, float>(p, "x", std::numeric_limits<float>::quiet_NaN()));
+  pcl::for_each_type<FieldList>(pcl::SetIfFieldExists<PointT, float>(p, "y", std::numeric_limits<float>::quiet_NaN()));
+  pcl::for_each_type<FieldList>(pcl::SetIfFieldExists<PointT, float>(p, "z", std::numeric_limits<float>::quiet_NaN()));
+  return p;
+}
 
 /**
  * @brief Retrieves point color if available

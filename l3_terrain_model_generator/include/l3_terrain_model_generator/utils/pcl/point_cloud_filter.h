@@ -43,6 +43,8 @@
 
 #include <l3_math/math.h>
 
+#include <l3_terrain_model_generator/utils/pcl/pcl_utils.h>
+
 namespace l3_terrain_modeling
 {
 template <typename PointT>
@@ -50,12 +52,13 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughBox(typename pcl::PointCl
 {
   if (!cloud)
   {
-    ROS_ERROR("filterPassThrough was called but no point cloud was available");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    ROS_ERROR("[filterPassThroughBox] No point cloud is available!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
   pcl::PassThrough<PointT> pass;
+  pass.setKeepOrganized(cloud->isOrganized());
   pass.setInputCloud(cloud);
   pass.setFilterFieldName(field_name);
   pass.setFilterLimits(min, max);
@@ -69,11 +72,11 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::Poi
 {
   if (!cloud)
   {
-    ROS_ERROR("filterPassThroughRadius was called but no point cloud was available");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    ROS_ERROR("[filterPassThroughEllipse] No point cloud is available!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
-  typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
+  typename pcl::PointCloud<PointT>::Ptr cloud_filtered = boost::make_shared<pcl::PointCloud<PointT>>();
   cloud_filtered->header = cloud->header;
   cloud_filtered->reserve(cloud->size());
 
@@ -81,13 +84,44 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::Poi
   double cos_yaw = cos(center.yaw());
   double sin_yaw = sin(center.yaw());
 
-  for (typename pcl::PointCloud<PointT>::const_iterator itr = cloud->begin(); itr != cloud->end(); itr++)
+  for (const PointT& p : *cloud)
   {
-    if (l3::isPointInEllipse(l3::Point(itr->x, itr->y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
-      cloud_filtered->push_back(*itr);
+    if (l3::isPointInEllipse(l3::Point(p.x, p.y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
+      cloud_filtered->push_back(p);
   }
 
   return cloud_filtered;
+}
+
+template <typename PointT>
+typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipseOrganized(typename pcl::PointCloud<PointT>::Ptr cloud, const l3::Pose& center, double rx, double ry)
+{
+  if (!cloud)
+  {
+    ROS_ERROR("[filterPassThroughEllipseOrganized] No point cloud is available!");
+    return cloud;
+  }
+
+  if (!cloud->isOrganized())
+  {
+    ROS_ERROR("[filterPassThroughEllipseOrganized] Point cloud is not organized!");
+    return cloud;
+  }
+
+  // generate point with nan fields
+  PointT nan_point = createNanPoint<PointT>();
+
+  l3::Point size(rx, ry, 0.0);
+  double cos_yaw = cos(center.yaw());
+  double sin_yaw = sin(center.yaw());
+
+  for (PointT& p : *cloud)
+  {
+    if (!l3::isPointInEllipse(l3::Point(p.x, p.y, 0.0), center.getPosition(), size, cos_yaw, sin_yaw))
+      p = nan_point;
+  }
+
+  return cloud;
 }
 
 template <typename PointT>
@@ -95,9 +129,12 @@ typename pcl::PointCloud<PointT>::Ptr filterVoxelGrid(typename pcl::PointCloud<P
 {
   if (!cloud)
   {
-    ROS_ERROR("filterVoxelGrid was called but no point cloud was available");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    ROS_ERROR("[filterVoxelGrid] No point cloud is available!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
+
+  if (cloud->isOrganized())
+    ROS_WARN_ONCE("[filterVoxelGrid] Cloud is not orgranized after downsampling. This warning is printed only once.");
 
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
   pcl::VoxelGrid<PointT> vox;
@@ -113,9 +150,12 @@ typename pcl::PointCloud<PointT>::Ptr filterMlsSmooth(typename pcl::PointCloud<P
 {
   if (!cloud)
   {
-    ROS_ERROR("filterSmooth was called but no point cloud was available");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    ROS_ERROR("[filterMlsSmooth] No point cloud is available!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
+
+  if (cloud->isOrganized())
+    ROS_WARN_ONCE("[filterMlsSmooth] Cloud is not orgranized after smoothing. This warning is printed only once.");
 
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
   typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
@@ -144,9 +184,12 @@ typename pcl::PointCloud<PointT>::Ptr filterStatisticalOutlier(typename pcl::Poi
 {
   if (!cloud)
   {
-    ROS_ERROR("filterStatisticalOutlier was called but no point cloud was available");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    ROS_ERROR("[filterStatisticalOutlier] No point cloud is available!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
+
+  if (cloud->isOrganized())
+    ROS_WARN_ONCE("[filterStatisticalOutlier] Cloud is not orgranized after outlier removal. This warning is printed only once.");
 
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
   pcl::StatisticalOutlierRemoval<PointT> sor;
@@ -164,28 +207,59 @@ typename pcl::PointCloud<PointT>::Ptr filterInGridMap(typename pcl::PointCloud<P
 {
   if (!cloud)
   {
-    ROS_ERROR("filterInGridMap was called but no point cloud was available");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    ROS_ERROR("[filterInGridMap] No point cloud is available!");
+    return boost::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   if (cloud->header.frame_id != map.getFrameId())
   {
-    ROS_ERROR("filterInGridMap: Cloud (%s) and grid map (%s) frame id are different!", cloud->header.frame_id.c_str(), map.getFrameId().c_str());
+    ROS_ERROR("[filterInGridMap] Cloud (%s) and grid map (%s) frame id are different!", cloud->header.frame_id.c_str(), map.getFrameId().c_str());
     return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
   }
 
-  typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
+  typename pcl::PointCloud<PointT>::Ptr cloud_filtered = boost::make_shared<pcl::PointCloud<PointT>>();
   cloud_filtered->header = cloud->header;
   cloud_filtered->reserve(cloud->size());
 
-  for (size_t i = 0; i < cloud->size(); i++)
+  for (const PointT& p : *cloud)
   {
-    const PointT& p = cloud->at(i);
-
     if (map.isInside(grid_map::Position(p.x, p.y)))
       cloud_filtered->push_back(p);
   }
 
   return cloud_filtered;
+}
+
+template <typename PointT>
+typename pcl::PointCloud<PointT>::Ptr filterInGridMapOrganized(typename pcl::PointCloud<PointT>::Ptr cloud, const grid_map::GridMap& map)
+{
+  if (!cloud)
+  {
+    ROS_ERROR("[filterInGridMapOrganized] No point cloud is available!");
+    return cloud;
+  }
+
+  if (!cloud->isOrganized())
+  {
+    ROS_ERROR("[filterInGridMapOrganized] Point cloud is not organized!");
+    return cloud;
+  }
+
+  if (cloud->header.frame_id != map.getFrameId())
+  {
+    ROS_ERROR("[filterInGridMapOrganized] Cloud (%s) and grid map (%s) frame id are different!", cloud->header.frame_id.c_str(), map.getFrameId().c_str());
+    return cloud;
+  }
+
+  // generate point with nan fields
+  PointT nan_point = createNanPoint<PointT>();
+
+  for (PointT& p : *cloud)
+  {
+    if (!map.isInside(grid_map::Position(p.x, p.y)))
+      p = nan_point;
+  }
+
+  return cloud;
 }
 }  // namespace l3_terrain_modeling

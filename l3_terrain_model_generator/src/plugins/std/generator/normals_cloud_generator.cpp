@@ -153,16 +153,18 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
   if (filter_mask_ & FILTER_VOXEL_GRID)
     search_points = filterVoxelGrid<pcl::PointXYZ>(search_points, voxel_grid_size_.x(), voxel_grid_size_.y(), voxel_grid_size_.z());
 
-  // enforce search points to be within grid map
-  l3::UniqueLockPtr grid_map_lock;
-  grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
-  search_points = filterInGridMap<pcl::PointXYZ>(search_points, grid_map);
-
   // init normals data structure
   pcl::PointCloud<pcl::Normal> normals_cloud;
 
+  // lock grid map
+  l3::UniqueLockPtr grid_map_lock;
+  grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
+
   if (search_points->isOrganized())
   {
+    // enforce search points to be within grid map
+    search_points = filterInGridMapOrganized<pcl::PointXYZ>(search_points, grid_map);
+
     // from https://pointclouds.org/documentation/tutorials/normal_estimation_using_integral_images.html#normal-estimation-using-integral-images
     // estimate normals
     pcl::IntegralImageNormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
@@ -174,6 +176,9 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
   }
   else
   {
+    // enforce search points to be within grid map
+    search_points = filterInGridMap<pcl::PointXYZ>(search_points, grid_map);
+
     input_octree_pcl_handle_->dispatch<l3::SharedLock>([&](auto& octree, auto type_trait)
     {
       pcl::PointCloud<pcl::PointXYZ>::Ptr processed_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
