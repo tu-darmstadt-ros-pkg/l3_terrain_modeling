@@ -116,6 +116,13 @@ void ElevationMapGenerator::update(const Timer& timer, UpdatedHandles& input, co
 
     for (const decltype(type_trait)& point : *cloud)
     {
+      // check if cloud may contain invalid points
+      if (!cloud->is_dense)
+      {
+        if (!std::isfinite(point.x) || !std::isfinite(point.y) || !std::isfinite(point.z))
+          continue;
+      }
+
       if (!grid_map.getIndex(l3::Position2D(static_cast<double>(point.x), static_cast<double>(point.y)), index))
         continue;
 
