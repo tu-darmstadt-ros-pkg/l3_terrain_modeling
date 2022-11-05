@@ -3,24 +3,13 @@
 namespace l3_terrain_modeling
 {
 GenericRGBDSensor::GenericRGBDSensor()
-  : SensorPlugin("generic_rgbd_sensor")
+  : PointCloudSensorPlugin("generic_rgbd_sensor")
 {}
 
 bool GenericRGBDSensor::initialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!SensorPlugin::initialize(params))
+  if (!PointCloudSensorPlugin::initialize(params))
     return false;
-
-  // init pointcloud
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-  std::string point_type = param("point_type", std::string("PointXYZ"), true);
-  cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name, point_type);
-
-  if (!cloud_pcl_handle_)
-  {
-    ROS_ERROR("[%s] Unsupported point type: \"%s\"", getName().c_str(), point_type.c_str());
-    return false;
-  }
 
   std::string topic = param("topic", std::string("cloud"), true);
   pointcloud_sub_ = nh_.subscribe(topic, 1, &GenericRGBDSensor::pointcloudCb, this);

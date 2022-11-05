@@ -106,6 +106,7 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/base/generator_plugin.h
   include/${PROJECT_NAME}/plugins/base/grid_map_generator_plugin.h
   include/${PROJECT_NAME}/plugins/base/point_cloud_filter_plugin.h
+  include/${PROJECT_NAME}/plugins/base/point_cloud_sensor_plugin.h
   include/${PROJECT_NAME}/plugins/base/process_plugin.h
   include/${PROJECT_NAME}/plugins/base/publisher_plugin.h
   include/${PROJECT_NAME}/plugins/base/sensor_plugin.h
@@ -153,6 +154,7 @@ set(SOURCES
   src/plugins/base/generator_plugin.cpp
   src/plugins/base/grid_map_generator_plugin.cpp
   src/plugins/base/point_cloud_filter_plugin.cpp
+  src/plugins/base/point_cloud_sensor_plugin.cpp
   src/plugins/base/process_plugin.cpp
   src/plugins/base/publisher_plugin.cpp
   src/plugins/base/sensor_plugin.cpp

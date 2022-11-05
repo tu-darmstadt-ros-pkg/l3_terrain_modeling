@@ -28,34 +28,77 @@
 
 #pragma once
 
-#include <sensor_msgs/PointCloud2.h>
+#include <ros/ros.h>
 
-#include <l3_terrain_model_generator/plugins/base/point_cloud_sensor_plugin.h>
+#include <pcl_ros/transforms.h>
+#include <pcl_conversions/pcl_conversions.h>
+
+#include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
+#include <l3_terrain_model_generator/utils/pcl/pcl_utils.h>
+#include <l3_terrain_model_generator/plugins/base/sensor_plugin.h>
 
 namespace l3_terrain_modeling
 {
 /**
- * @brief The GenericLidarSensor represents a generic lidar sensor that processes the
+ * @brief The PointCloudSensorPlugin represents a generic sensor that processes the
  * sensor data as Pointcloud.
  * @param map_frame (default: "map") Frame in which the data is represented
  * @param input_data_name (default: "cloud") Data name as found in the DataManager
  * @param point_type Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
- * @param topic (default: "cloud") Topic name to subscribe at
  */
-class GenericLidarSensor : public PointCloudSensorPlugin
+class PointCloudSensorPlugin : public SensorPlugin
 {
 public:
   // typedefs
-  typedef l3::SharedPtr<GenericLidarSensor> Ptr;
-  typedef l3::SharedPtr<const GenericLidarSensor> ConstPtr;
+  typedef l3::SharedPtr<PointCloudSensorPlugin> Ptr;
+  typedef l3::SharedPtr<const PointCloudSensorPlugin> ConstPtr;
 
-  GenericLidarSensor();
+  PointCloudSensorPlugin(const std::string& name);
 
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg);
+  template <typename PointT>
+  void process(typename pcl::PointCloud<PointT>::Ptr cloud)
+  {
+    ROS_ASSERT(cloud_pcl_handle_->isPointType<PointT>());
 
-  ros::Subscriber pointcloud_sub_;
+    // transform point cloud to map frame if necessary
+    std_msgs::Header header;
+    pcl_conversions::fromPCL(cloud->header, header);
+    std::string cloud_frame_id = l3::strip_const(cloud->header.frame_id, '/');
+
+    std::string error_msg;
+    if (tf_buffer_.canTransform(getMapFrame(), header.frame_id, header.stamp, ros::Duration(1.0), &error_msg))
+    {
+      geometry_msgs::TransformStamped t = tf_buffer_.lookupTransform(getMapFrame(), header.frame_id, header.stamp);
+
+      pcl_ros::transformPointCloud(*cloud, *cloud, t.transform);
+      cloud->header.frame_id = getMapFrame();
+    }
+    else
+    {
+      ROS_ERROR_THROTTLE(5.0, "[%s] Could not transform input point cloud from '%s' to '%s':\n%s", getName().c_str(), cloud_frame_id.c_str(), getMapFrame().c_str(),
+                         error_msg.c_str());
+      return;
+    }
+
+    Time time = Timer::timeFromRos(header.stamp);
+
+    // set sensor pose in point cloud
+    updateSensorPose(time); /// @todo early update required (also called in SensorPlugin::process)
+    setSensorPoseInCloud(*cloud, getSensorPose().data);
+
+    // switch pointer to new pointcloud
+    l3::UniqueLockPtr lock;
+    cloud_pcl_handle_->value<PointT>(lock) = cloud;
+    lock.reset();
+
+    // call default pipeline
+    UpdatedHandles updates = { cloud_pcl_handle_->handle() };
+    SensorPlugin::process(time, updates);
+  }
+
+  PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
 };
 }  // namespace l3_terrain_modeling
