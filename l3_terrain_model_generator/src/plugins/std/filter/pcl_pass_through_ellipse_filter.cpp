@@ -23,10 +23,9 @@ void PclPassThroughEllipseFilter::filter(UpdatedHandles& /*input*/, const Sensor
 {
   if (cloud_pcl_handle_)
   {
-    l3::Pose robot_pose;
-    determineCurrentRobotPose(robot_pose);
-    cloud_pcl_handle_->dispatch<l3::UniqueLock>(
-        [&](auto& cloud, auto type_trait) { cloud = filterPassThroughEllipse<decltype(type_trait)>(cloud, robot_pose, radius_x_, radius_y_); });
+    cloud_pcl_handle_->dispatch<l3::UniqueLock>([&](auto& cloud, auto type_trait) {
+      cloud = filterPassThroughEllipse<decltype(type_trait)>(cloud, getSensorPoseFromCloud(*cloud), radius_x_, radius_y_);
+    });
   }
 }
 }  // namespace l3_terrain_modeling

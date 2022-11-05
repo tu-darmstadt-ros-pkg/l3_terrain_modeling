@@ -36,6 +36,7 @@
 #include <pcl_conversions/pcl_conversions.h>
 
 #include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
+#include <l3_terrain_model_generator/utils/pcl/pcl_utils.h>
 #include <l3_terrain_model_generator/plugins/base/sensor_plugin.h>
 
 namespace l3_terrain_modeling
@@ -87,6 +88,12 @@ private:
       return;
     }
 
+    Time time = Timer::timeFromRos(header.stamp);
+
+    // set sensor pose in point cloud
+    updateSensorPose(time); /// @todo early update required (also called in SensorPlugin::process)
+    setSensorPoseInCloud(*cloud, getSensorPose().data);
+
     // switch pointer to new pointcloud
     l3::UniqueLockPtr lock;
     cloud_pcl_handle_->value<PointT>(lock) = cloud;
@@ -94,7 +101,7 @@ private:
 
     // call default pipeline
     UpdatedHandles updates = { cloud_pcl_handle_->handle() };
-    SensorPlugin::process(Timer::timeFromRos(header.stamp), updates);
+    SensorPlugin::process(time, updates);
   }
 
   PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;

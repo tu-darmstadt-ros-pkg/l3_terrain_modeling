@@ -39,6 +39,19 @@
 
 namespace l3_terrain_modeling
 {
+template <typename PointT>
+l3::Pose getSensorPoseFromCloud(const pcl::PointCloud<PointT>& cloud)
+{
+  return l3::Pose(cloud.sensor_origin_.head(3).template cast<double>(), cloud.sensor_orientation_.template cast<double>());
+}
+
+template <typename PointT>
+void setSensorPoseInCloud(pcl::PointCloud<PointT>& cloud, const l3::Pose pose)
+{
+  cloud.sensor_origin_ << pose.x(), pose.y(), pose.z(), 1.0;
+  cloud.sensor_orientation_ = pose.getQuaternion().cast<float>();
+}
+
 /**
  * @brief Converts a PCL PolygonMesh into a marker in order to visualize the mesh in RViz.
  * @param mesh pcl-based mesh

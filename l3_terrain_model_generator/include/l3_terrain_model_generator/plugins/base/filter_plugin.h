@@ -49,23 +49,13 @@ public:
 
   virtual ~FilterPlugin() = default;
 
-  bool initialize(const vigir_generic_params::ParameterSet& params) override;
-
 protected:
   void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override { filter(input, sensor); }
 
   virtual void filter(UpdatedHandles& input, const SensorPlugin* sensor) const = 0;
 
-  bool determineCurrentRobotPose(l3::Pose& pose) const;
-
 private:
-  void robotPoseCb(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr pose);
-
-  geometry_msgs::PoseStamped::Ptr robot_pose_;
-
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
-
-  ros::Subscriber robot_pose_sub_;
 };
 }  // namespace l3_terrain_modeling
