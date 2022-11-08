@@ -19,6 +19,10 @@ bool GenericRGBDSensor::initialize(const vigir_generic_params::ParameterSet& par
 
 void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg)
 {
+  // consider processing rate
+  if (!canProcess(Timer::timeFromRos(msg->header.stamp)))
+    return;
+
   if (msg->data.empty())
     return;
 

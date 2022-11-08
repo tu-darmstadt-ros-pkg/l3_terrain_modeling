@@ -90,7 +90,7 @@ private:
   std::set<DataHandle::ConstPtr> handles_;
 };
 
-using Time = uint64_t;
+using Time = uint64_t;  // [msec]
 
 struct Timer
 {
@@ -123,10 +123,6 @@ struct Timer
 
   inline void update(const ros::Time& current) { update(timeFromRos(current)); }
 
-  Time current;  // [msec]
-  Time last;     // [msec]
-  Time delta;    // [msec]
-
   inline static Time timeFromRos(const ros::Time& time) { return (ros::Time::now().toNSec() / 1e6); }
   inline static ros::Time timeToRos(const Time& time)
   {
@@ -134,5 +130,9 @@ struct Timer
     ros_time.fromNSec(static_cast<uint64_t>(time * 1e6));
     return ros_time;
   }
+
+  Time current;  // [msec]
+  Time last;     // [msec]
+  Time delta;    // [msec]
 };
 }  // namespace l3_terrain_modeling

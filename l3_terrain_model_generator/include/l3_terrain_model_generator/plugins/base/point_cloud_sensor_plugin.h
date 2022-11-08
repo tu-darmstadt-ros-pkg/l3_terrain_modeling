@@ -63,11 +63,18 @@ protected:
   {
     ROS_ASSERT(cloud_pcl_handle_->isPointType<PointT>());
 
-    // transform point cloud to map frame if necessary
+    // read header from point cloud
     std_msgs::Header header;
     pcl_conversions::fromPCL(cloud->header, header);
     std::string cloud_frame_id = l3::strip_const(cloud->header.frame_id, '/');
 
+    Time time = Timer::timeFromRos(header.stamp);
+
+    // consider processing rate
+    if (!canProcess(time))
+      return;
+
+    // transform point cloud to map frame if necessary
     std::string error_msg;
     if (tf_buffer_.canTransform(getMapFrame(), header.frame_id, header.stamp, ros::Duration(1.0), &error_msg))
     {
@@ -82,8 +89,6 @@ protected:
                          error_msg.c_str());
       return;
     }
-
-    Time time = Timer::timeFromRos(header.stamp);
 
     // set sensor pose in point cloud
     updateSensorPose(time); /// @todo early update required (also called in SensorPlugin::process)
