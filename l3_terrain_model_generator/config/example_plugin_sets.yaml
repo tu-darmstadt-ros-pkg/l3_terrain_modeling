@@ -26,10 +26,20 @@ plugin_sets:
         process_chain:
           - surface_mesh_publisher
 
+    ### Sensor Pose ###
+    # Use sensor pose subscriber as we don't have any state estimate available
+    sensor_pose_subscriber:
+      params:
+        topic: "/initialpose"
+        sensors:
+          - generic_lidar_sensor
+          - image_map_sensor
+
     ### Sensors ###
     generic_lidar_sensor:
       params:
         sensor_frame: map
+        auto_update_sensor_pose: false
         topic: point_cloud_update
         filter_chain:
           - pcl_pass_through_box_filter

@@ -10,18 +10,21 @@ SensorPlugin::SensorPlugin(const std::string& name)
   : Plugin(name)
   , tf_listener_(tf_buffer_)
 {
-  sensor_pose_.header.frame_id = "INVALID";
-  sensor_pose_.header.stamp = ros::Time::now();
-  sensor_pose_.data.setIdentity();
 }
 
 bool SensorPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
 {
   sensor_frame_id_ = param("sensor_frame", std::string("lidar"), true);
   map_frame_id_ = param("map_frame", std::string("map"), true);
+  auto_update_sensor_pose_ = param("auto_update_sensor_pose", true, true);
 
   double rate = param("rate", 0.0, true);
   process_intervall_ = rate > 0.0 ? static_cast<uint64_t>(1000.0 / rate) : 0llu;
+
+  // set initial sensor pose
+  sensor_pose_.header.frame_id = getMapFrame();
+  sensor_pose_.header.stamp = ros::Time::now();
+  sensor_pose_.data = l3::Pose();
 
   return true;
 }
@@ -58,7 +61,7 @@ void SensorPlugin::updateSensorPose(const Time& time)
   {
     l3::UniqueLock lock(mutex_);
     geometry_msgs::TransformStamped transform_msg = tf_buffer_.lookupTransform(getMapFrame(), sensor_frame_id_, ros_time);
-    sensor_pose_.header.frame_id = sensor_frame_id_;
+    sensor_pose_.header.frame_id = getMapFrame();
     sensor_pose_.header.stamp = ros_time;
     l3::transformMsgToL3(transform_msg.transform, sensor_pose_.data);
   }
@@ -79,7 +82,8 @@ void SensorPlugin::process(const Time& time, UpdatedHandles& updates)
     return;
 
   // update sensor poses
-  updateSensorPose(time);
+  if (canAutoUpdateSensorPose())
+    updateSensorPose(time);
 
   // apply filter
   filter_chain_->process(timer_, updates, this);

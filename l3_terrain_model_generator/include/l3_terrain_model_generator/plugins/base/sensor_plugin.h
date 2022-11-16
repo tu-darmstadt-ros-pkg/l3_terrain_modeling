@@ -44,6 +44,14 @@ namespace l3_terrain_modeling
 // forward declaration
 class ProcessChain;
 
+/**
+ * @brief Represents a generic sensor that processes
+ *
+ * @param sensor_frame (default: "lidar") Frame in which the sensor is localized
+ * @param map_frame (default: "map") Frame in which the data should be represented
+ * @param auto_update_sensor_pose (default: true) Tries to update sensor pose based on tf
+ * @param rate (default: 0.0) Maximum rate at which the input data should be processed, 0.0 for no limit
+ */
 class SensorPlugin : public vigir_pluginlib::Plugin
 {
 public:
@@ -105,6 +113,12 @@ protected:
    * @param updates Pointers of data handles whose data have been updated
    */
   void process(const Time& time, UpdatedHandles& updates);
+
+  /**
+   * @brief Returns state if auto sensor update should be used
+   * @return true if auto sensor update should be used
+   */
+  bool canAutoUpdateSensorPose() const { return auto_update_sensor_pose_; }
 
   /**
    * @brief Overwritable method how to obtain the sensor pose. The default implementation
@@ -177,6 +191,7 @@ private:
   // parameters
   std::string sensor_frame_id_;
   std::string map_frame_id_;
+  bool auto_update_sensor_pose_;
 
   // variables used for throtteling
   Timer timer_;

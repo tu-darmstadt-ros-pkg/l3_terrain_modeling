@@ -10,6 +10,8 @@
 namespace l3_terrain_modeling
 {
 TerrainModelGenerator::TerrainModelGenerator(ros::NodeHandle& nh)
+  : sensors_("TerrainModelGenerator::Sensors")
+  , processes_("TerrainModelGenerator::Processes")
 {
   ros::NodeHandle pnh("~");
 

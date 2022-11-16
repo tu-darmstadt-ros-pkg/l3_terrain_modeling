@@ -1,5 +1,13 @@
 <library path="lib/libl3_terrain_model_generator">
 
+  <!-- Misc -->
+
+  <class name="sensor_pose_subscriber" type="l3_terrain_modeling::SensorPoseSubscriber" base_class_type="l3_terrain_modeling::ProcessPlugin">
+    <description>
+      Plugin that forwards a subsribed position as sensor pose.
+    </description>
+  </class>
+
   <!-- Sensor plugins -->
   
   <class name="generic_lidar_sensor" type="l3_terrain_modeling::GenericLidarSensor" base_class_type="l3_terrain_modeling::SensorPlugin">

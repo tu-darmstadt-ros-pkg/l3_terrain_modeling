@@ -28,37 +28,35 @@
 
 #pragma once
 
-#include <sensor_msgs/PointCloud2.h>
+#include <topic_tools/shape_shifter.h>
 
-#include <l3_terrain_model_generator/plugins/base/point_cloud_sensor_plugin.h>
+#include <l3_terrain_model_generator/plugins/base/process_plugin.h>
+#include <l3_terrain_model_generator/plugins/aggregator/sensors.h>
 
 namespace l3_terrain_modeling
 {
 /**
- * @brief The GenericLidarSensor represents a generic lidar sensor that processes the
- * sensor data as Pointcloud.
- *
- * @param sensor_frame (default: "lidar") Frame in which the sensor is localized
- * @param map_frame (default: "map") Frame in which the data should be represented
- * @param auto_update_sensor_pose (default: true) Tries to update sensor pose based on tf
- * @param rate (default: 0.0) Maximum rate at which the input data should be processed, 0.0 for no limit
- * @param input_data_name (default: "cloud") Data name as found in the DataManager
- * @param point_type Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
+ * @brief The SensorPoseSubscriber subscribes to a pose topic and sets the sensor pose as
+ * given in the process chain.
+ * @param topic (default: "pose") Topic name to subscribe at
+ * @param sensors List of sensors to update based on the subscribed input
  */
-class GenericLidarSensor : public PointCloudSensorPlugin
+class SensorPoseSubscriber : public ProcessPlugin
 {
 public:
   // typedefs
-  typedef l3::SharedPtr<GenericLidarSensor> Ptr;
-  typedef l3::SharedPtr<const GenericLidarSensor> ConstPtr;
+  typedef l3::SharedPtr<SensorPoseSubscriber> Ptr;
+  typedef l3::SharedPtr<const SensorPoseSubscriber> ConstPtr;
 
-  GenericLidarSensor();
+  SensorPoseSubscriber();
 
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
-protected:
-  void pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg);
+private:
+  void poseCb(topic_tools::ShapeShifter::ConstPtr msg);
 
-  ros::Subscriber pointcloud_sub_;
+  boost::shared_ptr<Sensors> sensors_;
+
+  ros::Subscriber pose_sub_;
 };
 }  // namespace l3_terrain_modeling

@@ -42,7 +42,11 @@ namespace l3_terrain_modeling
 /**
  * @brief The PointCloudSensorPlugin represents a generic sensor that processes the
  * sensor data as Pointcloud.
- * @param map_frame (default: "map") Frame in which the data is represented
+ *
+ * @param sensor_frame (default: "lidar") Frame in which the sensor is localized
+ * @param map_frame (default: "map") Frame in which the data should be represented
+ * @param auto_update_sensor_pose (default: true) Tries to update sensor pose based on tf
+ * @param rate (default: 0.0) Maximum rate at which the input data should be processed, 0.0 for no limit
  * @param input_data_name (default: "cloud") Data name as found in the DataManager
  * @param point_type Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
  */
@@ -91,7 +95,8 @@ protected:
     }
 
     // set sensor pose in point cloud
-    updateSensorPose(time); /// @todo early update required (also called in SensorPlugin::process)
+    if (canAutoUpdateSensorPose())
+      updateSensorPose(time); /// @todo early update required (also called later in SensorPlugin::process)
     setSensorPoseInCloud(*cloud, getSensorPose().data);
 
     // switch pointer to new pointcloud

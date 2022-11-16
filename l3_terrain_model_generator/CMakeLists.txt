@@ -132,6 +132,7 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/std/sensor/generic_rgbd_sensor.h
   include/${PROJECT_NAME}/plugins/std/sensor/grid_map_sensor.h
   include/${PROJECT_NAME}/plugins/std/sensor/image_map_sensor.h
+  include/${PROJECT_NAME}/plugins/std/sensor/sensor_pose_subscriber.h
   include/${PROJECT_NAME}/plugins/std/periodic_process.h
   include/${PROJECT_NAME}/utils/pcl/incremental_octree_search.h
   include/${PROJECT_NAME}/utils/pcl/octree_voxel_grid.h
@@ -180,6 +181,7 @@ set(SOURCES
   src/plugins/std/sensor/generic_rgbd_sensor.cpp
   src/plugins/std/sensor/grid_map_sensor.cpp
   src/plugins/std/sensor/image_map_sensor.cpp
+  src/plugins/std/sensor/sensor_pose_subscriber.cpp
   src/plugins/std/periodic_process.cpp
   src/utils/pcl/incremental_octree_search.cpp
   src/utils/pcl/octree_voxel_grid.cpp
