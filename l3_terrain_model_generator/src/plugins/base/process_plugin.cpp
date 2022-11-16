@@ -34,10 +34,13 @@ bool ProcessPlugin::postInitialize(const vigir_generic_params::ParameterSet& par
 void ProcessPlugin::process(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
   // consider processing rate
-  if (!canProcess(timer.current))
+  if (canProcess(timer.current))
+  {
+    l3::UniqueLock lock(mutex_);
+    last_processed_time_ = timer.current;
+  }
+  else
     return;
-
-  last_processed_time_ = timer.current;
 
   // call plugin specific implementation
   processImpl(timer, updates, sensor);

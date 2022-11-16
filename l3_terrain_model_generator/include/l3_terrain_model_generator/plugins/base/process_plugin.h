@@ -88,7 +88,11 @@ protected:
    * @param time Current time [msec]
    * @return true when new data should be processed
    */
-  virtual bool canProcess(const Time& time) const { return (throttle_intervall_ == 0llu) || ((time - last_processed_time_) >= throttle_intervall_); }
+  virtual bool canProcess(const Time& time) const
+  {
+    l3::SharedLock lock(mutex_);
+    return (throttle_intervall_ == 0llu) || ((time - last_processed_time_) >= throttle_intervall_);
+  }
 
   /**
    * Helper to retrieve easily data handles from the date manager while performing
@@ -123,10 +127,13 @@ protected:
     return handle;
   }
 
+protected:
+  mutable l3::Mutex mutex_;
+
 private:
   boost::shared_ptr<ProcessChain> process_chain_;
 
-  uint64_t throttle_intervall_;            // in [msec]
+  uint64_t throttle_intervall_;           // in [msec]
   mutable uint64_t last_processed_time_;  // in [msec]
 };
 }  // namespace l3_terrain_modeling

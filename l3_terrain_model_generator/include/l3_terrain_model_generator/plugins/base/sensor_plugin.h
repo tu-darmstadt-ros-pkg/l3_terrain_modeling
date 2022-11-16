@@ -65,7 +65,25 @@ public:
 
   bool isUnique() const final { return false; }
 
-  inline const l3::StampedPose& getSensorPose() const { return sensor_pose_; }
+  /**
+   * @brief Sets new sensor pose
+   * @param pose New sensor pose
+   */
+  inline void setSensorPose(const l3::StampedPose& pose)
+  {
+    l3::UniqueLock lock(mutex_);
+    sensor_pose_ = pose;
+  }
+
+  /**
+   * @brief Gets current sensor pose
+   * @return Current sensor pose
+   */
+  inline l3::StampedPose getSensorPose() const
+  {
+    l3::SharedLock lock(mutex_);
+    return sensor_pose_;
+  }
 
 protected:
   /**
@@ -74,7 +92,11 @@ protected:
    * @param time Current time [msec]
    * @return true when new data should be processed
    */
-  inline bool canProcess(const Time& time) const { return (process_intervall_ == 0llu) || ((time - last_processed_time_) >= process_intervall_); }
+  inline bool canProcess(const Time& time) const
+  {
+    l3::SharedLock lock(mutex_);
+    return (process_intervall_ == 0llu) || ((time - last_processed_time_) >= process_intervall_);
+  }
 
   /**
    * @brief Main processing callback that must be triggered by concerete implementation.
@@ -91,12 +113,6 @@ protected:
    * @param time Current time [msec]
    */
   virtual void updateSensorPose(const Time& time);
-
-  /**
-   * @brief Sets new sensor pose
-   * @param pose New sensor pose
-   */
-  inline void setSensorPose(const l3::StampedPose& pose) { sensor_pose_ = pose; }
 
   /**
    * @brief Returns configured sensor frame, which represents the location of the sensor
@@ -146,6 +162,9 @@ protected:
 
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
+
+protected:
+  mutable l3::Mutex mutex_;
 
 private:
   // subsequent process calls

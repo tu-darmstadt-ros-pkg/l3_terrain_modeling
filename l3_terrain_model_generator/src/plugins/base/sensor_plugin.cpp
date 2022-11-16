@@ -56,6 +56,7 @@ void SensorPlugin::updateSensorPose(const Time& time)
   std::string error_msg;
   if (tf_buffer_.canTransform(getMapFrame(), sensor_frame_id_, ros_time, ros::Duration(1.0), &error_msg))
   {
+    l3::UniqueLock lock(mutex_);
     geometry_msgs::TransformStamped transform_msg = tf_buffer_.lookupTransform(getMapFrame(), sensor_frame_id_, ros_time);
     sensor_pose_.header.frame_id = sensor_frame_id_;
     sensor_pose_.header.stamp = ros_time;
@@ -68,12 +69,14 @@ void SensorPlugin::updateSensorPose(const Time& time)
 void SensorPlugin::process(const Time& time, UpdatedHandles& updates)
 {
   // consider processing rate
-  if (!canProcess(time))
+  if (canProcess(time))
+  {
+    l3::UniqueLock lock(mutex_);
+    last_processed_time_ = time;
+    timer_.update(time);
+  }
+  else
     return;
-
-  last_processed_time_ = time;
-
-  timer_.update(time);
 
   // update sensor poses
   updateSensorPose(time);
