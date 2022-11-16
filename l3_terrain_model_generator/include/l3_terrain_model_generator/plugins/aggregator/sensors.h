@@ -37,7 +37,7 @@ namespace l3_terrain_modeling
 class Sensors : public vigir_pluginlib::PluginAggregator<SensorPlugin>
 {
 public:
-  Sensors();
+  Sensors(const std::string& name = "Sensors");
 
   void reset()
   {

@@ -39,8 +39,6 @@ class ProcessChain : public vigir_pluginlib::PluginAggregator<ProcessPlugin>
 public:
   ProcessChain(const std::string& name = "ProcessChain");
 
-  bool loadPlugins(const std::vector<std::string>& names, bool print_warning = true);
-
   void reset()
   {
     PluginAggregator::call([](ProcessPlugin::Ptr process) { process->reset(); });

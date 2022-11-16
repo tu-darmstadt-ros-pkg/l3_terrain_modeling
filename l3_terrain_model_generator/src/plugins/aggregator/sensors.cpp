@@ -2,8 +2,8 @@
 
 namespace l3_terrain_modeling
 {
-Sensors::Sensors()
-  : PluginAggregator<SensorPlugin>("Sensors")
+Sensors::Sensors(const std::string& name)
+  : PluginAggregator<SensorPlugin>(name)
 {
 }
 }  // namespace l3_terrain_modeling
