@@ -40,7 +40,7 @@
 #include <l3_terrain_model/terrain_model.h>
 
 #include <l3_terrain_model_generator/utils/pcl/point_cloud_filter.h>
-#include <l3_terrain_model_generator/plugins/aggregator/sensor.h>
+#include <l3_terrain_model_generator/plugins/aggregator/sensors.h>
 #include <l3_terrain_model_generator/plugins/aggregator/process_chain.h>
 
 namespace l3_terrain_modeling
@@ -60,7 +60,7 @@ public:
 
 protected:
   // aggregators
-  Sensor sensor_;
-  vigir_pluginlib::PluginAggregator<ProcessPlugin> process_;
+  Sensors sensors_;
+  vigir_pluginlib::PluginAggregator<ProcessPlugin> processes_;
 };
 }  // namespace l3_terrain_modeling

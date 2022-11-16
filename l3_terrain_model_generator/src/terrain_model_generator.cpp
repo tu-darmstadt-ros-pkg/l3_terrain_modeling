@@ -34,15 +34,15 @@ bool TerrainModelGenerator::loadPluginSet(const std::string& name)
     return false;
   }
 
-  sensor_.loadPlugins();
-  process_.loadPlugins();
+  sensors_.loadPlugins();
+  processes_.loadPlugins();
 
   return true;
 }
 
 void TerrainModelGenerator::reset()
 {
-  sensor_.reset();
-  process_.call([](ProcessPlugin::Ptr process) { process->reset(); });
+  sensors_.reset();
+  processes_.call([](ProcessPlugin::Ptr process) { process->reset(); });
 }
 }  // namespace l3_terrain_modeling

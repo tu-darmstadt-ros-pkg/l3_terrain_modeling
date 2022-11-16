@@ -34,14 +34,19 @@
 
 namespace l3_terrain_modeling
 {
-class Sensor : public vigir_pluginlib::PluginAggregator<SensorPlugin>
+class Sensors : public vigir_pluginlib::PluginAggregator<SensorPlugin>
 {
 public:
-  Sensor();
+  Sensors();
 
   void reset()
   {
     PluginAggregator::call([](SensorPlugin::Ptr sensor) { sensor->reset(); });
+  }
+
+  void setSensorPose(const l3::StampedPose& pose)
+  {
+    PluginAggregator::call([&](SensorPlugin::Ptr sensor) { sensor->setSensorPose(pose); });
   }
 };
 }  // namespace l3_terrain_modeling

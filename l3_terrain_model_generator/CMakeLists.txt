@@ -101,7 +101,7 @@ include_directories(SYSTEM ${PCL_INCLUDE_DIRS})
 ## Specify additional locations of header files
 set(HEADERS
   include/${PROJECT_NAME}/plugins/aggregator/process_chain.h
-  include/${PROJECT_NAME}/plugins/aggregator/sensor.h
+  include/${PROJECT_NAME}/plugins/aggregator/sensors.h
   include/${PROJECT_NAME}/plugins/base/filter_plugin.h
   include/${PROJECT_NAME}/plugins/base/generator_plugin.h
   include/${PROJECT_NAME}/plugins/base/grid_map_generator_plugin.h
@@ -149,7 +149,7 @@ set(HEADERS
 
 set(SOURCES
   src/plugins/aggregator/process_chain.cpp
-  src/plugins/aggregator/sensor.cpp
+  src/plugins/aggregator/sensors.cpp
   src/plugins/base/filter_plugin.cpp
   src/plugins/base/generator_plugin.cpp
   src/plugins/base/grid_map_generator_plugin.cpp
