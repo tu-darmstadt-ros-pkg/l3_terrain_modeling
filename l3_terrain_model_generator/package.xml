@@ -46,7 +46,7 @@
   <depend>libpcl-all</depend>
   <depend>pcl_conversions</depend>
   <depend>pcl_ros</depend>
-  <depend>grid_map</depend>
+  <depend>grid_map_core</depend>
   <depend>vigir_pluginlib</depend>
   <depend>l3_terrain_model</depend>
 
