@@ -30,7 +30,7 @@
 
 #include <topic_tools/shape_shifter.h>
 
-#include <l3_terrain_model_generator/plugins/base/process_plugin.h>
+#include <l3_terrain_model_generator/plugins/base/processor_plugin.h>
 #include <l3_terrain_model_generator/plugins/aggregator/sensors.h>
 
 namespace l3_terrain_modeling
@@ -41,7 +41,7 @@ namespace l3_terrain_modeling
  * @param topic (default: "pose") Topic name to subscribe at
  * @param sensors List of sensors to update based on the subscribed input
  */
-class SensorPoseSubscriber : public ProcessPlugin
+class SensorPoseSubscriber : public ProcessorPlugin
 {
 public:
   // typedefs

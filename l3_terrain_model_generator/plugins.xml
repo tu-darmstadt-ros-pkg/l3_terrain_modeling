@@ -2,7 +2,7 @@
 
   <!-- Misc -->
 
-  <class name="sensor_pose_subscriber" type="l3_terrain_modeling::SensorPoseSubscriber" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="sensor_pose_subscriber" type="l3_terrain_modeling::SensorPoseSubscriber" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Plugin that forwards a subsribed position as sensor pose.
     </description>
@@ -33,31 +33,31 @@
   
   <!-- Filter plugins -->
   
-  <class name="pcl_mls_smooth_filter" type="l3_terrain_modeling::PclMlsSmoothFilter" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="pcl_mls_smooth_filter" type="l3_terrain_modeling::PclMlsSmoothFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Smoothes the pointcloud based on the neighboring data within a given radius.
     </description>
   </class>
   
-  <class name="pcl_pass_through_box_filter" type="l3_terrain_modeling::PclPassThroughBoxFilter" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="pcl_pass_through_box_filter" type="l3_terrain_modeling::PclPassThroughBoxFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Filters a pointcloud based on simple box limits.
     </description>
   </class>
   
-  <class name="pcl_pass_through_ellipse_filter" type="l3_terrain_modeling::PclPassThroughEllipseFilter" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="pcl_pass_through_ellipse_filter" type="l3_terrain_modeling::PclPassThroughEllipseFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Filters a pointcloud in xy-plane based on elliptical shape.
     </description>
   </class>
   
-  <class name="pcl_statistical_outlier_filter" type="l3_terrain_modeling::PclStatisticalOutlierFilter" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="pcl_statistical_outlier_filter" type="l3_terrain_modeling::PclStatisticalOutlierFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Removes outliers based on statistical data of the neighborhood.
     </description>
   </class>
   
-  <class name="pcl_voxel_grid_filter" type="l3_terrain_modeling::PclVoxelGrridFilter" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="pcl_voxel_grid_filter" type="l3_terrain_modeling::PclVoxelGrridFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Downsamples the pointcloud based on a fixed voxel grid.
     </description>
@@ -65,25 +65,25 @@
 
   <!-- Generator plugins -->
   
-  <class name="elevation_map_generator" type="l3_terrain_modeling::ElevationMapGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="elevation_map_generator" type="l3_terrain_modeling::ElevationMapGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Generates a elevation map based on input point cloud.
     </description>
   </class>
 
-  <class name="normals_cloud_generator" type="l3_terrain_modeling::NormalsCloudGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="normals_cloud_generator" type="l3_terrain_modeling::NormalsCloudGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Generates a surface normals using PCA based on input point cloud.
     </description>
   </class>
 
-  <class name="surface_mesh_generator" type="l3_terrain_modeling::SurfaceMeshGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="surface_mesh_generator" type="l3_terrain_modeling::SurfaceMeshGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Surface reconstruction based on aggregated point cloud data.
     </description>
   </class>
 
-  <class name="octree_generator" type="l3_terrain_modeling::OctreeGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="octree_generator" type="l3_terrain_modeling::OctreeGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Generates octree based on aggregated point cloud data.
     </description>
@@ -91,19 +91,19 @@
 
   <!-- Legacy Generator plugins; Not guaranteed to work! -->
 
-  <class name="edges_cloud_generator" type="l3_terrain_modeling::EdgesCloudGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="edges_cloud_generator" type="l3_terrain_modeling::EdgesCloudGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Detects edges in a point cloud and outputs a Pointcloud&ltPointXYZI&gt where the intensity represents the value if a point belons to an edge.
     </description>
   </class>
 
-  <class name="gradients_cloud_generator" type="l3_terrain_modeling::GradientsCloudGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="gradients_cloud_generator" type="l3_terrain_modeling::GradientsCloudGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Computes gradients in a point cloud and outputs a Pointcloud&ltPointXYZI&gt where the intensity represents gradient.
     </description>
   </class>
 
-  <class name="ground_level_map_generator" type="l3_terrain_modeling::GroundLevelMapGenerator" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="ground_level_map_generator" type="l3_terrain_modeling::GroundLevelMapGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Generates ground level occupancy grid map.
     </description>
@@ -111,37 +111,37 @@
 
   <!-- Publisher plugins -->
   
-  <class name="grid_map_publisher" type="l3_terrain_modeling::GridMapPublisher" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="grid_map_publisher" type="l3_terrain_modeling::GridMapPublisher" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       A generic grid_map publisher.
     </description>
   </class>
   
-  <class name="normals_publisher" type="l3_terrain_modeling::NormalsPublisher" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="normals_publisher" type="l3_terrain_modeling::NormalsPublisher" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       The NormalsPublisher publishes normals data provided by a PointNormalCloud.
     </description>
   </class>
   
-  <class name="octree_publisher" type="l3_terrain_modeling::OctreePublisher" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="octree_publisher" type="l3_terrain_modeling::OctreePublisher" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       The OctreePublisher publishes octree data in a viusal format.
     </description>
   </class>
   
-  <class name="point_cloud_publisher" type="l3_terrain_modeling::PointCloudPublisher" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="point_cloud_publisher" type="l3_terrain_modeling::PointCloudPublisher" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       A generic Pointcloud publisher. Supports Pointclouds consisting of PointXYZ, PointXYZI, PointXYZRGB and PointNormal.
     </description>
   </class>
   
-  <class name="surface_mesh_publisher" type="l3_terrain_modeling::SurfaceMeshPublisher" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="surface_mesh_publisher" type="l3_terrain_modeling::SurfaceMeshPublisher" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Publishes surface mesh reconstruction data provided by the SurfaceMeshGenerator.
     </description>
   </class>
   
-  <class name="terrain_model_publisher" type="l3_terrain_modeling::TerrainModelPublisher" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="terrain_model_publisher" type="l3_terrain_modeling::TerrainModelPublisher" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Publishes terrain model as used by the footstep planner.
     </description>
@@ -149,7 +149,7 @@
 
   <!-- Other plugins -->  
   
-  <class name="periodic_process" type="l3_terrain_modeling::PeriodicProcess" base_class_type="l3_terrain_modeling::ProcessPlugin">
+  <class name="periodic_process" type="l3_terrain_modeling::PeriodicProcess" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Triggers a process chain in a fixed frequency.
     </description>

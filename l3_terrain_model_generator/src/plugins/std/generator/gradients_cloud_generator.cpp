@@ -103,4 +103,4 @@ void GradientsCloudGenerator::computeGradients()
 }  // namespace l3_terrain_modeling
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::GradientsCloudGenerator, l3_terrain_modeling::ProcessPlugin)
+PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::GradientsCloudGenerator, l3_terrain_modeling::ProcessorPlugin)

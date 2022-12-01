@@ -34,11 +34,11 @@
 
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 
-#include <l3_terrain_model_generator/plugins/base/process_plugin.h>
+#include <l3_terrain_model_generator/plugins/base/processor_plugin.h>
 
 namespace l3_terrain_modeling
 {
-class FilterPlugin : public ProcessPlugin
+class FilterPlugin : public ProcessorPlugin
 {
 public:
   // typedefs

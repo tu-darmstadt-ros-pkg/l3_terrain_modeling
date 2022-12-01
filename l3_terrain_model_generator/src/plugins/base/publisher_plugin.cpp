@@ -3,13 +3,13 @@
 namespace l3_terrain_modeling
 {
 PublisherPlugin::PublisherPlugin(const std::string& name)
-  : ProcessPlugin(name)
+  : ProcessorPlugin(name)
 {
 }
 
 bool PublisherPlugin::initialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!ProcessPlugin::initialize(params))
+  if (!ProcessorPlugin::initialize(params))
     return false;
 
   latch_topics_ = param("latch", true, true);

@@ -61,6 +61,6 @@ public:
 protected:
   // aggregators
   Sensors sensors_;
-  vigir_pluginlib::PluginAggregator<ProcessPlugin> processes_;
+  vigir_pluginlib::PluginAggregator<ProcessorPlugin> processes_;
 };
 }  // namespace l3_terrain_modeling

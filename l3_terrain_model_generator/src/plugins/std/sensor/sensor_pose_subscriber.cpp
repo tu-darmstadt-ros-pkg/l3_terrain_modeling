@@ -16,12 +16,12 @@ bool isInstance(const M& msg)
 }
 
 SensorPoseSubscriber::SensorPoseSubscriber()
-  : ProcessPlugin("sensor_pose_subscriber")
+  : ProcessorPlugin("sensor_pose_subscriber")
 {}
 
 bool SensorPoseSubscriber::initialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!ProcessPlugin::initialize(params))
+  if (!ProcessorPlugin::initialize(params))
     return false;
 
   std::string topic = param("topic", std::string("pose"), true);
@@ -76,4 +76,4 @@ void SensorPoseSubscriber::poseCb(topic_tools::ShapeShifter::ConstPtr msg)
 }  // namespace l3_terrain_modeling
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::SensorPoseSubscriber, l3_terrain_modeling::ProcessPlugin)
+PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::SensorPoseSubscriber, l3_terrain_modeling::ProcessorPlugin)

@@ -41,16 +41,16 @@ namespace l3_terrain_modeling
 // forward declaration
 class ProcessChain;
 
-class ProcessPlugin : public vigir_pluginlib::Plugin
+class ProcessorPlugin : public vigir_pluginlib::Plugin
 {
 public:
   // typedefs
-  typedef l3::SharedPtr<ProcessPlugin> Ptr;
-  typedef l3::SharedPtr<const ProcessPlugin> ConstPtr;
+  typedef l3::SharedPtr<ProcessorPlugin> Ptr;
+  typedef l3::SharedPtr<const ProcessorPlugin> ConstPtr;
 
-  ProcessPlugin(const std::string& name);
+  ProcessorPlugin(const std::string& name);
 
-  virtual ~ProcessPlugin() = default;
+  virtual ~ProcessorPlugin() = default;
 
   virtual void reset() {}
 

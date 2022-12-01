@@ -91,4 +91,4 @@ void OctreeGenerator::update(const Timer& timer, UpdatedHandles& input, const Se
 }  // namespace l3_terrain_modeling
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::OctreeGenerator, l3_terrain_modeling::ProcessPlugin)
+PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::OctreeGenerator, l3_terrain_modeling::ProcessorPlugin)

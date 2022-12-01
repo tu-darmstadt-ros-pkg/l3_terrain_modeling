@@ -107,7 +107,7 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/base/grid_map_generator_plugin.h
   include/${PROJECT_NAME}/plugins/base/point_cloud_filter_plugin.h
   include/${PROJECT_NAME}/plugins/base/point_cloud_sensor_plugin.h
-  include/${PROJECT_NAME}/plugins/base/process_plugin.h
+  include/${PROJECT_NAME}/plugins/base/processor_plugin.h
   include/${PROJECT_NAME}/plugins/base/publisher_plugin.h
   include/${PROJECT_NAME}/plugins/base/sensor_plugin.h
   include/${PROJECT_NAME}/plugins/std/filter/pcl_mls_smooth_filter.h
@@ -156,7 +156,7 @@ set(SOURCES
   src/plugins/base/grid_map_generator_plugin.cpp
   src/plugins/base/point_cloud_filter_plugin.cpp
   src/plugins/base/point_cloud_sensor_plugin.cpp
-  src/plugins/base/process_plugin.cpp
+  src/plugins/base/processor_plugin.cpp
   src/plugins/base/publisher_plugin.cpp
   src/plugins/base/sensor_plugin.cpp
   src/plugins/std/filter/pcl_mls_smooth_filter.cpp

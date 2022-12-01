@@ -30,23 +30,23 @@
 
 #include <vigir_pluginlib/plugin_aggregator.h>
 
-#include <l3_terrain_model_generator/plugins/base/process_plugin.h>
+#include <l3_terrain_model_generator/plugins/base/processor_plugin.h>
 
 namespace l3_terrain_modeling
 {
-class ProcessChain : public vigir_pluginlib::PluginAggregator<ProcessPlugin>
+class ProcessChain : public vigir_pluginlib::PluginAggregator<ProcessorPlugin>
 {
 public:
   ProcessChain(const std::string& name = "ProcessChain");
 
   void reset()
   {
-    PluginAggregator::call([](ProcessPlugin::Ptr process) { process->reset(); });
+    PluginAggregator::call([](ProcessorPlugin::Ptr process) { process->reset(); });
   }
 
   void process(const Timer& timer, UpdatedHandles& handles, const SensorPlugin* sensor)
   {
-    PluginAggregator::call([&](ProcessPlugin::Ptr process) { process->process(timer, handles, sensor); });
+    PluginAggregator::call([&](ProcessorPlugin::Ptr process) { process->process(timer, handles, sensor); });
   }
 };
 }  // namespace l3_terrain_modeling

@@ -20,7 +20,7 @@ TerrainModelGenerator::TerrainModelGenerator(ros::NodeHandle& nh)
 
   // register class loader
   vigir_pluginlib::PluginManager::addPluginClassLoader<SensorPlugin>("l3_terrain_model_generator", "l3_terrain_modeling::SensorPlugin");
-  vigir_pluginlib::PluginManager::addPluginClassLoader<ProcessPlugin>("l3_terrain_model_generator", "l3_terrain_modeling::ProcessPlugin");
+  vigir_pluginlib::PluginManager::addPluginClassLoader<ProcessorPlugin>("l3_terrain_model_generator", "l3_terrain_modeling::ProcessorPlugin");
 
   // load plugin set
   loadPluginSet(pnh.param("plugin_set", std::string("example")));
@@ -45,6 +45,6 @@ bool TerrainModelGenerator::loadPluginSet(const std::string& name)
 void TerrainModelGenerator::reset()
 {
   sensors_.reset();
-  processes_.call([](ProcessPlugin::Ptr process) { process->reset(); });
+  processes_.call([](ProcessorPlugin::Ptr process) { process->reset(); });
 }
 }  // namespace l3_terrain_modeling

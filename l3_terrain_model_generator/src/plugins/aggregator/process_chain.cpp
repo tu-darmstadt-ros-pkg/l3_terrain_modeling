@@ -3,7 +3,7 @@
 namespace l3_terrain_modeling
 {
 ProcessChain::ProcessChain(const std::string& name)
-  : PluginAggregator<ProcessPlugin>(name)
+  : PluginAggregator<ProcessorPlugin>(name)
 {
 }
 }  // namespace l3_terrain_modeling

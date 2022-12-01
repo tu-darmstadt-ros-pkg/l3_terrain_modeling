@@ -5,7 +5,7 @@
 namespace l3_terrain_modeling
 {
 FilterPlugin::FilterPlugin(const std::string& name)
-  : ProcessPlugin(name)
+  : ProcessorPlugin(name)
   , tf_listener_(tf_buffer_)
 {}
 }  // namespace l3_terrain_modeling

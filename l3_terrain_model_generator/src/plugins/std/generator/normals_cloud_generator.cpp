@@ -264,4 +264,4 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
 }  // namespace l3_terrain_modeling
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::NormalsCloudGenerator, l3_terrain_modeling::ProcessPlugin)
+PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::NormalsCloudGenerator, l3_terrain_modeling::ProcessorPlugin)

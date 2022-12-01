@@ -1,27 +1,27 @@
-#include <l3_terrain_model_generator/plugins/base/process_plugin.h>
+#include <l3_terrain_model_generator/plugins/base/processor_plugin.h>
 
 #include <l3_terrain_model_generator/plugins/aggregator/process_chain.h>
 
 namespace l3_terrain_modeling
 {
-ProcessPlugin::ProcessPlugin(const std::string& name)
+ProcessorPlugin::ProcessorPlugin(const std::string& name)
   : Plugin(name)
 {}
 
-bool ProcessPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
+bool ProcessorPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
 {
   double rate = param("rate", 0.0, true);
   throttle_intervall_ = rate > 0.0 ? static_cast<uint64_t>(1000.0 / rate) : 0llu;
   return true;
 }
 
-bool ProcessPlugin::initialize(const vigir_generic_params::ParameterSet& params)
+bool ProcessorPlugin::initialize(const vigir_generic_params::ParameterSet& params)
 {
   last_processed_time_ = 0llu;
   return true;
 }
 
-bool ProcessPlugin::postInitialize(const vigir_generic_params::ParameterSet& params)
+bool ProcessorPlugin::postInitialize(const vigir_generic_params::ParameterSet& params)
 {
   // load processing chain
   std::vector<std::string> process_chain = param("process_chain", std::vector<std::string>(), true);
@@ -31,7 +31,7 @@ bool ProcessPlugin::postInitialize(const vigir_generic_params::ParameterSet& par
   return true;
 }
 
-void ProcessPlugin::process(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
+void ProcessorPlugin::process(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
   // consider processing rate
   if (canProcess(timer.current))

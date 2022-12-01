@@ -3,12 +3,12 @@
 namespace l3_terrain_modeling
 {
 PeriodicProcess::PeriodicProcess()
-  : ProcessPlugin("periodic_process")
+  : ProcessorPlugin("periodic_process")
 {}
 
 bool PeriodicProcess::initialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!ProcessPlugin::initialize(params))
+  if (!ProcessorPlugin::initialize(params))
     return false;
 
   double rate = param("rate", 0.0, true);
@@ -25,4 +25,4 @@ void PeriodicProcess::timerCb(const ros::TimerEvent& event)
 }  // namespace l3_terrain_modeling
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::PeriodicProcess, l3_terrain_modeling::ProcessPlugin)
+PLUGINLIB_EXPORT_CLASS(l3_terrain_modeling::PeriodicProcess, l3_terrain_modeling::ProcessorPlugin)

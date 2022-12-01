@@ -3,7 +3,7 @@
 namespace l3_terrain_modeling
 {
 GeneratorPlugin::GeneratorPlugin(const std::string& name)
-  : ProcessPlugin(name)
+  : ProcessorPlugin(name)
 {
 }
 }  // namespace l3_terrain_modeling
