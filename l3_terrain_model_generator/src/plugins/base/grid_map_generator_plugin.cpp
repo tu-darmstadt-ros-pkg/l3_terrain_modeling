@@ -70,6 +70,8 @@ bool GridMapGeneratorPlugin::postInitialize(const vigir_generic_params::Paramete
 
 void GridMapGeneratorPlugin::reset()
 {
+  GeneratorPlugin::reset();
+
   if (grid_map_handle_)
   {
     l3::UniqueLockPtr lock;
@@ -82,13 +84,16 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
   if (!cloud_pcl_handle_ || !grid_map_handle_)
     return;
 
+  // run only on changes
+  if (!updates.has(cloud_pcl_handle_->handle()))
+    return;
+
   std_msgs::Header header;
   l3::Vector3 update_min;
   l3::Vector3 update_max;
 
   // get basic properties from input point cloud
-  cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait)
-  {
+  cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait) {
     header = pcl_conversions::fromPCL(cloud->header);
     getPointCloudBoundary<decltype(type_trait)>(cloud, update_min, update_max);
   });

@@ -19,8 +19,12 @@ bool PclStatisticalOutlierFilter::loadParams(const vigir_generic_params::Paramet
   return true;
 }
 
-void PclStatisticalOutlierFilter::filter(UpdatedHandles& /*input*/, const SensorPlugin* /*sensor*/) const
+void PclStatisticalOutlierFilter::filter(UpdatedHandles& updates, const SensorPlugin* /*sensor*/) const
 {
+  // run only on changes
+  if (!updates.has(cloud_pcl_handle_->handle()))
+    return;
+
   if (cloud_pcl_handle_)
     cloud_pcl_handle_->dispatch<l3::UniqueLock>([&](auto& cloud, auto type_trait) { cloud = filterStatisticalOutlier<decltype(type_trait)>(cloud, k_, stddev_mult_); });
 }

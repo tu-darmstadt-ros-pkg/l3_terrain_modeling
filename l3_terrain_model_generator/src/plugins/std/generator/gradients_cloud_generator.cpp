@@ -57,6 +57,10 @@ void GradientsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& upd
   if (!normals_cloud_handle_)
     return;
 
+  // run only on changes
+  if (!updates.has(normals_cloud_handle_))
+    return;
+
   computeGradients();
 
   updates.insert(gradients_cloud_handle_);

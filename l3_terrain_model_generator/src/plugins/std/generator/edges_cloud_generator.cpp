@@ -59,6 +59,10 @@ void EdgesCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates
   if (!normals_cloud_handle_)
     return;
 
+  // run only on changes
+  if (!updates.has(normals_cloud_handle_))
+    return;
+
   detectEdges();
 
   updates.insert(edges_cloud_handle_);

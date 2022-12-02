@@ -73,20 +73,24 @@ void OctreeGenerator::reset()
 
 void OctreeGenerator::update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
-  if (octree_pcl_handle_ && cloud_pcl_handle_)
-  {
-    // clang-format off
-    octree_pcl_handle_->dispatch<l3::UniqueLock>([&](auto& octree, auto type_trait)
-    {
-      cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait)
-      {
-        octree->insertPointCloud(cloud);
-      });
-    });
-    // clang-format on
+  if (!octree_pcl_handle_ || !cloud_pcl_handle_)
+    return;
 
-    updates.insert(octree_pcl_handle_->handle());
-  }
+  // run only on changes
+  if (!updates.has(cloud_pcl_handle_->handle()))
+    return;
+
+  // clang-format off
+  octree_pcl_handle_->dispatch<l3::UniqueLock>([&](auto& octree, auto type_trait)
+  {
+    cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait)
+    {
+      octree->insertPointCloud(cloud);
+    });
+  });
+  // clang-format on
+
+  updates.insert(octree_pcl_handle_->handle());
 }
 }  // namespace l3_terrain_modeling
 

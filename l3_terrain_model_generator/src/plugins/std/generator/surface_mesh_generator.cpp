@@ -48,8 +48,11 @@ void SurfaceMeshGenerator::reset()
 
 void SurfaceMeshGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
 {
-  // run only on changes
   if (!normals_cloud_handle_)
+    return;
+
+  // run only on changes
+  if (!updates.has(normals_cloud_handle_))
     return;
 
   computeMesh();

@@ -122,6 +122,13 @@ void NormalsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updat
   if (!input_octree_pcl_handle_ || !input_cloud_pcl_handle_)
     return;
 
+  // run only on changes
+  if (!updates.has(input_octree_pcl_handle_->handle()))
+    return;
+
+  if (!updates.has(input_cloud_pcl_handle_->handle()))
+    return;
+
   // determine search points
   pcl::PointCloud<pcl::PointXYZ>::Ptr search_points = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
 

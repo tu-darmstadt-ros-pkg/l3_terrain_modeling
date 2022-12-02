@@ -48,9 +48,13 @@ void GroundLevelMapGenerator::reset()
 //  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "z");
 }
 
-void GroundLevelMapGenerator::update(const Timer& /*timer*/, UpdatedHandles& /*input*/, const SensorPlugin* /*sensor*/)
+void GroundLevelMapGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
 {
   if (!cloud_gradients_handle_ || !cloud_edges_handle_)
+    return;
+
+  // run only on changes
+  if (!updates.has(cloud_gradients_handle_))
     return;
 
   generateGroundLevelMap();

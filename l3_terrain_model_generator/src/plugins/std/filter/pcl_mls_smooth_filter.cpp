@@ -18,8 +18,12 @@ bool PclMlsSmoothFilter::loadParams(const vigir_generic_params::ParameterSet& pa
   return true;
 }
 
-void PclMlsSmoothFilter::filter(UpdatedHandles& /*input*/, const SensorPlugin* /*sensor*/) const
+void PclMlsSmoothFilter::filter(UpdatedHandles& updates, const SensorPlugin* /*sensor*/) const
 {
+  // run only on changes
+  if (!updates.has(cloud_pcl_handle_->handle()))
+    return;
+
   if (cloud_pcl_handle_)
     cloud_pcl_handle_->dispatch<l3::UniqueLock>([&](auto& cloud, auto type_trait) { cloud = filterMlsSmooth<decltype(type_trait)>(cloud, radius_); });
 }

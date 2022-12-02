@@ -20,8 +20,12 @@ bool PclVoxelGrridFilter::loadParams(const vigir_generic_params::ParameterSet& p
   return true;
 }
 
-void PclVoxelGrridFilter::filter(UpdatedHandles& /*input*/, const SensorPlugin* /*sensor*/) const
+void PclVoxelGrridFilter::filter(UpdatedHandles& updates, const SensorPlugin* /*sensor*/) const
 {
+  // run only on changes
+  if (!updates.has(cloud_pcl_handle_->handle()))
+    return;
+
   if (cloud_pcl_handle_)
     cloud_pcl_handle_->dispatch<l3::UniqueLock>([&](auto& cloud, auto type_trait) { cloud = filterVoxelGrid<decltype(type_trait)>(cloud, lx_, ly_, lz_); });
 }
