@@ -52,7 +52,7 @@ public:
   void reset() override;
 
 protected:
-  void update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override;
+  void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
   PclDataHandle<OctreeVoxelGrid>::Ptr octree_pcl_handle_;

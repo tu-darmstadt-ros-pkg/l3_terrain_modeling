@@ -47,7 +47,7 @@ bool NormalsPublisher::postInitialize(const vigir_generic_params::ParameterSet& 
   return true;
 }
 
-void NormalsPublisher::publish(const UpdatedHandles& input) const
+void NormalsPublisher::publish(const UpdatedHandles& updates) const
 {
   // generate pcl mesh msg
   if (initial_publish_ || normals_pub_.getNumSubscribers() > 0)

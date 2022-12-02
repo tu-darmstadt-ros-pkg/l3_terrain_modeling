@@ -47,7 +47,7 @@ bool PointCloudPublisher::postInitialize(const vigir_generic_params::ParameterSe
   return true;
 }
 
-void PointCloudPublisher::publish(const UpdatedHandles& input) const
+void PointCloudPublisher::publish(const UpdatedHandles& updates) const
 {
   if (initial_publish_ || cloud_pub_.getNumSubscribers() > 0)
   {

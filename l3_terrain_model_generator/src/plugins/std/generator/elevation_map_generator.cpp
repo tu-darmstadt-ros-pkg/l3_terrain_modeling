@@ -104,7 +104,7 @@ bool ElevationMapGenerator::initialize(const vigir_generic_params::ParameterSet&
 //  }
 //}
 
-void ElevationMapGenerator::update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor)
+void ElevationMapGenerator::update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
   l3::UniqueLockPtr lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);

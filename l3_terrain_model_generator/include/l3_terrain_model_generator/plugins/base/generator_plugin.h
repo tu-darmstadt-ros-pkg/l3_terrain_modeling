@@ -50,7 +50,7 @@ protected:
    * @param updates Pointers of data handles whose data have been updated
    * @param sensor Sensor on which the data is based (may be nullptr)
    */
-  void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override { update(timer, input, sensor); }
+  void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override { update(timer, updates, sensor); }
 
   /**
    * @brief Method stub for concrete implementation of this process plugin.
@@ -59,6 +59,6 @@ protected:
    * @param updates Pointers of data handles whose data have been updated
    * @param sensor Sensor on which the data is based (may be nullptr)
    */
-  virtual void update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) = 0;
+  virtual void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) = 0;
 };
 }  // namespace l3_terrain_modeling

@@ -57,7 +57,7 @@ public:
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg);
+  void pointcloudCb(const sensor_msgs::PointCloud2& msg);
 
   ros::Subscriber pointcloud_sub_;
 };

@@ -48,7 +48,7 @@ public:
   void reset() override;
 
 protected:
-  void update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override;
+  void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   void generateGroundLevelMap();
 

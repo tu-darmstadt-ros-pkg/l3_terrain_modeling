@@ -54,14 +54,14 @@ void EdgesCloudGenerator::reset()
   edges_cloud_handle_->value<pcl::PointCloud<pcl::PointXYZI>::Ptr>(lock)->clear();
 }
 
-void EdgesCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& input, const SensorPlugin* /*sensor*/)
+void EdgesCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
 {
   if (!normals_cloud_handle_)
     return;
 
   detectEdges();
 
-  input.insert(edges_cloud_handle_);
+  updates.insert(edges_cloud_handle_);
 }
 
 void EdgesCloudGenerator::detectEdges()

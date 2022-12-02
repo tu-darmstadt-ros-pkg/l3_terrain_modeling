@@ -74,6 +74,19 @@ public:
   bool isUnique() const final { return false; }
 
   /**
+   * @brief Returns configured sensor frame, which represents the location of the sensor
+   * devive and thus the origin of the data.
+   * @return Sensor frame id
+   */
+  inline const std::string& getSensorFrame() const { return sensor_frame_id_; }
+
+  /**
+   * @brief Returns configured map frame all (generated) data should be represented in.
+   * @return Map frame id
+   */
+  inline const std::string& getMapFrame() const { return map_frame_id_; }
+
+  /**
    * @brief Sets new sensor pose
    * @param pose New sensor pose
    */
@@ -129,19 +142,6 @@ protected:
   virtual void updateSensorPose(const Time& time);
 
   /**
-   * @brief Returns configured sensor frame, which represents the location of the sensor
-   * devive and thus the origin of the data.
-   * @return Sensor frame id
-   */
-  inline const std::string& getSensorFrame() const { return sensor_frame_id_; }
-
-  /**
-   * @brief Returns configured map frame all (generated) data should be represented in.
-   * @return Map frame id
-   */
-  inline const std::string& getMapFrame() const { return map_frame_id_; }
-
-  /**
    * Helper to retrieve easily data handles from the date manager while performing
    * type checking.
    * @param ValueType Type of data the handle stores
@@ -182,8 +182,8 @@ protected:
 
 private:
   // subsequent process calls
-  boost::shared_ptr<ProcessChain> filter_chain_;
-  boost::shared_ptr<ProcessChain> process_chain_;
+  l3::SharedPtr<ProcessChain> filter_chain_;
+  l3::SharedPtr<ProcessChain> process_chain_;
 
   // sensor pose
   l3::StampedPose sensor_pose_;

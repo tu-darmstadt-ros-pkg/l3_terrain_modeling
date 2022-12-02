@@ -58,7 +58,7 @@ public:
   bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void publish(const UpdatedHandles& input) const override;
+  void publish(const UpdatedHandles& updates) const override;
 
   DataHandle::Ptr grid_map_handle_;
   std::vector<std::string> layers_;

@@ -49,7 +49,7 @@ public:
   virtual void reset() override;
 
 protected:
-  void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override;
+  void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
   DataHandle::Ptr grid_map_handle_;

@@ -46,7 +46,7 @@ void SurfaceMeshGenerator::reset()
   surface_mesh_handle_->value<pcl::PolygonMesh>(lock).polygons.clear();
 }
 
-void SurfaceMeshGenerator::update(const Timer& /*timer*/, UpdatedHandles& input, const SensorPlugin* /*sensor*/)
+void SurfaceMeshGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
 {
   // run only on changes
   if (!normals_cloud_handle_)
@@ -54,7 +54,7 @@ void SurfaceMeshGenerator::update(const Timer& /*timer*/, UpdatedHandles& input,
 
   computeMesh();
 
-  input.insert(surface_mesh_handle_);
+  updates.insert(surface_mesh_handle_);
 }
 
 void SurfaceMeshGenerator::computeMesh()

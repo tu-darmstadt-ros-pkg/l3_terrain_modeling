@@ -46,7 +46,7 @@ public:
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override {}
+  void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override {}
 
   // periodic process uses its own timer -> disable pre-implemented throttling mechanism
   bool canProcess(const Time& time) const override { return true; }

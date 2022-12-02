@@ -50,9 +50,22 @@ public:
   virtual ~FilterPlugin() = default;
 
 protected:
-  void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override { filter(input, sensor); }
+  /**
+   * @brief Method stub for concrete implementation of this filter plugin.
+   * This method is automatically called by process(...).
+   * @param timer Timing data provided by the caller
+   * @param updates Pointers of data handles whose data have been updated
+   * @param sensor Sensor on which the data is based (may be nullptr)
+   */
+  void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override { filter(updates, sensor); }
 
-  virtual void filter(UpdatedHandles& input, const SensorPlugin* sensor) const = 0;
+  /**
+   * @brief Method stub for concrete implementation of this filter plugin.
+   * This method is automatically called by processImpl(...).
+   * @param updates Pointers of data handles whose data have been updated
+   * @param sensor Sensor on which the data is based (may be nullptr)
+   */
+  virtual void filter(UpdatedHandles& updates, const SensorPlugin* sensor) const = 0;
 
 private:
   tf2_ros::Buffer tf_buffer_;

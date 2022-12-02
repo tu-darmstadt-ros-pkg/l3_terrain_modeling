@@ -77,7 +77,7 @@ void GridMapGeneratorPlugin::reset()
   }
 }
 
-void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor)
+void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
   if (!cloud_pcl_handle_ || !grid_map_handle_)
     return;
@@ -116,8 +116,8 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& inp
   grid_map_lock.reset();
 
   // call update routine
-  update(timer, input, sensor);
+  update(timer, updates, sensor);
 
-  input.insert(grid_map_handle_);
+  updates.insert(grid_map_handle_);
 }
 }  // namespace l3_terrain_modeling

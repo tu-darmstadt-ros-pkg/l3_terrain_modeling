@@ -50,7 +50,7 @@ public:
   bool loadParams(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void filter(UpdatedHandles& input, const SensorPlugin* sensor) const override;
+  void filter(UpdatedHandles& updates, const SensorPlugin* sensor) const override;
 
   double lx_;
   double ly_;

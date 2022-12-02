@@ -48,7 +48,7 @@ public:
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override;
+  void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   void updateCell(grid_map::GridMap& grid_map, const grid_map::Index& index, float height, const pcl::RGB& color);
 

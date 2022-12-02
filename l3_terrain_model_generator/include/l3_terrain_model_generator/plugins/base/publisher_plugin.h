@@ -44,9 +44,9 @@ public:
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
 protected:
-  void processImpl(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor) override { publish(input); }
+  void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override { publish(updates); }
 
-  virtual void publish(const UpdatedHandles& input) const = 0;
+  virtual void publish(const UpdatedHandles& updates) const = 0;
 
   bool latch_topics_;
   mutable bool initial_publish_;

@@ -117,7 +117,7 @@ void NormalsCloudGenerator::reset()
   grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "z");
 }
 
-void NormalsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& input, const SensorPlugin* /*sensor*/)
+void NormalsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
 {
   if (!input_octree_pcl_handle_ || !input_cloud_pcl_handle_)
     return;
@@ -132,9 +132,9 @@ void NormalsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& input
 
   computeNormals(search_points);
 
-  input.insert(normals_octree_handle_);
-  input.insert(normals_cloud_handle_);
-  input.insert(grid_map_handle_);
+  updates.insert(normals_octree_handle_);
+  updates.insert(normals_cloud_handle_);
+  updates.insert(grid_map_handle_);
 }
 
 void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr search_points)

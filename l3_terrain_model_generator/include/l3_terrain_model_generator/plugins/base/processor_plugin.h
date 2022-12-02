@@ -65,7 +65,7 @@ public:
   /**
    * @brief Triggers processing of this plugin. Afterward subsequent processes are called.
    * Processing is only performed when a pre-configured time is elapsed.
-   * @param timer Timing data
+   * @param timer Timing data provided by the caller
    * @param updates Pointers of data handles whose data have been updated
    * @param sensor Sensor on which the data is based (may be nullptr)
    */
@@ -75,7 +75,7 @@ protected:
   /**
    * @brief Method stub for concrete implementation of this process plugin.
    * This method is automatically called by process(...).
-   * @param timer Timing data
+   * @param timer Timing data provided by the caller
    * @param updates Pointers of data handles whose data have been updated
    * @param sensor Sensor on which the data is based (may be nullptr)
    */
@@ -113,7 +113,7 @@ protected:
   }
 
   /**
-   * Helper to retrieve easily data handles from the date manager.
+   * Helper to retrieve easily data handles from the data manager.
    * @param name Name of data entity within the data manager
    * @return true if hander for given type was found
    */
@@ -131,7 +131,7 @@ protected:
   mutable l3::Mutex mutex_;
 
 private:
-  boost::shared_ptr<ProcessChain> process_chain_;
+  l3::SharedPtr<ProcessChain> process_chain_;
 
   uint64_t throttle_intervall_;           // in [msec]
   mutable uint64_t last_processed_time_;  // in [msec]

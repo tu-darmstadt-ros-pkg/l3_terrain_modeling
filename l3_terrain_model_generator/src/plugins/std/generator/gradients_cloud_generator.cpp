@@ -52,14 +52,14 @@ void GradientsCloudGenerator::reset()
   gradients_cloud_handle_->value<pcl::PointCloud<pcl::PointXYZI>::Ptr>(lock)->clear();
 }
 
-void GradientsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& input, const SensorPlugin* /*sensor*/)
+void GradientsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
 {
   if (!normals_cloud_handle_)
     return;
 
   computeGradients();
 
-  input.insert(gradients_cloud_handle_);
+  updates.insert(gradients_cloud_handle_);
 }
 
 void GradientsCloudGenerator::computeGradients()

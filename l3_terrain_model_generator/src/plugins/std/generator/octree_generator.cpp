@@ -71,7 +71,7 @@ void OctreeGenerator::reset()
     octree_pcl_handle_->dispatch<l3::UniqueLock>([](auto& octree, auto type_trait) { octree->deleteTree(); });
 }
 
-void OctreeGenerator::update(const Timer& timer, UpdatedHandles& input, const SensorPlugin* sensor)
+void OctreeGenerator::update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
   if (octree_pcl_handle_ && cloud_pcl_handle_)
   {
@@ -85,7 +85,7 @@ void OctreeGenerator::update(const Timer& timer, UpdatedHandles& input, const Se
     });
     // clang-format on
 
-    input.insert(octree_pcl_handle_->handle());
+    updates.insert(octree_pcl_handle_->handle());
   }
 }
 }  // namespace l3_terrain_modeling

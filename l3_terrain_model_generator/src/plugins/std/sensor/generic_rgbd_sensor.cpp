@@ -17,27 +17,27 @@ bool GenericRGBDSensor::initialize(const vigir_generic_params::ParameterSet& par
   return true;
 }
 
-void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg)
+void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2& msg)
 {
   // consider processing rate
-  if (!canProcess(Timer::timeFromRos(msg->header.stamp)))
+  if (!canProcess(Timer::timeFromRos(msg.header.stamp)))
     return;
 
-  if (msg->data.empty())
+  if (msg.data.empty())
     return;
 
-  if (msg->height == 1)
+  if (msg.height == 1)
     ROS_WARN_ONCE("[%s] Received unorganized data. This warning is printed only once.", getName().c_str());
 
   // extract xyzrbg pointcloud if possible
-  for (const sensor_msgs::PointField& field : msg->fields)
+  for (const sensor_msgs::PointField& field : msg.fields)
   {
     if (field.name == "rgb" || field.name == "rgba")
     {
       if (cloud_pcl_handle_->isPointType<pcl::PointXYZRGB>())
       {
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
-        pcl::fromROSMsg(*msg, *cloud);
+        pcl::fromROSMsg(msg, *cloud);
         process<pcl::PointXYZRGB>(cloud);
         return;
       }
@@ -50,7 +50,7 @@ void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr ms
   if (cloud_pcl_handle_->isPointType<pcl::PointXYZ>())
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
-    pcl::fromROSMsg(*msg, *cloud);
+    pcl::fromROSMsg(msg, *cloud);
     process<pcl::PointXYZ>(cloud);
   }
   else

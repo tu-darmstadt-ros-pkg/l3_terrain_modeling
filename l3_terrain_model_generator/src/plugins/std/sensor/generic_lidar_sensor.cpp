@@ -17,24 +17,24 @@ bool GenericLidarSensor::initialize(const vigir_generic_params::ParameterSet& pa
   return true;
 }
 
-void GenericLidarSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr msg)
+void GenericLidarSensor::pointcloudCb(const sensor_msgs::PointCloud2& msg)
 {
   // consider processing rate
-  if (!canProcess(Timer::timeFromRos(msg->header.stamp)))
+  if (!canProcess(Timer::timeFromRos(msg.header.stamp)))
     return;
 
-  if (msg->data.empty())
+  if (msg.data.empty())
     return;
 
   // extract xyzrbg pointcloud if possible
-  for (const sensor_msgs::PointField& field : msg->fields)
+  for (const sensor_msgs::PointField& field : msg.fields)
   {
     if (field.name == "rgb" || field.name == "rgba")
     {
       if (cloud_pcl_handle_->isPointType<pcl::PointXYZRGB>())
       {
         pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
-        pcl::fromROSMsg(*msg, *cloud);
+        pcl::fromROSMsg(msg, *cloud);
         process<pcl::PointXYZRGB>(cloud);
         return;
       }
@@ -47,7 +47,7 @@ void GenericLidarSensor::pointcloudCb(const sensor_msgs::PointCloud2::ConstPtr m
   if (cloud_pcl_handle_->isPointType<pcl::PointXYZ>())
   {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
-    pcl::fromROSMsg(*msg, *cloud);
+    pcl::fromROSMsg(msg, *cloud);
     process<pcl::PointXYZ>(cloud);
   }
   else
