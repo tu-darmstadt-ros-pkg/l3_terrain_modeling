@@ -13,6 +13,11 @@ TerrainModel::TerrainModel(const grid_map::GridMap& grid_map)
 {
 }
 
+TerrainModel::TerrainModel(const grid_map_msgs::GridMap& grid_map)
+{
+  fromMsg(grid_map);
+}
+
 TerrainModel::TerrainModel(const TerrainModelMsg& terrain_model)
 {
   fromMsg(terrain_model);
@@ -25,15 +30,25 @@ void TerrainModel::reset()
   grid_map_.clearAll();
 }
 
+void TerrainModel::fromMsg(const grid_map_msgs::GridMap& grid_map)
+{
+  grid_map::GridMapRosConverter::fromMessage(grid_map, grid_map_);
+  has_normals_ = grid_map_.exists(NORMAL_LAYER_PREFIX + "x") && grid_map_.exists(NORMAL_LAYER_PREFIX + "y") && grid_map_.exists(NORMAL_LAYER_PREFIX + "z");
+}
+
 void TerrainModel::fromMsg(const TerrainModelMsg& terrain_model)
 {
-  grid_map::GridMapRosConverter::fromMessage(terrain_model.map, grid_map_);
-  has_normals_ = grid_map_.exists(NORMAL_LAYER_PREFIX + "x") && grid_map_.exists(NORMAL_LAYER_PREFIX + "y") && grid_map_.exists(NORMAL_LAYER_PREFIX + "z");
+  fromMsg(terrain_model.map);
+}
+
+void TerrainModel::toMsg(grid_map_msgs::GridMap& grid_map) const
+{
+  grid_map::GridMapRosConverter::toMessage(grid_map_, grid_map);
 }
 
 void TerrainModel::toMsg(TerrainModelMsg& terrain_model) const
 {
-  grid_map::GridMapRosConverter::toMessage(grid_map_, terrain_model.map);
+  toMsg(terrain_model.map);
 }
 
 bool TerrainModel::getHeight(double x, double y, double& height) const

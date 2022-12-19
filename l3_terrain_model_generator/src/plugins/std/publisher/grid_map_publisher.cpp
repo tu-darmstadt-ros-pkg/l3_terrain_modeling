@@ -23,7 +23,7 @@ bool GridMapPublisher::initialize(const vigir_generic_params::ParameterSet& para
   if (!PublisherPlugin::initialize(params))
     return false;
 
-  std::string topic = param("topic", std::string("terrain_model_map"), true);
+  std::string topic = param("topic", std::string("/grid_map"), true);
   grid_map_pub_ = nh_.advertise<grid_map_msgs::GridMap>(topic, 1, latch_topics_);
 
   return true;

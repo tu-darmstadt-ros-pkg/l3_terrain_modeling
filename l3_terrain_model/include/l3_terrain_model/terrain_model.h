@@ -53,12 +53,16 @@ public:
   inline static const std::string RGB_LAYER = "rgb";
 
   TerrainModel(const grid_map::GridMap& grid_map);
+  TerrainModel(const grid_map_msgs::GridMap& grid_map);
   TerrainModel(const TerrainModelMsg& terrain_model);
   virtual ~TerrainModel();
 
   void reset();
 
+  void fromMsg(const grid_map_msgs::GridMap& grid_map);
   void fromMsg(const TerrainModelMsg& terrain_model);
+
+  void toMsg(grid_map_msgs::GridMap& grid_map) const;
   void toMsg(TerrainModelMsg& terrain_model) const;
 
   inline const std::string& getFrameId() const { return grid_map_.getFrameId(); }
