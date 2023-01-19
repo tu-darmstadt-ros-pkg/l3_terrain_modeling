@@ -7,7 +7,11 @@ project(l3_terrain_model_msgs)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp message_generation grid_map_msgs)
+set(CATKIN_PACKAGE_DEPENDENCIES
+  roscpp
+  grid_map_msgs
+)
+find_package(catkin REQUIRED COMPONENTS ${CATKIN_PACKAGE_DEPENDENCIES} message_generation)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -78,8 +82,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES l3_terrain_model_msgs
-  CATKIN_DEPENDS roscpp message_runtime grid_map_msgs
+#  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS ${CATKIN_PACKAGE_DEPENDENCIES} message_runtime
 #  DEPENDS system_lib
 )
 
@@ -103,7 +107,7 @@ catkin_package(
 #set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 
 ## Declare a cpp executable
-# add_executable(l3_msgs_node src/l3_msgs_node.cpp)
+#add_executable(l3_terrain_model_msgs src/l3_msgs_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

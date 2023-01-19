@@ -10,7 +10,21 @@ set(CMAKE_CXX_STANDARD 17)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs pcl_conversions pcl_ros grid_map_core vigir_pluginlib l3_terrain_model)
+set(CATKIN_PACKAGE_DEPENDENCIES
+  roscpp
+  rospy
+  std_msgs
+  geometry_msgs
+  sensor_msgs
+  nav_msgs
+  visualization_msgs
+  pcl_conversions
+  pcl_ros
+  grid_map_core
+  vigir_pluginlib
+  l3_terrain_model
+)
+find_package(catkin REQUIRED COMPONENTS ${CATKIN_PACKAGE_DEPENDENCIES})
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
@@ -84,9 +98,9 @@ catkin_python_setup()
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES l3_terrain_model_generator
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs sensor_msgs nav_msgs visualization_msgs pcl_conversions pcl_ros grid_map_core vigir_pluginlib l3_terrain_model
-#  DEPENDS system_lib
+  LIBRARIES ${PROJECT_NAME}
+  CATKIN_DEPENDS ${CATKIN_PACKAGE_DEPENDENCIES}
+  DEPENDS Boost Pcl
 )
 
 ###########
