@@ -24,7 +24,7 @@ find_package(catkin REQUIRED COMPONENTS ${CATKIN_PACKAGE_DEPENDENCIES})
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
 
-find_package(PCL REQUIRED)
+find_package(PCL REQUIRED common)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -96,7 +96,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS ${CATKIN_PACKAGE_DEPENDENCIES}
-  DEPENDS Boost Pcl
+  DEPENDS Boost PCL
 )
 
 ###########
