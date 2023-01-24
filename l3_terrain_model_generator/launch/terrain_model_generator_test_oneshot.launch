@@ -8,5 +8,5 @@
     <arg name="args" value="-loadTestCloud" />
   </include>
 
-  <node type="static_transform_publisher" pkg="tf" name="world_odom_tf_static_publisher" args="0 0 0 0 0 0 1 world odom 100" />
+  <node name="world_odom_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 world odom 100" />
 </launch>

@@ -10,7 +10,7 @@
   <group ns="$(arg ns)">
     <node name="rosbag_player" pkg="rosbag" type="play" args="--clock -k $(arg bag_file)" />
   
-    <node type="static_transform_publisher" pkg="tf" name="world_map_tf_static_publisher" args="0 0 0 0 0 0 1 world map 100" />
-    <node type="static_transform_publisher" pkg="tf" name="map_odom_tf_static_publisher" args="0 0 0 0 0 0 1 map odom 100" />
+    <node name="world_map_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 world map 100" />
+    <node name="map_odom_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 map odom 100" />
   </group>
 </launch>

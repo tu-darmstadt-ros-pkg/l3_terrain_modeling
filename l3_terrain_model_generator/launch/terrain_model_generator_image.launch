@@ -8,11 +8,11 @@
 
   <!-- load the image -->
   <group ns="$(arg ns)">
-    <node pkg="l3_terrain_model_generator" type="image_map_publisher.py" name="image_map_publisher" output="screen">
+    <node name="image_map_publisher" pkg="l3_terrain_model_generator" type="image_map_publisher.py" output="screen">
       <param name="image_path" value="$(arg image_file)" />
     </node>
   </group>
 
-  <node name="world_map_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 world map 100" />
-  <node name="map_odom_tf_static_publisher" type="static_transform_publisher" pkg="tf" args="0 0 0 0 0 0 1 map odom 100" />
+  <node name="world_map_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 world map 100" />
+  <node name="map_odom_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 map odom 100" />
 </launch>
