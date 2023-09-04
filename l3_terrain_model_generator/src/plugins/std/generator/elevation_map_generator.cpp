@@ -2,17 +2,19 @@
 
 #include <grid_map_core/GridMapMath.hpp>
 
+#include <l3_terrain_model/terrain_model.h>
+
 #include <l3_terrain_model_generator/utils/pcl/pcl_utils.h>
 
 namespace l3_terrain_modeling
 {
 ElevationMapGenerator::ElevationMapGenerator()
-  : GridMapGeneratorPlugin("elevation_map_generator")
+  : PclGridMapGeneratorPlugin("elevation_map_generator")
 {}
 
 bool ElevationMapGenerator::loadParams(const vigir_generic_params::ParameterSet& params)
 {
-  if (!GridMapGeneratorPlugin::loadParams(params))
+  if (!PclGridMapGeneratorPlugin::loadParams(params))
     return false;
 
   update_weight_ = param("update_weight", 0.75);
@@ -23,7 +25,7 @@ bool ElevationMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
 
 bool ElevationMapGenerator::initialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!GridMapGeneratorPlugin::initialize(params))
+  if (!PclGridMapGeneratorPlugin::initialize(params))
     return false;
 
   l3::UniqueLockPtr lock;

@@ -5,13 +5,13 @@
 namespace l3_terrain_modeling
 {
 GroundLevelMapGenerator::GroundLevelMapGenerator()
-  : GridMapGeneratorPlugin("ground_level_map_generator")
+  : PclGridMapGeneratorPlugin("ground_level_map_generator")
 {
 }
 
 bool GroundLevelMapGenerator::initialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!GridMapGeneratorPlugin::initialize(params))
+  if (!PclGridMapGeneratorPlugin::initialize(params))
     return false;
 
   l3::UniqueLockPtr lock;
@@ -22,7 +22,7 @@ bool GroundLevelMapGenerator::initialize(const vigir_generic_params::ParameterSe
 
 bool GroundLevelMapGenerator::postInitialize(const vigir_generic_params::ParameterSet& params)
 {
-  if (!GridMapGeneratorPlugin::postInitialize(params))
+  if (!PclGridMapGeneratorPlugin::postInitialize(params))
     return false;
 
   cloud_gradients_handle_ = getHandleT<pcl::PointCloud<pcl::PointXYZI>::Ptr>("cloud_gradients");

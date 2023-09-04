@@ -50,24 +50,6 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   return true;
 }
 
-bool GridMapGeneratorPlugin::postInitialize(const vigir_generic_params::ParameterSet& params)
-{
-  if (!GeneratorPlugin::postInitialize(params))
-    return false;
-
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-
-  // get pcl handle
-  cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name);
-  if (!cloud_pcl_handle_)
-  {
-    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());
-    return false;
-  }
-
-  return true;
-}
-
 void GridMapGeneratorPlugin::reset()
 {
   GeneratorPlugin::reset();
@@ -81,22 +63,14 @@ void GridMapGeneratorPlugin::reset()
 
 void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
 {
-  if (!cloud_pcl_handle_ || !grid_map_handle_)
+  if (!input_handle_ || !grid_map_handle_)
     return;
 
   // run only on changes
-  if (!updates.has(cloud_pcl_handle_->handle()))
+  if (!updates.has(input_handle_))
     return;
 
-  std_msgs::Header header;
-  l3::Vector3 update_min;
-  l3::Vector3 update_max;
-
-  // get basic properties from input point cloud
-  cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait) {
-    header = pcl_conversions::fromPCL(cloud->header);
-    getPointCloudBoundary<decltype(type_trait)>(cloud, update_min, update_max);
-  });
+  std_msgs::Header header = getDataHeader();
 
   l3::UniqueLockPtr grid_map_lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
@@ -112,6 +86,9 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
 
   // resize grid map to contain all points
   /// @todo should be done by terrain model GeneratorPlugin and not by its sub handler
+  l3::Vector3 update_min;
+  l3::Vector3 update_max;
+  getDataBoundary(update_min, update_max);
   resize(grid_map, update_min, update_max);
 
   // update grid map timestamp
@@ -124,5 +101,46 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
   update(timer, updates, sensor);
 
   updates.insert(grid_map_handle_);
+}
+
+
+PclGridMapGeneratorPlugin::PclGridMapGeneratorPlugin(const std::string& name)
+  : GridMapGeneratorPlugin(name)
+{}
+
+bool PclGridMapGeneratorPlugin::postInitialize(const vigir_generic_params::ParameterSet& params)
+{
+  if (!GridMapGeneratorPlugin::postInitialize(params))
+    return false;
+
+  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
+
+  // get pcl handle
+  cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name);
+  if (!cloud_pcl_handle_)
+  {
+    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());
+    return false;
+  }
+
+  input_handle_ = cloud_pcl_handle_->handle();
+
+  return true;
+}
+
+std_msgs::Header PclGridMapGeneratorPlugin::getDataHeader()
+{
+  std_msgs::Header header;
+  cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait) {
+    header = pcl_conversions::fromPCL(cloud->header);
+  });
+  return header;
+}
+
+void PclGridMapGeneratorPlugin::getDataBoundary(l3::Vector3& min, l3::Vector3& max)
+{
+  cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait) {
+    getPointCloudBoundary<decltype(type_trait)>(cloud, min, max);
+  });
 }
 }  // namespace l3_terrain_modeling

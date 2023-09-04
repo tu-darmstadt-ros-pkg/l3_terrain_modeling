@@ -32,7 +32,7 @@
 
 namespace l3_terrain_modeling
 {
-class GroundLevelMapGenerator : public GridMapGeneratorPlugin
+class GroundLevelMapGenerator : public PclGridMapGeneratorPlugin
 {
 public:
   // typedefs

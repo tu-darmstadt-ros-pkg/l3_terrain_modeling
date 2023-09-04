@@ -28,13 +28,11 @@
 
 #pragma once
 
-#include <l3_terrain_model/terrain_model.h>
-
 #include <l3_terrain_model_generator/plugins/base/grid_map_generator_plugin.h>
 
 namespace l3_terrain_modeling
 {
-class ElevationMapGenerator : public GridMapGeneratorPlugin
+class ElevationMapGenerator : public PclGridMapGeneratorPlugin
 {
 public:
   // typedefs

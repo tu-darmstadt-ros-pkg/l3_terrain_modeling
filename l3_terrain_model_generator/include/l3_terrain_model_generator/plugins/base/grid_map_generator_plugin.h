@@ -44,14 +44,33 @@ public:
 
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
-  bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
-
   virtual void reset() override;
 
 protected:
+  virtual std_msgs::Header getDataHeader() = 0;
+  virtual void getDataBoundary(l3::Vector3& min, l3::Vector3& max) = 0;
+
   void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
-  PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
+  DataHandle::Ptr input_handle_; // should be set by derived class to detect if input is available
   DataHandle::Ptr grid_map_handle_;
+};
+
+class PclGridMapGeneratorPlugin : public GridMapGeneratorPlugin
+{
+public:
+  // typedefs
+  typedef l3::SharedPtr<PclGridMapGeneratorPlugin> Ptr;
+  typedef l3::SharedPtr<const PclGridMapGeneratorPlugin> ConstPtr;
+
+  PclGridMapGeneratorPlugin(const std::string& name);
+
+  bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
+
+protected:
+  std_msgs::Header getDataHeader() override;
+  void getDataBoundary(l3::Vector3& min, l3::Vector3& max) override;
+
+  PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
 };
 }  // namespace l3_terrain_modeling
