@@ -120,7 +120,8 @@ protected:
   }
 
   /**
-   * @brief Main processing callback that must be triggered by concerete implementation.
+   * @brief Main processing callback that must be called by concerete sensor implementation
+   * to trigger processing of new data.
    * Calls also updateSensorPose(...).
    * @param time Current time [msec]
    * @param updates Pointers of data handles whose data have been updated
@@ -146,7 +147,7 @@ protected:
    * type checking.
    * @param ValueType Type of data the handle stores
    * @param name Name of data entity within the data manager
-   * @return true if hander for given type was found
+   * @return true if handler for given type was found
    */
   template <class ValueType>
   DataHandle::Ptr getHandleT(const std::string& name) const
@@ -162,7 +163,7 @@ protected:
   /**
    * Helper to retrieve easily data handles from the date manager.
    * @param name Name of data entity within the data manager
-   * @return true if hander for given type was found
+   * @return true if handler for given type was found
    */
   DataHandle::Ptr getHandle(const std::string& name) const
   {
