@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <tf2_ros/transform_listener.h>
+
 #include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
 #include <l3_terrain_model_generator/plugins/base/generator_plugin.h>
 
@@ -64,9 +66,15 @@ protected:
 
   void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
+  tf2_ros::Buffer tf_buffer_;
+  tf2_ros::TransformListener tf_listener_;
+
   DataHandle::Ptr input_handle_; // should be set by derived class to detect if input is available
   DataHandle::Ptr grid_map_handle_;
 
+  bool expand_map_;
+  bool robot_centric_map_;
+  std::string robot_frame_id_;
   bool use_color_;
 };
 

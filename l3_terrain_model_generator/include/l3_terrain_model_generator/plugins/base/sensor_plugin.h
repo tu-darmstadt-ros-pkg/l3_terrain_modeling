@@ -175,11 +175,11 @@ protected:
     return handle;
   }
 
-  tf2_ros::Buffer tf_buffer_;
-  tf2_ros::TransformListener tf_listener_;
-
 protected:
   mutable l3::Mutex mutex_;
+
+  tf2_ros::Buffer tf_buffer_;
+  tf2_ros::TransformListener tf_listener_;
 
 private:
   // subsequent process calls

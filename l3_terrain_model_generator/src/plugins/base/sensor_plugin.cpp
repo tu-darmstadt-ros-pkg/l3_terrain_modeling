@@ -2,6 +2,7 @@
 
 #include <l3_libs/conversions/l3_msg_std_conversions.h>
 
+#include <l3_terrain_model_generator/utils/utils.h>
 #include <l3_terrain_model_generator/plugins/aggregator/process_chain.h>
 
 namespace l3_terrain_modeling
@@ -55,18 +56,7 @@ bool SensorPlugin::postInitialize(const vigir_generic_params::ParameterSet& para
 void SensorPlugin::updateSensorPose(const Time& time)
 {
   ros::Time ros_time = Timer::timeToRos(time);
-
-  std::string error_msg;
-  if (tf_buffer_.canTransform(getMapFrame(), sensor_frame_id_, ros_time, ros::Duration(1.0), &error_msg))
-  {
-    l3::UniqueLock lock(mutex_);
-    geometry_msgs::TransformStamped transform_msg = tf_buffer_.lookupTransform(getMapFrame(), sensor_frame_id_, ros_time);
-    sensor_pose_.header.frame_id = getMapFrame();
-    sensor_pose_.header.stamp = ros_time;
-    l3::transformMsgToL3(transform_msg.transform, sensor_pose_.data);
-  }
-  else
-    ROS_ERROR_THROTTLE(5.0, "Could not retrieve transform '%s' to '%s':\n%s", sensor_frame_id_.c_str(), getMapFrame().c_str(), error_msg.c_str());
+  getTransformAsPose(tf_buffer_, getMapFrame(), sensor_frame_id_, ros_time, sensor_pose_);
 }
 
 void SensorPlugin::process(const Time& time, UpdatedHandles& updates)

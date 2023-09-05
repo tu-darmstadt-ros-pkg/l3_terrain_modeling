@@ -9,6 +9,7 @@ namespace l3_terrain_modeling
 {
 GridMapGeneratorPlugin::GridMapGeneratorPlugin(const std::string& name)
   : GeneratorPlugin(name)
+  , tf_listener_(tf_buffer_)
 {}
 
 bool GridMapGeneratorPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
@@ -16,7 +17,21 @@ bool GridMapGeneratorPlugin::loadParams(const vigir_generic_params::ParameterSet
   if (!GeneratorPlugin::loadParams(params))
     return false;
 
+  expand_map_ = param("expand_map", false, true);
+  robot_centric_map_ = param("robot_centric_map", false, true);
+  robot_frame_id_ = param("robot_frame", std::string("base_link"), true);
   use_color_ = param("colored", false, true);
+
+  // check parameter consistency
+  if (expand_map_ && robot_centric_map_)
+  {
+    ROS_ERROR("[%s] Parameters \"expand_map\" and \"robot_centric_map\" are mutually exclusive!", getName().c_str());
+    return false;
+  }
+
+  // warn as expand map is not implemented yet
+  if (expand_map_)
+    ROS_WARN("[%s] Parameter \"expand_map\" is not implemented yet.", getName().c_str());
 
   return true;
 }
@@ -26,7 +41,14 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   if (!GeneratorPlugin::initialize(params))
     return false;
 
+  // get grid map configuration
   const std::string& map_frame_id = param("map_frame", std::string("map"), true);
+  std::vector<int> size = param("size", std::vector<int>{0, 0}, true);
+  if (size.size() != 2)
+  {
+    ROS_ERROR("[%s] Initialization failed! Parameter \"size\" must be a vector of size 2!", getName().c_str());
+    return false;
+  }
   double resolution = param("resolution", 0.01);
 
   if (!DataManager::hasData<grid_map::GridMap>(GRID_MAP_NAME))
@@ -34,7 +56,7 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
     // init grid map
     grid_map::GridMap grid_map;
     grid_map.setFrameId(map_frame_id);
-    grid_map.setGeometry(grid_map::Length(0.0, 0.0), resolution);
+    grid_map.setGeometry(grid_map::Length(size[0], size[1]), resolution);
     grid_map.setTimestamp(ros::Time::now().toNSec());
 
     grid_map_handle_ = DataManager::addData(GRID_MAP_NAME, std::move(grid_map));
@@ -87,28 +109,44 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
 
   // check frame id
-  std::string cloud_frame_id = l3::strip_const(header.frame_id, '/');
-  if (grid_map.getFrameId() != cloud_frame_id)
+  std::string input_frame_id = l3::strip_const(header.frame_id, '/');
+  if (grid_map.getFrameId() != input_frame_id)
   {
-    ROS_ERROR_THROTTLE(5.0, "[%s] update: Frame of input point cloud (\"%s\") mismatch! Should be \"%s\".", getName().c_str(), cloud_frame_id.c_str(),
+    ROS_ERROR_THROTTLE(5.0, "[%s] update: Frame of input data (\"%s\") mismatch! Should be \"%s\".", getName().c_str(), input_frame_id.c_str(),
                        grid_map.getFrameId().c_str());
     return;
   }
 
   // resize grid map to contain all points
   /// @todo should be done by terrain model GeneratorPlugin and not by its sub handler
-  l3::Vector3 update_min;
-  l3::Vector3 update_max;
-  getDataBoundary(update_min, update_max);
-  resize(grid_map, update_min, update_max);
+  if (expand_map_)
+  {
+    l3::Vector3 update_min;
+    l3::Vector3 update_max;
+    getDataBoundary(update_min, update_max);
+    resize(grid_map, update_min, update_max);
+  }
+
+  // update grid map position based on robot motion
+  if (robot_centric_map_)
+  {
+    l3::Pose robot_pose;
+
+    if (sensor && sensor->getSensorFrame() == robot_frame_id_)
+      robot_pose = sensor->getSensorPose().data;
+    else if (!getTransformAsPose(tf_buffer_, grid_map.getFrameId(), robot_frame_id_, header.stamp, robot_pose))
+      return;
+
+    grid_map.move(l3::Position2D(robot_pose.x(), robot_pose.y()));
+  }
 
   // update grid map timestamp
   grid_map.setTimestamp(header.stamp.toNSec());
 
-  // relase mutex
+  // release mutex
   grid_map_lock.reset();
 
-  // call update routine
+  // call grid map processing update routine implemented by derived class
   update(timer, updates, sensor);
 
   // add grid map to the list of updated data
