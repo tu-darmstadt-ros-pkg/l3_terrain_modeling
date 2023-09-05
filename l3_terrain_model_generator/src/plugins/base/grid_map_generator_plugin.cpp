@@ -11,6 +11,16 @@ GridMapGeneratorPlugin::GridMapGeneratorPlugin(const std::string& name)
   : GeneratorPlugin(name)
 {}
 
+bool GridMapGeneratorPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
+{
+  if (!GeneratorPlugin::loadParams(params))
+    return false;
+
+  use_color_ = param("colored", false, true);
+
+  return true;
+}
+
 bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet& params)
 {
   if (!GeneratorPlugin::initialize(params))
@@ -70,6 +80,7 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
   if (!updates.has(input_handle_))
     return;
 
+  // get data header
   std_msgs::Header header = getDataHeader();
 
   l3::UniqueLockPtr grid_map_lock;
@@ -100,7 +111,38 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
   // call update routine
   update(timer, updates, sensor);
 
+  // add grid map to the list of updated data
   updates.insert(grid_map_handle_);
+}
+
+
+GridCellGridMapGeneratorPlugin::GridCellGridMapGeneratorPlugin(const std::string& name)
+  : GridMapGeneratorPlugin(name)
+{}
+
+bool GridCellGridMapGeneratorPlugin::postInitialize(const vigir_generic_params::ParameterSet& params)
+{
+  if (!GridMapGeneratorPlugin::postInitialize(params))
+    return false;
+
+  const std::string& input_data_name = param("input_data", std::string("grid_cell_updates"), true);
+  input_handle_ = getHandleT<GridCellUpdates>(input_data_name);
+  if (!input_handle_)
+    return false;
+
+  return true;
+}
+
+std_msgs::Header GridCellGridMapGeneratorPlugin::getDataHeader()
+{
+  l3::SharedLockPtr lock;
+  return input_handle_->value<GridCellUpdates>(lock).header;
+}
+
+void GridCellGridMapGeneratorPlugin::getDataBoundary(l3::Vector3& min, l3::Vector3& max)
+{
+  l3::SharedLockPtr lock;
+  getBoundary(input_handle_->value<GridCellUpdates>(lock).cells, min, max);
 }
 
 

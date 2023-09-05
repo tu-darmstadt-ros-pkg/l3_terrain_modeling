@@ -42,20 +42,60 @@ public:
 
   GridMapGeneratorPlugin(const std::string& name);
 
+  bool loadParams(const vigir_generic_params::ParameterSet& params) override;
+
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
   virtual void reset() override;
 
 protected:
+  /**
+   * @brief Returns the header of the data that is used to update the grid map.
+   * @return Header of the data.
+   */
   virtual std_msgs::Header getDataHeader() = 0;
+
+  /**
+   * @brief Returns the boundary of the data that is used to update the grid map.
+   * @param min [out] Minimum boundary of the data.
+   * @param max [out] Maximum boundary of the data.
+   */
   virtual void getDataBoundary(l3::Vector3& min, l3::Vector3& max) = 0;
 
   void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   DataHandle::Ptr input_handle_; // should be set by derived class to detect if input is available
   DataHandle::Ptr grid_map_handle_;
+
+  bool use_color_;
 };
 
+
+/**
+ * @brief The GridCellGridMapGeneratorPlugin represents a grid map generator
+ * that uses a grid cell data structure as input.
+ */
+class GridCellGridMapGeneratorPlugin : public GridMapGeneratorPlugin
+{
+public:
+  // typedefs
+  typedef l3::SharedPtr<GridCellGridMapGeneratorPlugin> Ptr;
+  typedef l3::SharedPtr<const GridCellGridMapGeneratorPlugin> ConstPtr;
+
+  GridCellGridMapGeneratorPlugin(const std::string& name);
+
+  bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
+
+protected:
+  std_msgs::Header getDataHeader() override;
+  void getDataBoundary(l3::Vector3& min, l3::Vector3& max) override;
+};
+
+
+/**
+ * @brief The PclGridMapGeneratorPlugin represents a grid map generator
+ * that uses a pcl point cloud as input.
+ */
 class PclGridMapGeneratorPlugin : public GridMapGeneratorPlugin
 {
 public:

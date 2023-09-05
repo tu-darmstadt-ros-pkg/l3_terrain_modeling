@@ -135,4 +135,32 @@ struct Timer
   Time last;     // [msec]
   Time delta;    // [msec]
 };
+
+
+struct GridCell
+{
+  GridCell()
+    : position(0.0, 0.0, 0.0)
+    , value(0)
+  {}
+
+  GridCell(const l3::Vector3& position, int value)
+    : position(position)
+    , value(0)
+  {}
+
+  // Quick access to position (required for iterators)
+  double x() const { return position.x(); }
+  double y() const { return position.y(); }
+  double z() const { return position.z(); }
+
+  l3::Vector3 position;
+  int value;
+};
+
+struct GridCellUpdates
+{
+  std_msgs::Header header;
+  std::vector<GridCell> cells;
+};
 }  // namespace l3_terrain_modeling
