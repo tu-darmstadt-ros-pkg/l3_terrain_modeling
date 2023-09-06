@@ -51,6 +51,7 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   }
   double resolution = param("resolution", 0.01);
 
+  // create grid map if not already available
   if (!DataManager::hasData<grid_map::GridMap>(GRID_MAP_NAME))
   {
     // init grid map
@@ -64,11 +65,6 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   else
   {
     grid_map_handle_ = getHandleT<grid_map::GridMap>(GRID_MAP_NAME);
-    if (!grid_map_handle_)
-    {
-      ROS_ERROR("[%s] Initialization failed! No handle to grid map available!", getName().c_str());
-      return false;
-    }
 
     l3::SharedLockPtr lock;
     const grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);
@@ -77,6 +73,12 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
       ROS_WARN("[%s] Provided grid_map has frame id \"%s\" but this plugin requested frame id \"%s\".", getName().c_str(), grid_map.getFrameId().c_str(), map_frame_id.c_str());
     if (grid_map.getResolution() != resolution)
       ROS_WARN("[%s] Provided grid_map has different resolution as configured by this plugin.", getName().c_str());
+  }
+
+  if (!grid_map_handle_)
+  {
+    ROS_ERROR("[%s] Initialization failed! No handle to grid map available!", getName().c_str());
+    return false;
   }
 
   return true;

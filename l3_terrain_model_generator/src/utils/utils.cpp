@@ -15,7 +15,7 @@ bool getTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& tar
   }
   else
   {
-    ROS_ERROR_THROTTLE(5.0, "Could not retrieve transform '%s' to '%s':\n%s", source_frame, target_frame, error_msg.c_str());
+    ROS_ERROR_THROTTLE(5.0, "Could not retrieve transform '%s' to '%s':\n%s", source_frame.c_str(), target_frame.c_str(), error_msg.c_str());
     return false;
   }
 }

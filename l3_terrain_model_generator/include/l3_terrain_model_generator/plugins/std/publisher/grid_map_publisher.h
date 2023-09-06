@@ -37,7 +37,7 @@ namespace l3_terrain_modeling
 {
 /**
  * @brief The GridMapPublisher is a generic publisher for data from type grid_map.
- * @param topic (default: "terrain_model_map") Topic name to publish at
+ * @param topic (default: "grid_map") Topic name to publish at
  * @param latch (default: true) Defines if topic is latched
  * @param input_data (default: "grid_map") Data name as found in the DataManager
  * @param layers (default: empty) List of names representing the layers to be copied in the published message (keep empty for all)

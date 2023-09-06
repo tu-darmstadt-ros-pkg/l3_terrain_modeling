@@ -39,7 +39,6 @@ bool SurfaceMeshPublisher::postInitialize(const vigir_generic_params::ParameterS
     return false;
 
   const std::string& input_data_name = param("input_data", std::string("surface_mesh"), true);
-
   surface_mesh_handle_ = DataManager::getHandle<pcl::PolygonMesh>(input_data_name);
   if (!surface_mesh_handle_)
     return false;
