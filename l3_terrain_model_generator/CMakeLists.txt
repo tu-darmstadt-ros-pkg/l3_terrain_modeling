@@ -134,10 +134,12 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/std/generator/gradients_cloud_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/ground_level_map_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/normals_cloud_generator.h
+  include/${PROJECT_NAME}/plugins/std/generator/occupancy_map_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/octree_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/surface_mesh_generator.h
   include/${PROJECT_NAME}/plugins/std/publisher/grid_map_publisher.h
   include/${PROJECT_NAME}/plugins/std/publisher/normals_publisher.h
+  include/${PROJECT_NAME}/plugins/std/publisher/occupancy_map_publisher.h
   include/${PROJECT_NAME}/plugins/std/publisher/octree_publisher.h
   include/${PROJECT_NAME}/plugins/std/publisher/point_cloud_publisher.h
   include/${PROJECT_NAME}/plugins/std/publisher/surface_mesh_publisher.h
@@ -183,10 +185,12 @@ set(SOURCES
   src/plugins/std/generator/gradients_cloud_generator.cpp
   src/plugins/std/generator/ground_level_map_generator.cpp
   src/plugins/std/generator/normals_cloud_generator.cpp
+  src/plugins/std/generator/occupancy_map_generator.cpp
   src/plugins/std/generator/octree_generator.cpp
   src/plugins/std/generator/surface_mesh_generator.cpp
   src/plugins/std/publisher/grid_map_publisher.cpp
   src/plugins/std/publisher/normals_publisher.cpp
+  src/plugins/std/publisher/occupancy_map_publisher.cpp
   src/plugins/std/publisher/octree_publisher.cpp
   src/plugins/std/publisher/point_cloud_publisher.cpp
   src/plugins/std/publisher/surface_mesh_publisher.cpp
