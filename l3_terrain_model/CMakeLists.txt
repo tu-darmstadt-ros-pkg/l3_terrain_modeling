@@ -110,6 +110,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS} ${PCL_I
 ## Specify additional locations of header files
 set(HEADERS
   include/${PROJECT_NAME}/terrain_model.h
+  include/${PROJECT_NAME}/typedefs.h
 )
 
 set(SOURCES

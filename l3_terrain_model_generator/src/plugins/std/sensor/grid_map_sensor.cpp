@@ -1,5 +1,7 @@
 #include <l3_terrain_model_generator/plugins/std/sensor/grid_map_sensor.h>
 
+#include <l3_terrain_model/typedefs.h>
+
 namespace l3_terrain_modeling
 {
 GridMapSensor::GridMapSensor()
@@ -17,7 +19,7 @@ bool GridMapSensor::initialize(const vigir_generic_params::ParameterSet& params)
   if (!cloud_handle_)
     return false;
 
-  std::string topic = param("topic", std::string("grid_map"), true);
+  std::string topic = param("topic", ELEVATION_LAYER, true);
   layer_ = param("layer", std::string("elevation"), true);
 
   grid_map_sub_ = nh_.subscribe(topic, 1, &GridMapSensor::gridMapCb, this);

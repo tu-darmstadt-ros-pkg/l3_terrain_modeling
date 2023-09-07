@@ -5,7 +5,8 @@
 
 #include <l3_libs/yaml_parser.h>
 
-#include <l3_terrain_model_generator/typedefs.h>
+#include <l3_terrain_model/typedefs.h>
+
 #include <l3_terrain_model_generator/utils/pcl/point_cloud_filter.h>
 
 namespace l3_terrain_modeling
@@ -93,9 +94,9 @@ bool NormalsCloudGenerator::postInitialize(const vigir_generic_params::Parameter
   // add normal layers
   l3::UniqueLockPtr lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);
-  grid_map.add(TerrainModel::NORMAL_LAYER_PREFIX + "x");
-  grid_map.add(TerrainModel::NORMAL_LAYER_PREFIX + "y");
-  grid_map.add(TerrainModel::NORMAL_LAYER_PREFIX + "z");
+  grid_map.add(NORMAL_LAYER_PREFIX + "x");
+  grid_map.add(NORMAL_LAYER_PREFIX + "y");
+  grid_map.add(NORMAL_LAYER_PREFIX + "z");
 
   return true;
 }
@@ -112,9 +113,9 @@ void NormalsCloudGenerator::reset()
 
   l3::UniqueLockPtr grid_map_lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
-  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "x");
-  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "y");
-  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "z");
+  grid_map.clear(NORMAL_LAYER_PREFIX + "x");
+  grid_map.clear(NORMAL_LAYER_PREFIX + "y");
+  grid_map.clear(NORMAL_LAYER_PREFIX + "z");
 }
 
 void NormalsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)
@@ -259,9 +260,9 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
 
     grid_map::Index index;
     grid_map.getIndex(l3::Position2D(static_cast<double>(n.x), static_cast<double>(n.y)), index);
-    grid_map.at(TerrainModel::NORMAL_LAYER_PREFIX + "x", index) = n.normal_x;
-    grid_map.at(TerrainModel::NORMAL_LAYER_PREFIX + "y", index) = n.normal_y;
-    grid_map.at(TerrainModel::NORMAL_LAYER_PREFIX + "z", index) = n.normal_z;
+    grid_map.at(NORMAL_LAYER_PREFIX + "x", index) = n.normal_x;
+    grid_map.at(NORMAL_LAYER_PREFIX + "y", index) = n.normal_y;
+    grid_map.at(NORMAL_LAYER_PREFIX + "z", index) = n.normal_z;
   }
 
   grid_map.setTimestamp(cloud->header.stamp);

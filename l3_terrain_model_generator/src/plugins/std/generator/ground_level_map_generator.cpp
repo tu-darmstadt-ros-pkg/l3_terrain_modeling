@@ -43,9 +43,9 @@ void GroundLevelMapGenerator::reset()
 
   l3::UniqueLockPtr grid_map_lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
-//  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "x");
-//  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "y");
-//  grid_map.clear(TerrainModel::NORMAL_LAYER_PREFIX + "z");
+//  grid_map.clear(NORMAL_LAYER_PREFIX + "x");
+//  grid_map.clear(NORMAL_LAYER_PREFIX + "y");
+//  grid_map.clear(NORMAL_LAYER_PREFIX + "z");
 }
 
 void GroundLevelMapGenerator::update(const Timer& /*timer*/, UpdatedHandles& updates, const SensorPlugin* /*sensor*/)

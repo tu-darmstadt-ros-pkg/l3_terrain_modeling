@@ -37,6 +37,8 @@
 
 #include <l3_terrain_model_msgs/TerrainModelMsg.h>
 
+#include <l3_terrain_model/typedefs.h>
+
 namespace l3_terrain_modeling
 {
 using namespace l3_terrain_model_msgs;
@@ -47,10 +49,6 @@ public:
   // typedefs
   typedef l3::SharedPtr<TerrainModel> Ptr;
   typedef l3::SharedPtr<const TerrainModel> ConstPtr;
-
-  inline static const std::string ELEVATION_LAYER = "elevation";
-  inline static const std::string NORMAL_LAYER_PREFIX = "normal_";
-  inline static const std::string RGB_LAYER = "rgb";
 
   TerrainModel(const grid_map::GridMap& grid_map);
   TerrainModel(const grid_map_msgs::GridMap& grid_map);

@@ -1,5 +1,7 @@
 #include <l3_terrain_model_generator/plugins/std/sensor/image_map_sensor.h>
 
+#include <l3_terrain_model/typedefs.h>
+
 namespace l3_terrain_modeling
 {
 ImageMapSensor::ImageMapSensor()
@@ -22,7 +24,7 @@ bool ImageMapSensor::initialize(const vigir_generic_params::ParameterSet& params
   max_height_ = param("max_height", 1.0);
 
   std::string topic = param("topic", std::string("image"), true);
-  layer_ = param("layer", std::string("elevation"), true);
+  layer_ = param("layer", ELEVATION_LAYER, true);
 
   image_sub_ = nh_.subscribe(topic, 1, &ImageMapSensor::imageCb, this);
 

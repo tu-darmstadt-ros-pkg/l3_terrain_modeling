@@ -2,7 +2,7 @@
 
 #include <grid_map_core/GridMapMath.hpp>
 
-#include <l3_terrain_model/terrain_model.h>
+#include <l3_terrain_model/typedefs.h>
 
 #include <l3_terrain_model_generator/utils/pcl/pcl_utils.h>
 
@@ -31,10 +31,10 @@ bool ElevationMapGenerator::initialize(const vigir_generic_params::ParameterSet&
   l3::UniqueLockPtr lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);
 
-  grid_map.add(TerrainModel::ELEVATION_LAYER);
+  grid_map.add(ELEVATION_LAYER);
 
   if (use_color_)
-    grid_map.add(TerrainModel::RGB_LAYER);
+    grid_map.add(RGB_LAYER);
 
   return true;
 }
@@ -143,17 +143,17 @@ void ElevationMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
 void ElevationMapGenerator::updateCell(grid_map::GridMap& grid_map, const grid_map::Index& index, float height, const pcl::RGB& color)
 {
   // update height
-  if (grid_map.isValid(index, TerrainModel::ELEVATION_LAYER))
+  if (grid_map.isValid(index, ELEVATION_LAYER))
   {
-    float& h = grid_map.at(TerrainModel::ELEVATION_LAYER, index);
+    float& h = grid_map.at(ELEVATION_LAYER, index);
     h += update_weight_ * (height - h);
   }
   else
-    grid_map.at(TerrainModel::ELEVATION_LAYER, index) = height;
+    grid_map.at(ELEVATION_LAYER, index) = height;
 
   // add color information
   if (color.a > 0)
-    grid_map.at(TerrainModel::RGB_LAYER, index) = color.rgb;
+    grid_map.at(RGB_LAYER, index) = color.rgb;
   /// @todo define fallback color
 }
 }  // namespace l3_terrain_modeling

@@ -28,56 +28,13 @@
 
 #pragma once
 
-#include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
-#include <l3_terrain_model_generator/utils/pcl/octree_voxel_grid.h>
-#include <l3_terrain_model_generator/plugins/base/generator_plugin.h>
+#include <string>
 
 namespace l3_terrain_modeling
 {
-class NormalsCloudGenerator : public GeneratorPlugin
-{
-public:
-  // typedefs
-  typedef l3::SharedPtr<NormalsCloudGenerator> Ptr;
-  typedef l3::SharedPtr<const NormalsCloudGenerator> ConstPtr;
-
-  NormalsCloudGenerator();
-
-  bool loadParams(const vigir_generic_params::ParameterSet& params) override;
-
-  bool initialize(const vigir_generic_params::ParameterSet& params) override;
-
-  bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
-
-  void reset() override;
-
-protected:
-  void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
-
-  void computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr search_points);
-
-  PclDataHandle<OctreeVoxelGrid>::Ptr input_octree_pcl_handle_;
-  PclDataHandle<pcl::PointCloud>::Ptr input_cloud_pcl_handle_;
-  DataHandle::Ptr normals_octree_handle_;
-  DataHandle::Ptr normals_cloud_handle_;
-  DataHandle::Ptr grid_map_handle_;
-
-  // parameters
-  int threads_;
-  unsigned int min_aggregation_size_;
-  unsigned int filter_mask_;
-
-  // params for normal estimator
-  double ne_radius_;
-
-  // params for voxel grid filter
-  l3::Vector3 voxel_grid_size_;
-
-  // params for moving least squares smoother
-  double ms_radius_;
-
-  // params for statistical outlier filter
-  double so_radius_;
-  int so_k_;
-};
+  inline static const std::string ELEVATION_LAYER = "elevation";
+  inline static const std::string OCC_PROB_LAYER = "occupancy_probability";
+  inline static const std::string LOG_ODDS_LAYER = "log_odds";
+  inline static const std::string NORMAL_LAYER_PREFIX = "normal_";
+  inline static const std::string RGB_LAYER = "rgb";
 }  // namespace l3_terrain_modeling
