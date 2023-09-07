@@ -141,12 +141,14 @@ struct GridCell
 {
   GridCell()
     : position(0.0, 0.0, 0.0)
-    , value(0)
+    , i_value(0)
+    , f_value(0.0f)
   {}
 
   GridCell(const l3::Vector3& position, int value)
     : position(position)
-    , value(0)
+    , i_value(0)
+    , f_value(0.0f)
   {}
 
   // Quick access to position (required for iterators)
@@ -155,8 +157,12 @@ struct GridCell
   double z() const { return position.z(); }
 
   l3::Vector3 position;
-  int value;
+
+  int i_value;
+  float f_value;
 };
+
+L3_STATIC_ASSERT_MOVEABLE(GridCell);
 
 struct GridCellUpdates
 {
