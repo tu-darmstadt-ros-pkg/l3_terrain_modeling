@@ -67,7 +67,7 @@ plugin_sets:
           - 02_normals_cloud_generator
           - 03_surface_mesh_generator
           - processed_cloud_publisher
-        
+
     ### Generators ###
     01_octree_generator:
       import: octree_generator
@@ -80,6 +80,7 @@ plugin_sets:
     01_elevation_map_generator:
       import: elevation_map_generator
       params:
+        size: [10, 10]
         resolution: 0.02
         update_weight: 0.75
         process_chain:
@@ -121,4 +122,3 @@ plugin_sets:
         topic: normals
         input_data: normals_cloud
     surface_mesh_publisher: none
-

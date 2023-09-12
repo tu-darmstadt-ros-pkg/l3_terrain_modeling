@@ -4,28 +4,32 @@
 
 namespace l3_terrain_modeling
 {
-ImageMapSensor::ImageMapSensor()
-  : SensorPlugin("image_map_sensor")
-{}
-
-bool ImageMapSensor::initialize(const vigir_generic_params::ParameterSet& params)
+ImageMapSensor::ImageMapSensor() : SensorPlugin("image_map_sensor")
 {
-  if (!SensorPlugin::initialize(params))
-    return false;
+}
 
-  // init pointcloud
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-  cloud_handle_ = DataManager::addData(input_data_name, boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>());
-  if (!cloud_handle_)
+bool ImageMapSensor::loadParams(const vigir_generic_params::ParameterSet& params)
+{
+  if (!SensorPlugin::loadParams(params))
     return false;
 
   resolution_ = param("resolution", 0.025);
   min_height_ = param("min_height", 0.0);
   max_height_ = param("max_height", 1.0);
 
-  std::string topic = param("topic", std::string("image"), true);
   layer_ = param("layer", ELEVATION_LAYER, true);
 
+  return true;
+}
+
+bool ImageMapSensor::initialize(const vigir_generic_params::ParameterSet& params)
+{
+  if (!SensorPlugin::initialize(params))
+    return false;
+
+  GET_OUTPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
+
+  std::string topic = param("topic", std::string("image"), true);
   image_sub_ = nh_.subscribe(topic, 1, &ImageMapSensor::imageCb, this);
 
   return true;
@@ -38,7 +42,8 @@ void ImageMapSensor::imageCb(const sensor_msgs::Image& msg)
 
   // generate grid map from image
   grid_map::GridMapRosConverter::initializeFromImage(msg, resolution_, image_map_);
-  ROS_INFO("Initialized map with size %f x %f m (%i x %i cells).", image_map_.getLength().x(), image_map_.getLength().y(), image_map_.getSize().x(), image_map_.getSize().y());
+  ROS_INFO("Initialized map with size %f x %f m (%i x %i cells).", image_map_.getLength().x(),
+           image_map_.getLength().y(), image_map_.getSize().x(), image_map_.getSize().y());
   grid_map::GridMapRosConverter::addLayerFromImage(msg, layer_, image_map_, min_height_, max_height_);
 
   // convert grid map to point cloud
@@ -48,12 +53,11 @@ void ImageMapSensor::imageCb(const sensor_msgs::Image& msg)
   point_cloud_msg.header.stamp = ros::Time::now();
 
   // update pointcloud
-  l3::UniqueLockPtr lock;
-  pcl::fromROSMsg(point_cloud_msg, *cloud_handle_->value<pcl::PointCloud<pcl::PointXYZ>::Ptr>(lock));
-  lock.reset();
+  cloud_pcl_handle_->dispatch<l3::UniqueLock>(
+      [&](auto& cloud, auto type_trait) { pcl::fromROSMsg(point_cloud_msg, *cloud); });
 
   // call default processing pipeline
-  UpdatedHandles updates = { cloud_handle_ };
+  UpdatedHandles updates = { cloud_pcl_handle_->handle() };
   SensorPlugin::process(Timer::timeFromRos(point_cloud_msg.header.stamp), updates);
 }
 }  // namespace l3_terrain_modeling

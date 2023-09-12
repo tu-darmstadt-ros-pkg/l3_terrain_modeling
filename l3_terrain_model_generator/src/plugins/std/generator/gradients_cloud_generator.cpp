@@ -25,9 +25,7 @@ bool GradientsCloudGenerator::initialize(const vigir_generic_params::ParameterSe
   if (!GeneratorPlugin::initialize(params))
     return false;
 
-  gradients_cloud_handle_ = DataManager::addData("gradients_cloud", boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>());
-  if (!gradients_cloud_handle_)
-    return false;
+  GET_OUTPUT_HANDLE_DEFAULT(boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>(), "gradients_cloud", gradients_cloud_handle_);
 
   return true;
 }
@@ -37,9 +35,7 @@ bool GradientsCloudGenerator::postInitialize(const vigir_generic_params::Paramet
   if (!GeneratorPlugin::postInitialize(params))
     return false;
 
-  normals_cloud_handle_ = getHandleT<pcl::PointCloud<pcl::PointNormal>::Ptr>("normals_cloud");
-  if (!normals_cloud_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(pcl::PointCloud<pcl::PointNormal>::Ptr, "normals_cloud", normals_cloud_handle_);
 
   return true;
 }

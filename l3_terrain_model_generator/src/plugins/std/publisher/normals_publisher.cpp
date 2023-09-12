@@ -38,10 +38,7 @@ bool NormalsPublisher::postInitialize(const vigir_generic_params::ParameterSet& 
   if (!PublisherPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("normals_cloud"), true);
-  normals_cloud_handle_ = getHandleT<pcl::PointCloud<pcl::PointNormal>::Ptr>(input_data_name);
-  if (!normals_cloud_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(pcl::PointCloud<pcl::PointNormal>::Ptr, "normals_cloud", normals_cloud_handle_);
 
   return true;
 }

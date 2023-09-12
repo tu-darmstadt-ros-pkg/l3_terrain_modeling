@@ -157,6 +157,7 @@ set(HEADERS
   include/${PROJECT_NAME}/utils/pcl/point_cloud_filter.h
   include/${PROJECT_NAME}/utils/data_handle.h
   include/${PROJECT_NAME}/utils/data_manager.h
+  include/${PROJECT_NAME}/utils/macros.h
   include/${PROJECT_NAME}/utils/utils.h
   include/${PROJECT_NAME}/point_cloud_portioner_node.h
   include/${PROJECT_NAME}/terrain_model_generator_node.h

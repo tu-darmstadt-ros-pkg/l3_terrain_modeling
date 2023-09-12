@@ -28,6 +28,11 @@
 
 #pragma once
 
+#include <unordered_map>
+#include <set>
+
+#include <vigir_pluginlib/plugin.h>
+
 #include <l3_libs/types/types.h>
 #include <l3_libs/singleton.h>
 
@@ -47,15 +52,16 @@ public:
    * If data does already exist no new data handler will be created and the exisitng will
    * be returned instead of. If the new type mismatches the exisiting type, a nullptr is
    * returned.
+   * @param owner Owner of data handler
    * @param name Name of data
    * @param data Data to add
    * @return Corresponding data handler
    */
   template <class ValueType>
-  static DataHandle::Ptr addData(const std::string& name, ValueType& data)
+  static DataHandle::Ptr addData(const vigir_pluginlib::Plugin* owner, const std::string& name, ValueType& data)
   {
     // check for existing handle
-    DataHandle::Ptr handle = getHandle(name);
+    DataHandle::Ptr handle = getHandle(owner, name);
 
     if (handle)
     {
@@ -73,6 +79,7 @@ public:
 
     l3::UniqueLock lock(instance().mutex_);
     mutableInstance().database_[name] = handle;
+    mutableInstance().owner_database_[owner].insert(handle);
 
     return handle;
   }
@@ -82,15 +89,16 @@ public:
    * If data does already exist no new data handler will be created and the exisitng will
    * be returned instead of. If the new type mismatches the exisiting type, a nullptr is
    * returned.
+   * @param owner Owner of data handler
    * @param name Name of data
    * @param data Data to add using std::move
    * @return Corresponding data handler
    */
   template <class ValueType>
-  static DataHandle::Ptr addData(const std::string& name, ValueType&& data)
-  {    
+  static DataHandle::Ptr addData(const vigir_pluginlib::Plugin* owner, const std::string& name, ValueType&& data)
+  {
     // check for existing handle
-    DataHandle::Ptr handle = getHandle(name);
+    DataHandle::Ptr handle = getHandle(owner, name);
 
     if (handle)
     {
@@ -108,6 +116,7 @@ public:
 
     l3::UniqueLock lock(instance().mutex_);
     mutableInstance().database_[name] = handle;
+    mutableInstance().owner_database_[owner].insert(handle);
 
     return handle;
   }
@@ -136,6 +145,77 @@ public:
     return handle && handle->isType<ValueType>();
   }
 
+  /**
+   * @brief Retrieves data handle with given name from data manager
+   * @param owner Owner of data handler
+   * @param name Name of data to retrieve
+   * @return true DataHandle if exists otherwise nullptr
+   */
+  static DataHandle::Ptr getHandle(const vigir_pluginlib::Plugin* owner, const std::string& name)
+  {
+    DataHandle::Ptr handle = getHandle(name);
+
+    if (handle)
+    {
+      l3::UniqueLock lock(instance().mutex_);
+      mutableInstance().owner_database_[owner].insert(handle);
+    }
+
+    return handle;
+  }
+
+  /**
+   * @brief Retrieves data handle with given name from data manager and checks matching type.
+   * @param ValueType Type of data to check existence
+   * @param owner Owner of data handler
+   * @param name Name of data to retrieve
+   * @return true DataHandle if exists otherwise nullptr
+   */
+  template <class ValueType>
+  static DataHandle::Ptr getHandle(const vigir_pluginlib::Plugin* owner, const std::string& name)
+  {
+    DataHandle::Ptr handle = getHandle<ValueType>(name);
+
+    if (handle)
+    {
+      l3::UniqueLock lock(instance().mutex_);
+      mutableInstance().owner_database_[owner].insert(handle);
+    }
+
+    return handle;
+  }
+
+  /**
+   * @brief Retrieves read-only data with given name and from sepcified type from data manager.
+   * This method will not perform any checks and may throw an exception.
+   * @param ValueType Type of data to retrieve
+   * @param name Name of data to retrieve
+   * @param lock [out] SharedLock for this data
+   * @return Reference to data
+   */
+  template <class ValueType>
+  static const ValueType& getData(const std::string& name, l3::SharedLockPtr& lock)
+  {
+    return getHandle(name)->value<ValueType>(lock);
+  }
+
+  /**
+   * @brief Retrieves writable data with given name and from sepcified type from data manager.
+   * This method will not perform any checks and may throw an exception.
+   * @param ValueType Type of data to retrieve
+   * @param name Name of data to retrieve
+   * @param lock [out] UniqueLock for this data
+   * @return Reference to data
+   */
+  template <class ValueType>
+  static ValueType& getData(const std::string& name, l3::UniqueLockPtr& lock)
+  {
+    return getHandle(name)->value<ValueType>(lock);
+  }
+
+  static std::string printDatabase();
+
+private:
   /**
    * @brief Retrieves data handle with given name from data manager
    * @param name Name of data to retrieve
@@ -170,37 +250,10 @@ public:
       return DataHandle::Ptr();
   }
 
-  /**
-   * @brief Retrieves read-only data with given name and from sepcified type from data manager.
-   * This method will not perform any checks and may throw an exception.
-   * @param ValueType Type of data to retrieve
-   * @param lock [out] SharedLock for this data
-   * @return Reference to data
-   */
-  template <class ValueType>
-  static const ValueType& getData(const std::string& name, l3::SharedLockPtr& lock)
-  {
-    return getHandle(name)->value<ValueType>(lock);
-  }
-
-  /**
-   * @brief Retrieves writable data with given name and from sepcified type from data manager.
-   * This method will not perform any checks and may throw an exception.
-   * @param ValueType Type of data to retrieve
-   * @param lock [out] UniqueLock for this data
-   * @return Reference to data
-   */
-  template <class ValueType>
-  static ValueType& getData(const std::string& name, l3::UniqueLockPtr& lock)
-  {
-    return getHandle(name)->value<ValueType>(lock);
-  }
-
-  static std::string printDatabase();
-
-private:
   mutable l3::Mutex mutex_;
 
   DatabaseType database_;
+
+  std::unordered_map<const vigir_pluginlib::Plugin*, std::set<DataHandle::ConstPtr>> owner_database_;
 };
 }  // namespace l3_terrain_modeling

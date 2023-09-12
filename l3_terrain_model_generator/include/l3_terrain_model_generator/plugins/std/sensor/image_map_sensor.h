@@ -38,6 +38,7 @@
 #include <grid_map_ros/grid_map_ros.hpp>
 
 #include <l3_terrain_model_generator/plugins/base/sensor_plugin.h>
+#include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
 
 namespace l3_terrain_modeling
 {
@@ -57,12 +58,14 @@ public:
 
   ImageMapSensor();
 
+  bool loadParams(const vigir_generic_params::ParameterSet& params) override;
+
   bool initialize(const vigir_generic_params::ParameterSet& params) override;
 
 private:
   void imageCb(const sensor_msgs::Image& msg);
 
-  DataHandle::Ptr cloud_handle_;
+  PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
 
   grid_map::GridMap image_map_;
   std::string layer_;

@@ -2,14 +2,14 @@
 
 <launch>
   <arg name="ns" default="l3/terrain_model" />
-  <arg name="run_node" default="False" />
+  <arg name="run_node" default="True" />
   <arg name="bag_file" default="$(dirname)/../bags/stairs_sim.bag" />
 
   <include file="$(dirname)/terrain_model_generator.launch" pass_all_args="True" if="$(arg run_node)" />
 
   <group ns="$(arg ns)">
     <node name="rosbag_player" pkg="rosbag" type="play" args="--clock -k $(arg bag_file)" />
-  
+
     <node name="world_map_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 world map 100" />
     <node name="map_odom_tf_static_publisher" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 1 map odom 100" />
   </group>

@@ -35,6 +35,7 @@
 #include <geometry_msgs/PoseWithCovarianceStamped.h>
 
 #include <l3_terrain_model_generator/plugins/base/processor_plugin.h>
+#include <l3_terrain_model_generator/utils/macros.h>
 
 namespace l3_terrain_modeling
 {

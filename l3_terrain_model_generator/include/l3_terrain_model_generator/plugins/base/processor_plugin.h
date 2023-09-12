@@ -35,6 +35,7 @@
 #include <l3_terrain_model_generator/typedefs.h>
 #include <l3_terrain_model_generator/plugins/base/sensor_plugin.h>
 #include <l3_terrain_model_generator/utils/data_manager.h>
+#include <l3_terrain_model_generator/utils/macros.h>
 
 namespace l3_terrain_modeling
 {
@@ -52,7 +53,9 @@ public:
 
   virtual ~ProcessorPlugin() = default;
 
-  virtual void reset() {}
+  virtual void reset()
+  {
+  }
 
   bool loadParams(const vigir_generic_params::ParameterSet& params) override;
 
@@ -60,7 +63,10 @@ public:
 
   bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
 
-  bool isUnique() const final { return false; }
+  bool isUnique() const final
+  {
+    return false;
+  }
 
   /**
    * @brief Triggers processing of this plugin. Afterward subsequent processes are called.
@@ -79,7 +85,9 @@ protected:
    * @param updates Pointers of data handles whose data have been updated
    * @param sensor Sensor on which the data is based (may be nullptr)
    */
-  virtual void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) {}
+  virtual void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor)
+  {
+  }
 
   /**
    * @brief Checks if new data should be processed based on configured
@@ -104,10 +112,11 @@ protected:
   template <class ValueType>
   DataHandle::Ptr getHandleT(const std::string& name) const
   {
-    DataHandle::Ptr handle = DataManager::getHandle<ValueType>(name);
+    DataHandle::Ptr handle = DataManager::getHandle<ValueType>(this, name);
 
     if (!handle)
-      ROS_ERROR("[%s] Could not fetch \"%s\" data of type \"%s\"!", getName().c_str(), name.c_str(), l3::getTypeName<ValueType>().c_str());
+      ROS_ERROR("[%s] Could not fetch \"%s\" data of type \"%s\"!", getName().c_str(), name.c_str(),
+                l3::getTypeName<ValueType>().c_str());
 
     return handle;
   }
@@ -119,7 +128,7 @@ protected:
    */
   DataHandle::Ptr getHandle(const std::string& name) const
   {
-    DataHandle::Ptr handle = DataManager::getHandle(name);
+    DataHandle::Ptr handle = DataManager::getHandle(this, name);
 
     if (!handle)
       ROS_ERROR("[%s] Could not fetch \"%s\" data!", getName().c_str(), name.c_str());

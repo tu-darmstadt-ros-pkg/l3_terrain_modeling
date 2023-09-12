@@ -34,10 +34,7 @@ bool GridMapPublisher::postInitialize(const vigir_generic_params::ParameterSet& 
   if (!PublisherPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("grid_map"), true);
-  grid_map_handle_ = getHandleT<grid_map::GridMap>(input_data_name);
-  if (!grid_map_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(grid_map::GridMap, GRID_MAP_NAME, grid_map_handle_);
 
   return true;
 }

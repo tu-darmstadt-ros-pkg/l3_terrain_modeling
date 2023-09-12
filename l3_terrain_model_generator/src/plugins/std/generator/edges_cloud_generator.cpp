@@ -27,9 +27,7 @@ bool EdgesCloudGenerator::initialize(const vigir_generic_params::ParameterSet& p
   if (!GeneratorPlugin::initialize(params))
     return false;
 
-  edges_cloud_handle_ = DataManager::addData("edges_cloud", boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>());
-  if (!edges_cloud_handle_)
-    return false;
+  GET_OUTPUT_HANDLE_DEFAULT(boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>(), "edges_cloud", edges_cloud_handle_);
 
   return true;
 }
@@ -39,9 +37,7 @@ bool EdgesCloudGenerator::postInitialize(const vigir_generic_params::ParameterSe
   if (!GeneratorPlugin::postInitialize(params))
     return false;
 
-  normals_cloud_handle_ = getHandleT<pcl::PointCloud<pcl::PointNormal>::Ptr>("normals_cloud");
-  if (!normals_cloud_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(pcl::PointCloud<pcl::PointNormal>::Ptr, "normals_cloud", normals_cloud_handle_);
 
   return true;
 }

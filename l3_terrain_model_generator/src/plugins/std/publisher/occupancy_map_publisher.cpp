@@ -24,10 +24,7 @@ bool OccupancyMapPublisher::postInitialize(const vigir_generic_params::Parameter
   if (!PublisherPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("occupancy_map"), true);
-  occupancy_map_handle_ = getHandleT<nav_msgs::OccupancyGrid>(input_data_name);
-  if (!occupancy_map_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(nav_msgs::OccupancyGrid, "occupancy_map", occupancy_map_handle_);
 
   return true;
 }

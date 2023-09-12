@@ -26,9 +26,7 @@ bool TerrainModelPublisher::postInitialize(const vigir_generic_params::Parameter
   if (!PublisherPlugin::postInitialize(params))
     return false;
 
-  grid_map_handle_ = getHandleT<grid_map::GridMap>(GRID_MAP_NAME);
-  if (!grid_map_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(grid_map::GridMap, GRID_MAP_NAME, grid_map_handle_);
 
   return true;
 }

@@ -55,11 +55,8 @@ bool NormalsCloudGenerator::initialize(const vigir_generic_params::ParameterSet&
   double resolution = param("resolution", 0.05);
   double update_weight = param("update_weight", 0.75);
 
-  normals_octree_handle_ = DataManager::addData("normals_octree", OctreeVoxelGrid<pcl::PointNormal>(resolution, update_weight));
-  normals_cloud_handle_ = DataManager::addData("normals_cloud", boost::make_shared<pcl::PointCloud<pcl::PointNormal>>());
-
-  if (!normals_octree_handle_ || !normals_cloud_handle_)
-    return false;
+  GET_OUTPUT_HANDLE_DEFAULT(OctreeVoxelGrid<pcl::PointNormal>(resolution, update_weight), "normals_octree", normals_octree_handle_);
+  GET_OUTPUT_HANDLE_DEFAULT(boost::make_shared<pcl::PointCloud<pcl::PointNormal>>(), "normals_cloud", normals_cloud_handle_);
 
   return true;
 }
@@ -69,27 +66,20 @@ bool NormalsCloudGenerator::postInitialize(const vigir_generic_params::Parameter
   if (!GeneratorPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-
   // get input octree pcl handle
-  input_octree_pcl_handle_ = PclDataHandle<OctreeVoxelGrid>::makeHandle(INPUT_OCTREE_NAME);
+  const std::string& input_octree_name = getInputDataParam(getParams(), "input_octree", INPUT_OCTREE_NAME);
+  input_octree_pcl_handle_ = PclDataHandle<OctreeVoxelGrid>::makeHandle(this, input_octree_name);
   if (!input_octree_pcl_handle_)
   {
-    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), INPUT_OCTREE_NAME);
+    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), INPUT_OCTREE_NAME.c_str());
     return false;
   }
 
   // get input cloud pcl handle
-  input_cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name);
-  if (!input_cloud_pcl_handle_)
-  {
-    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());
-    return false;
-  }
+  GET_INPUT_PCL_HANDLE("input_cloud", "cloud", "PointXYZ", input_cloud_pcl_handle_);
 
-  grid_map_handle_ = getHandleT<grid_map::GridMap>(GRID_MAP_NAME);
-  if (!grid_map_handle_)
-    return false;
+  // get input grid map handle
+  GET_INPUT_HANDLE(grid_map::GridMap, "input_grid_map", GRID_MAP_NAME, grid_map_handle_);
 
   // add normal layers
   l3::UniqueLockPtr lock;

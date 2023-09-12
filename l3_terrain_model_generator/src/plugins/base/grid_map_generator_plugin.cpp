@@ -43,7 +43,7 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
 
   // get grid map configuration
   const std::string& map_frame_id = param("map_frame", std::string("map"), true);
-  std::vector<int> size = param("size", std::vector<int>{0, 0}, true);
+  std::vector<int> size = param("size", std::vector<int>{1, 1}, true);
   if (size.size() != 2)
   {
     ROS_ERROR("[%s] Initialization failed! Parameter \"size\" must be a vector of size 2!", getName().c_str());
@@ -51,8 +51,10 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   }
   double resolution = param("resolution", 0.01);
 
+  const std::string& output_data_name = getOutputDataParam(getParams(), "output_data", GRID_MAP_NAME);
+
   // create grid map if not already available
-  if (!DataManager::hasData<grid_map::GridMap>(GRID_MAP_NAME))
+  if (!DataManager::hasData<grid_map::GridMap>(output_data_name))
   {
     // init grid map
     grid_map::GridMap grid_map;
@@ -60,11 +62,11 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
     grid_map.setGeometry(grid_map::Length(size[0], size[1]), resolution);
     grid_map.setTimestamp(ros::Time::now().toNSec());
 
-    grid_map_handle_ = DataManager::addData(GRID_MAP_NAME, std::move(grid_map));
+    grid_map_handle_ = DataManager::addData(this, output_data_name, std::move(grid_map));
   }
   else
   {
-    grid_map_handle_ = getHandleT<grid_map::GridMap>(GRID_MAP_NAME);
+    grid_map_handle_ = getHandleT<grid_map::GridMap>(output_data_name);
 
     l3::SharedLockPtr lock;
     const grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);
@@ -165,10 +167,7 @@ bool GridCellGridMapGeneratorPlugin::postInitialize(const vigir_generic_params::
   if (!GridMapGeneratorPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("grid_cell_updates"), true);
-  input_handle_ = getHandleT<GridCellUpdates>(input_data_name);
-  if (!input_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(GridCellUpdates, "grid_cell_updates", input_handle_);
 
   return true;
 }
@@ -195,15 +194,7 @@ bool PclGridMapGeneratorPlugin::postInitialize(const vigir_generic_params::Param
   if (!GridMapGeneratorPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-
-  // get pcl handle
-  cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name);
-  if (!cloud_pcl_handle_)
-  {
-    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());
-    return false;
-  }
+  GET_INPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
 
   input_handle_ = cloud_pcl_handle_->handle();
 

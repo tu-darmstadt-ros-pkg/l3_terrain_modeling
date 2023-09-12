@@ -32,6 +32,8 @@
 
 #include <grid_map_core/GridMap.hpp>
 
+#include <vigir_generic_params/parameter_set.h>
+
 #include <l3_libs/types/types.h>
 
 namespace l3_terrain_modeling
@@ -57,4 +59,22 @@ void getBoundary(const Container<Type, std::allocator<Type>>& container, l3::Vec
 }
 
 void resize(grid_map::GridMap& grid_map, const l3::Vector3& min, const l3::Vector3& max);
+
+template <typename T>
+T getInputDataParam(const vigir_generic_params::ParameterSet& p, const std::string& key, const T& default_val)
+{
+  vigir_generic_params::ParameterSet param;
+  param = p.getSubset("data");
+  param = param.getSubset("in");
+  return param.param(key, default_val, true);
+}
+
+template <typename T>
+T getOutputDataParam(const vigir_generic_params::ParameterSet& p, const std::string& key, const T& default_val)
+{
+  vigir_generic_params::ParameterSet param;
+  param = p.getSubset("data");
+  param = param.getSubset("out");
+  return param.param(key, default_val, true);
+}
 }  // namespace l3_terrain_modeling

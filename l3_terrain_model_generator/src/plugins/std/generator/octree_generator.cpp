@@ -26,9 +26,9 @@ bool OctreeGenerator::initialize(const vigir_generic_params::ParameterSet& param
   double resolution = param("resolution", 0.02, true);
   double update_weight = param("update_weight", 0.75, true);
 
-  std::string point_type = param("point_type", std::string("PointXYZ"), true);
-  octree_pcl_handle_ = PclDataHandle<OctreeVoxelGrid>::makeHandle(INPUT_OCTREE_NAME, point_type, resolution, update_weight);
-
+  const std::string& output_octree_name = getOutputDataParam(getParams(), "output_octree", INPUT_OCTREE_NAME);
+  const std::string& point_type = getOutputDataParam(getParams(), "output_octree_point_type", std::string("PointXYZ"));
+  octree_pcl_handle_ = PclDataHandle<OctreeVoxelGrid>::makeHandle(this, output_octree_name, point_type, resolution, update_weight);
   if (!octree_pcl_handle_)
   {
     ROS_ERROR("[%s] Unsupported point type: \"%s\"", getName().c_str(), point_type.c_str());
@@ -43,16 +43,9 @@ bool OctreeGenerator::postInitialize(const vigir_generic_params::ParameterSet& p
   if (!GeneratorPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-
   // get pcl handle
-  cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name);
-  if (!cloud_pcl_handle_)
-  {
-    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());
-    return false;
-  }
-  else if (cloud_pcl_handle_->pointType() != octree_pcl_handle_->pointType())
+  GET_INPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
+  if (cloud_pcl_handle_->pointType() != octree_pcl_handle_->pointType())
   {
     ROS_ERROR("[%s] Input pointcloud has not same point type (%s) as octree (%s)!", getName().c_str(), toString(cloud_pcl_handle_->pointType()).c_str(),
               toString(octree_pcl_handle_->pointType()).c_str());

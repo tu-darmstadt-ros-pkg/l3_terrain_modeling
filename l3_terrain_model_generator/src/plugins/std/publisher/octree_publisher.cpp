@@ -38,10 +38,9 @@ bool OctreePublisher::postInitialize(const vigir_generic_params::ParameterSet& p
   if (!PublisherPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string(INPUT_OCTREE_NAME), true);
-
   // get pcl handle
-  octree_pcl_handle_ = PclDataHandle<OctreeVoxelGrid>::makeHandle(input_data_name);
+  const std::string& input_data_name = getInputDataParam(getParams(), "input_data", INPUT_OCTREE_NAME);
+  octree_pcl_handle_ = PclDataHandle<OctreeVoxelGrid>::makeHandle(this, input_data_name);
   if (!octree_pcl_handle_)
   {
     ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());

@@ -90,12 +90,13 @@ public:
   /**
    * @brief Creates PclDataHandle and either creates new data handle or retrieves the corresponding
    * exisiting handle from the data manager.
+   * @param owner Owner of data handler
    * @param name Name of internally used data handler
    * @param point_type Point type (see PointType enum)
    */
   template <class... Args>
-  PclDataHandle(const std::string& name, const PointType& point_type, Args&&... args)
-    : handle_(createDataHandle(name, point_type, boost::forward<Args>(args)...))
+  PclDataHandle(const vigir_pluginlib::Plugin* owner, const std::string& name, const PointType& point_type, Args&&... args)
+    : handle_(createDataHandle(owner, name, point_type, boost::forward<Args>(args)...))
     , point_type_(point_type)
   {}
 
@@ -129,11 +130,12 @@ public:
    * @brief Creates shared pointer of PclDataHandle and retrieves the corresponding exisiting handle
    * from the data manager.
    * @param name Name of internally used data handler
+   * @param owner Owner of data handler
    * @return New PclDataHandle shared pointer if handle is successfully created. Otherwise nullptr.
    */
-  static PclDataHandle::Ptr makeHandle(const std::string& name)
+  static PclDataHandle::Ptr makeHandle(const vigir_pluginlib::Plugin* owner, const std::string& name)
   {
-    DataHandle::Ptr handle = DataManager::getHandle(name);
+    DataHandle::Ptr handle = DataManager::getHandle(owner, name);
     if (handle)
     {
       PclDataHandle::Ptr pcl_handle = makeHandle(handle);
@@ -146,14 +148,15 @@ public:
   /**
    * @brief Creates shared pointer of PclDataHandle and either creates new data handle or retrieves
    * the corresponding exisiting handle from the data manager.
+   * @param owner Owner of data handler
    * @param name Name of internally used data handler
    * @param point_type Point type (see PointType enum)
    * @return New PclDataHandle shared pointer if handle is successfully created. Otherwise nullptr.
    */
   template <class... Args>
-  static PclDataHandle::Ptr makeHandle(const std::string& name, const PointType& point_type, Args&&... args)
+  static PclDataHandle::Ptr makeHandle(const vigir_pluginlib::Plugin* owner, const std::string& name, const PointType& point_type, Args&&... args)
   {
-    PclDataHandle::Ptr pcl_handle = boost::make_shared<PclDataHandle<PclType>>(name, point_type, boost::forward<Args>(args)...);
+    PclDataHandle::Ptr pcl_handle = boost::make_shared<PclDataHandle<PclType>>(owner, name, point_type, boost::forward<Args>(args)...);
     if (pcl_handle->handle())
       return pcl_handle;
     else
@@ -163,14 +166,15 @@ public:
   /**
    * @brief Creates shared pointer of PclDataHandle and either creates new data handle or retrieves
    * the corresponding exisiting handle from the data manager.
+   * @param owner Owner of data handler
    * @param name Name of internally used data handler
    * @param point_type Point type as string (see PointType enum)
    * @return New PclDataHandle shared pointer if handle is successfully created. Otherwise nullptr.
    */
   template <class... Args>
-  inline static PclDataHandle::Ptr makeHandle(const std::string& name, const std::string& point_type, Args&&... args)
+  inline static PclDataHandle::Ptr makeHandle(const vigir_pluginlib::Plugin* owner, const std::string& name, const std::string& point_type, Args&&... args)
   {
-    return makeHandle(name, dispatchPointType(point_type), boost::forward<Args>(args)...);
+    return makeHandle(owner, name, dispatchPointType(point_type), boost::forward<Args>(args)...);
   }
 
   /**
@@ -284,25 +288,26 @@ public:
 protected:
   /**
    * @brief Creates new data handle according to the given template parameters.
+   * @param owner Owner of data handler
    * @param name Name of new data handle
    * @param point_type Point type to use as template argument for PclType.
    * @return New data handle pointer on success, otherwise nullptr.
    */
   template <class... Args>
-  static DataHandle::Ptr createDataHandle(const std::string& name, const PointType& point_type, Args&&... args)
+  static DataHandle::Ptr createDataHandle(const vigir_pluginlib::Plugin* owner, const std::string& name, const PointType& point_type, Args&&... args)
   {
     switch (point_type)
     {
       case PointType::PointXYZ:
-        return DataManager::addData(name, boost::make_shared<PclType<pcl::PointXYZ>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZ>>(boost::forward<Args>(args)...));
 #ifdef POINTXYZI_SUPPORT
       case PointType::PointXYZI:
-        return DataManager::addData(name, boost::make_shared<PclType<pcl::PointXYZI>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZI>>(boost::forward<Args>(args)...));
 #endif
       case PointType::PointXYZRGB:
-        return DataManager::addData(name, boost::make_shared<PclType<pcl::PointXYZRGB>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZRGB>>(boost::forward<Args>(args)...));
       case PointType::PointNormal:
-        return DataManager::addData(name, boost::make_shared<PclType<pcl::PointNormal>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointNormal>>(boost::forward<Args>(args)...));
       default:
         return DataHandle::Ptr();
     }

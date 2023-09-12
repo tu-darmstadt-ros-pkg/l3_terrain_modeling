@@ -38,11 +38,11 @@
 
 #include <l3_terrain_model_generator/utils/data_handle.h>
 
-#define INPUT_OCTREE_NAME "input_octree"
-#define GRID_MAP_NAME "grid_map"
-
 namespace l3_terrain_modeling
 {
+inline static const std::string INPUT_OCTREE_NAME = "input_octree";
+inline static const std::string GRID_MAP_NAME = "grid_map";
+
 enum filterMask
 {
   FILTER_NONE = 0,

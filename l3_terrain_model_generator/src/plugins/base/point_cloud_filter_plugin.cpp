@@ -11,15 +11,7 @@ bool PointCloudFilterPlugin::postInitialize(const vigir_generic_params::Paramete
   if (!FilterPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string("cloud"), true);
-
-  // get pcl handle
-  cloud_pcl_handle_ = PclDataHandle<pcl::PointCloud>::makeHandle(input_data_name);
-  if (!cloud_pcl_handle_)
-  {
-    ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(), input_data_name.c_str());
-    return false;
-  }
+  GET_INPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
 
   return true;
 }

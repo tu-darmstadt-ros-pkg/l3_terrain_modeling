@@ -33,10 +33,7 @@ bool OccupancyMapGenerator::initialize(const vigir_generic_params::ParameterSet&
   if (!GeneratorPlugin::initialize(params))
     return false;
 
-  const std::string& output_data_name = param("output_data", std::string("occupancy_map"), true);
-  occupancy_map_handle_ = DataManager::addData(output_data_name, nav_msgs::OccupancyGrid());
-  if (!occupancy_map_handle_)
-    return false;
+  GET_OUTPUT_HANDLE_DEFAULT(nav_msgs::OccupancyGrid(), "occupancy_map", occupancy_map_handle_);
 
   return true;
 }
@@ -46,10 +43,7 @@ bool OccupancyMapGenerator::postInitialize(const vigir_generic_params::Parameter
   if (!GeneratorPlugin::postInitialize(params))
     return false;
 
-  const std::string& input_data_name = param("input_data", std::string(GRID_MAP_NAME), true);
-  grid_map_handle_ = getHandleT<grid_map::GridMap>(input_data_name);
-  if (!grid_map_handle_)
-    return false;
+  GET_INPUT_HANDLE_DEFAULT(grid_map::GridMap, GRID_MAP_NAME, grid_map_handle_);
 
   return true;
 }
