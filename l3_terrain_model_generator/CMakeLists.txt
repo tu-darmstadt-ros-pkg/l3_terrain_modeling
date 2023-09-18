@@ -238,7 +238,6 @@ target_link_libraries(terrain_model_generator_node ${PROJECT_NAME})
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-
 catkin_install_python(PROGRAMS src/${PROJECT_NAME}/image_map_publisher.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
@@ -260,6 +259,12 @@ install(DIRECTORY include/${PROJECT_NAME}/
 install(DIRECTORY launch
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
   FILES_MATCHING PATTERN "*.launch"
+)
+
+# Mark plugin description file for installation
+install(FILES
+  plugins.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 #############
