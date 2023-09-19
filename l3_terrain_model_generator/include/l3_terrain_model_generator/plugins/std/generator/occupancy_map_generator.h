@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <tf2_ros/transform_listener.h>
+
 #include <l3_terrain_model_generator/plugins/base/generator_plugin.h>
 
 namespace l3_terrain_modeling
@@ -50,12 +52,16 @@ public:
 protected:
   void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor);
 
+  tf2_ros::Buffer tf_buffer_;
+  tf2_ros::TransformListener tf_listener_;
+
   DataHandle::Ptr grid_map_handle_;
   DataHandle::Ptr occupancy_map_handle_;
 
   // parameters
   std::string layer_;
 
+  std::string z_ref_frame_id_;
   float min_height_;
   float max_height_;
 

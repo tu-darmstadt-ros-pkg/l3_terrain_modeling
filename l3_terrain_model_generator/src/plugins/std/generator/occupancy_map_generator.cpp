@@ -10,6 +10,7 @@ namespace l3_terrain_modeling
 {
 OccupancyMapGenerator::OccupancyMapGenerator()
   : GeneratorPlugin("occupancy_map_generator")
+  , tf_listener_(tf_buffer_)
 {}
 
 bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet& params)
@@ -18,6 +19,8 @@ bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
     return false;
 
   layer_ = param("layer", ELEVATION_LAYER, true);
+
+  z_ref_frame_id_ = param("z_ref_frame", std::string(), true);
 
   min_height_ = param("min_height", -0.1, true);
   max_height_ = param("max_height", 0.9, true);
@@ -62,7 +65,8 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
     sensor_height = sensor->getSensorPose().data.z();
 
   // convert grid map to occupancy grid
-  grid_map::GridMapRosConverter::toOccupancyGrid(grid_map, layer_, sensor_height + min_height_, sensor_height + max_height_, occupancy_map);
+  grid_map::GridMapRosConverter::toOccupancyGrid(grid_map, layer_, sensor_height + min_height_,
+                                                 sensor_height + max_height_, occupancy_map);
 
   // generate binary occupancy grid
   if (binarize_)
@@ -74,6 +78,17 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
       else
         occupancy_map.data[i] = 0;
     }
+  }
+
+  // adjust z position
+  if (!z_ref_frame_id_.empty())
+  {
+    l3::Pose z_ref_pose;
+    if (getTransformAsPose(tf_buffer_, occupancy_map.header.frame_id, z_ref_frame_id_, occupancy_map.header.stamp, z_ref_pose))
+      occupancy_map.info.origin.position.z = z_ref_pose.z();
+    else
+      ROS_WARN("[%s] Failed to adjust occupancy map z position to reference frame \"%s\"!", getName().c_str(),
+               z_ref_frame_id_.c_str());
   }
 }
 }  // namespace l3_terrain_modeling
