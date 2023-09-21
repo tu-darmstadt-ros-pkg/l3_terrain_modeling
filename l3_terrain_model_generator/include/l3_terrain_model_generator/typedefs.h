@@ -162,7 +162,7 @@ struct GridCell
   float f_value;
 };
 
-L3_STATIC_ASSERT_MOVEABLE(GridCell);
+L3_STATIC_ASSERT_MOVEABLE(GridCell)
 
 struct GridCellUpdates
 {
