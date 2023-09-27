@@ -80,6 +80,7 @@ plugin_sets:
     01_elevation_map_generator:
       import: elevation_map_generator
       params:
+        init_map: true
         size: [10, 10]
         resolution: 0.02
         update_weight: 0.75

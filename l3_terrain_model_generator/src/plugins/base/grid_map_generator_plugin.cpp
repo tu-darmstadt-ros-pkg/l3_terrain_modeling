@@ -42,6 +42,8 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
     return false;
 
   // get grid map configuration
+  bool init_map = param("init_map", false, true);
+
   const std::string& map_frame_id = param("map_frame", std::string("map"), true);
   std::vector<int> size = param("size", std::vector<int>{1, 1}, true);
   if (size.size() != 2)
@@ -54,7 +56,7 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   const std::string& output_data_name = getOutputDataParam(getParams(), "output_data", GRID_MAP_NAME);
 
   // create grid map if not already available
-  if (!DataManager::hasData<grid_map::GridMap>(output_data_name))
+  if (init_map && !DataManager::hasData<grid_map::GridMap>(output_data_name))
   {
     // init grid map
     grid_map::GridMap grid_map;
