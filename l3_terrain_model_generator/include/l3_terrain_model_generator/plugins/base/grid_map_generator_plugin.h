@@ -64,6 +64,15 @@ protected:
    */
   virtual void getDataBoundary(l3::Vector3& min, l3::Vector3& max) = 0;
 
+  /**
+   * @brief Sets the given default value for all cells in the new region.
+   * @param grid_map [in] Grid map that is updated.
+   * @param layer [in] Layer that is updated.
+   * @param value [in] Default value for the new cells.
+   * @param new_regions [in] New regions of the grid map.
+   */
+  void setValueInNewRegion(grid_map::GridMap& grid_map, const std::string& layer, float value, const std::vector<grid_map::BufferRegion>& new_regions);
+
   void processImpl(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   tf2_ros::Buffer tf_buffer_;
@@ -71,6 +80,7 @@ protected:
 
   DataHandle::Ptr input_handle_; // should be set by derived class to detect if input is available
   DataHandle::Ptr grid_map_handle_;
+  DataHandle::Ptr new_regions_handle_;
 
   bool expand_map_;
   bool robot_centric_map_;

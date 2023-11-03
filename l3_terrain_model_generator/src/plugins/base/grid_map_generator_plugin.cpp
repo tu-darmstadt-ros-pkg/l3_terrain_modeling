@@ -2,6 +2,8 @@
 
 #include <pcl_conversions/pcl_conversions.h>
 
+#include <grid_map_core/iterators/SubmapIterator.hpp>
+
 #include <l3_terrain_model_generator/utils/utils.h>
 #include <l3_terrain_model_generator/utils/pcl/pcl_utils.h>
 
@@ -55,7 +57,7 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
 
   const std::string& output_data_name = getOutputDataParam(getParams(), "output_data", GRID_MAP_NAME);
 
-  // create grid map if not already available
+  // create grid map handle if not already available
   if (init_map && !DataManager::hasData<grid_map::GridMap>(output_data_name))
   {
     // init grid map
@@ -85,6 +87,9 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
     return false;
   }
 
+  // create handle representing the new regions of the grid map after expansion or moving
+  new_regions_handle_ = DataManager::addData(this, output_data_name + "_new_regions", std::vector<grid_map::BufferRegion>());
+
   return true;
 }
 
@@ -96,6 +101,30 @@ void GridMapGeneratorPlugin::reset()
   {
     l3::UniqueLockPtr lock;
     grid_map_handle_->value<grid_map::GridMap>(lock).clearAll();
+  }
+
+  if (new_regions_handle_)
+  {
+    l3::UniqueLockPtr lock;
+    new_regions_handle_->value<std::vector<grid_map::BufferRegion>>(lock).clear();
+  }
+}
+
+void GridMapGeneratorPlugin::setValueInNewRegion(grid_map::GridMap& grid_map, const std::string& layer, float value, const std::vector<grid_map::BufferRegion>& new_regions)
+{
+  // skip if no default value is set
+  if (std::isnan(value))
+    return;
+
+  // set default value for new regions
+  grid_map::Matrix& map = grid_map.get(layer);
+  for (const grid_map::BufferRegion& region : new_regions)
+  {
+    for (grid_map::SubmapIterator iterator(grid_map, region); !iterator.isPastEnd(); ++iterator)
+    {
+      const grid_map::Index index(*iterator);
+      map(index.x(), index.y()) = value;
+    }
   }
 }
 
@@ -114,6 +143,9 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
   l3::UniqueLockPtr grid_map_lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
 
+  l3::UniqueLockPtr new_regions_lock;
+  std::vector<grid_map::BufferRegion>& new_regions = new_regions_handle_->value<std::vector<grid_map::BufferRegion>>(new_regions_lock);
+
   // check frame id
   std::string input_frame_id = l3::strip_const(header.frame_id, '/');
   if (grid_map.getFrameId() != input_frame_id)
@@ -131,6 +163,7 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
     l3::Vector3 update_max;
     getDataBoundary(update_min, update_max);
     resize(grid_map, update_min, update_max);
+    // @TODO set new regions
   }
 
   // update grid map position based on robot motion
@@ -143,20 +176,22 @@ void GridMapGeneratorPlugin::processImpl(const Timer& timer, UpdatedHandles& upd
     else if (!getTransformAsPose(tf_buffer_, grid_map.getFrameId(), robot_frame_id_, header.stamp, robot_pose))
       return;
 
-    grid_map.move(l3::Position2D(robot_pose.x(), robot_pose.y()));
+    grid_map.move(l3::Position2D(robot_pose.x(), robot_pose.y()), new_regions);
   }
 
   // update grid map timestamp
   grid_map.setTimestamp(header.stamp.toNSec());
 
-  // release mutex
+  // release mutexes
   grid_map_lock.reset();
+  new_regions_lock.reset();
 
   // call grid map processing update routine implemented by derived class
   update(timer, updates, sensor);
 
   // add grid map to the list of updated data
   updates.insert(grid_map_handle_);
+  updates.insert(new_regions_handle_);
 }
 
 
