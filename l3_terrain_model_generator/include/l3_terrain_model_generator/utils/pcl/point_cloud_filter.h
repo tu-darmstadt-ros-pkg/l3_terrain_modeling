@@ -66,7 +66,7 @@ typename pcl::PointCloud<PointT>::Ptr filterDense(typename pcl::PointCloud<Point
   std::vector<int> indices;
   indices.reserve(cloud->size());
 
-  for (int i = 0; i < cloud->size(); i++)
+  for (size_t i = 0; i < cloud->size(); i++)
   {
     const PointT& p = cloud->at(i);
 
