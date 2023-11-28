@@ -47,7 +47,7 @@
   }
 
 #define GET_INPUT_HANDLE_DEFAULT(Type, DefaultHandleName, Handle)                                                      \
-  GET_INPUT_HANDLE(Type, "input_data", DefaultHandleName, Handle)
+  GET_INPUT_HANDLE(Type, "data", DefaultHandleName, Handle)
 
 /* Helper macros to get pcl handle to exsiting data. */
 #define GET_INPUT_PCL_HANDLE(ParamKey, DefaultHandleName, DefaultPointType, Handle)                                    \
@@ -66,7 +66,7 @@
   }
 
 #define GET_INPUT_PCL_HANDLE_DEFAULT(DefaultHandleName, Handle)                                                        \
-  GET_INPUT_PCL_HANDLE("input_data", DefaultHandleName, "PointXYZ", Handle)
+  GET_INPUT_PCL_HANDLE("data", DefaultHandleName, "PointXYZ", Handle)
 
 /* Helper macros to get pcl handle to exsiting data. */
 #define GET_INPUT_TYPED_PCL_HANDLE(ParamKey, DefaultHandleName, PointType, Handle)                                     \
@@ -83,7 +83,7 @@
   }
 
 #define GET_INPUT_TYPED_PCL_HANDLE_DEFAULT(DefaultHandleName, PointType, Handle)                                       \
-  GET_INPUT_TYPED_PCL_HANDLE("input_data", DefaultHandleName, PointType, Handle)
+  GET_INPUT_TYPED_PCL_HANDLE("data", DefaultHandleName, PointType, Handle)
 
 /* Helper macros to create new handle. */
 #define GET_OUTPUT_HANDLE(Data, ParamKey, DefaultHandleName, Handle)                                                   \
@@ -99,7 +99,7 @@
   }
 
 #define GET_OUTPUT_HANDLE_DEFAULT(Data, DefaultHandleName, Handle)                                                     \
-  GET_OUTPUT_HANDLE(Data, "output_data", DefaultHandleName, Handle)
+  GET_OUTPUT_HANDLE(Data, "data", DefaultHandleName, Handle)
 
 /* Helper macros to create new pcl handle. */
 #define GET_OUTPUT_PCL_HANDLE(ParamKey, DefaultHandleName, DefaultPointType, Handle)                                   \
@@ -118,7 +118,7 @@
   }
 
 #define GET_OUTPUT_PCL_HANDLE_DEFAULT(DefaultHandleName, Handle)                                                       \
-  GET_OUTPUT_PCL_HANDLE("output_data", DefaultHandleName, "PointXYZ", Handle)
+  GET_OUTPUT_PCL_HANDLE("data", DefaultHandleName, "PointXYZ", Handle)
 
 /* Helper macros to create new pcl handle. */
 #define GET_OUTPUT_TYPED_PCL_HANDLE(ParamKey, DefaultHandleName, PointType, Handle)                                    \
@@ -135,4 +135,4 @@
   }
 
 #define GET_OUTPUT_TYPED_PCL_HANDLE_DEFAULT(DefaultHandleName, PointType, Handle)                                      \
-  GET_OUTPUT_TYPED_PCL_HANDLE("output_data", DefaultHandleName, PointType, Handle)
+  GET_OUTPUT_TYPED_PCL_HANDLE("data", DefaultHandleName, PointType, Handle)
