@@ -59,14 +59,23 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
   l3::SharedLockPtr grid_map_lock;
   const grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
 
-  // get sensor height to slice grid map
-  float sensor_height = 0.0;
-  if (sensor)
-    sensor_height = sensor->getSensorPose().data.z();
+  // determine z reference height
+  float ref_height = 0.0;
+  if (!z_ref_frame_id_.empty())
+  {
+    l3::Pose z_ref_pose;
+    if (getTransformAsPose(tf_buffer_, grid_map.getFrameId(), z_ref_frame_id_, ros::Time().fromNSec(grid_map.getTimestamp()), z_ref_pose))
+      ref_height = z_ref_pose.z();
+    else
+      ROS_WARN("[%s] Failed to adjust occupancy map z position to reference frame \"%s\"!", getName().c_str(),
+               z_ref_frame_id_.c_str());
+  }
+  else if (sensor)
+    ref_height = sensor->getSensorPose().data.z();
 
   // convert grid map to occupancy grid
-  grid_map::GridMapRosConverter::toOccupancyGrid(grid_map, layer_, sensor_height + min_height_,
-                                                 sensor_height + max_height_, occupancy_map);
+  grid_map::GridMapRosConverter::toOccupancyGrid(grid_map, layer_, ref_height + min_height_,
+                                                 ref_height + max_height_, occupancy_map);
 
   // generate binary occupancy grid
   if (binarize_)
@@ -81,15 +90,7 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
   }
 
   // adjust z position
-  if (!z_ref_frame_id_.empty())
-  {
-    l3::Pose z_ref_pose;
-    if (getTransformAsPose(tf_buffer_, occupancy_map.header.frame_id, z_ref_frame_id_, occupancy_map.header.stamp, z_ref_pose))
-      occupancy_map.info.origin.position.z = z_ref_pose.z();
-    else
-      ROS_WARN("[%s] Failed to adjust occupancy map z position to reference frame \"%s\"!", getName().c_str(),
-               z_ref_frame_id_.c_str());
-  }
+  occupancy_map.info.origin.position.z = ref_height;
 }
 }  // namespace l3_terrain_modeling
 
