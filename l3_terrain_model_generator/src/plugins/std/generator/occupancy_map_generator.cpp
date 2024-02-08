@@ -80,7 +80,7 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
   // generate binary occupancy grid
   if (binarize_)
   {
-    for (int i = 0; i < occupancy_map.data.size(); ++i)
+    for (size_t i = 0; i < occupancy_map.data.size(); ++i)
     {
       if (occupancy_map.data[i] > binary_threshold_)
         occupancy_map.data[i] = 100;

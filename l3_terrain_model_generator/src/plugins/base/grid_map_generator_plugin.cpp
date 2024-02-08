@@ -55,7 +55,7 @@ bool GridMapGeneratorPlugin::initialize(const vigir_generic_params::ParameterSet
   }
   double resolution = param("resolution", 0.01);
 
-  const std::string& output_data_name = getOutputDataParam(getParams(), "output_data", GRID_MAP_NAME);
+  const std::string& output_data_name = getOutputDataParam(getParams(), "data", GRID_MAP_NAME);
 
   // create grid map handle if not already available
   if (init_map && !DataManager::hasData<grid_map::GridMap>(output_data_name))
