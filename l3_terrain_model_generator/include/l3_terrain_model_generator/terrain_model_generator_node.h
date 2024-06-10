@@ -32,6 +32,7 @@
 
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
+#include <std_srvs/Empty.h>
 
 #include <l3_terrain_model_generator/terrain_model_generator.h>
 
@@ -45,12 +46,19 @@ public:
   void loadTestPointCloud(const std::string& path);
 
 protected:
+  void reset();
+
   void resetCb(const std_msgs::Empty::ConstPtr empty);
   void sysCommandCb(const std_msgs::String::ConstPtr command);
+
+  bool resetService(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
 
   // subscribers
   ros::Subscriber reset_terrain_model_sub_;
   ros::Subscriber sys_command_sub_;
+
+  // services
+  ros::ServiceServer reset_service_;
 
   TerrainModelGenerator terrain_model_generator_;
 };

@@ -10,6 +10,9 @@ TerrainModelGeneratorNode::TerrainModelGeneratorNode(ros::NodeHandle& nh)
   // subscribe topics
   reset_terrain_model_sub_ = nh.subscribe("reset", 1, &TerrainModelGeneratorNode::resetCb, this);
   sys_command_sub_ = nh.subscribe("/syscommand", 1, &TerrainModelGeneratorNode::sysCommandCb, this);
+
+  // advertise services
+  reset_service_ = nh.advertiseService("reset", &TerrainModelGeneratorNode::resetService, this);
 }
 
 void TerrainModelGeneratorNode::loadTestPointCloud(const std::string& path)
@@ -35,12 +38,27 @@ void TerrainModelGeneratorNode::loadTestPointCloud(const std::string& path)
   ROS_INFO("Done!");
 }
 
-void TerrainModelGeneratorNode::resetCb(const std_msgs::Empty::ConstPtr /*empty*/) { terrain_model_generator_.reset(); }
+void TerrainModelGeneratorNode::reset()
+{
+  ROS_INFO("[TerrainModelGeneratorNode] Reset called!");
+  terrain_model_generator_.reset();
+}
+
+void TerrainModelGeneratorNode::resetCb(const std_msgs::Empty::ConstPtr /*empty*/)
+{
+  reset();
+}
 
 void TerrainModelGeneratorNode::sysCommandCb(const std_msgs::String::ConstPtr command)
 {
   if (command->data == "reset")
-    terrain_model_generator_.reset();
+    reset();
+}
+
+bool TerrainModelGeneratorNode::resetService(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res)
+{
+  reset();
+  return true;
 }
 }  // namespace l3_terrain_modeling
 
