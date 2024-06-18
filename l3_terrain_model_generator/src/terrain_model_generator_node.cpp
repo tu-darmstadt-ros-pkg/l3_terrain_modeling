@@ -51,7 +51,7 @@ void TerrainModelGeneratorNode::resetCb(const std_msgs::Empty::ConstPtr /*empty*
 
 void TerrainModelGeneratorNode::sysCommandCb(const std_msgs::String::ConstPtr command)
 {
-  if (command->data == "reset")
+  if (command->data == "reset_mapping")
     reset();
 }
 
