@@ -7,6 +7,9 @@ namespace l3_terrain_modeling
 TerrainModelGeneratorNode::TerrainModelGeneratorNode(ros::NodeHandle& nh)
   : terrain_model_generator_(nh)
 {
+  // get params
+  nh.param("clear_mapping_command", clear_mapping_command_, std::string("reset"));
+
   // subscribe topics
   reset_terrain_model_sub_ = nh.subscribe("reset", 1, &TerrainModelGeneratorNode::resetCb, this);
   sys_command_sub_ = nh.subscribe("/syscommand", 1, &TerrainModelGeneratorNode::sysCommandCb, this);
@@ -51,7 +54,7 @@ void TerrainModelGeneratorNode::resetCb(const std_msgs::Empty::ConstPtr /*empty*
 
 void TerrainModelGeneratorNode::sysCommandCb(const std_msgs::String::ConstPtr command)
 {
-  if (command->data == "reset_mapping")
+  if (command->data == clear_mapping_command_)
     reset();
 }
 
