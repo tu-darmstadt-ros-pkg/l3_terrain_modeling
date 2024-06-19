@@ -61,5 +61,7 @@ protected:
   ros::ServiceServer reset_service_;
 
   TerrainModelGenerator terrain_model_generator_;
+
+  std::string clear_mapping_command_;
 };
 }  // namespace l3_terrain_modeling
