@@ -199,5 +199,7 @@ private:
   Timer timer_;
   uint64_t process_intervall_;            // in [msec]
   mutable uint64_t last_processed_time_;  // in [msec]
+
+  bool enable_timing_ = false;
 };
 }  // namespace l3_terrain_modeling

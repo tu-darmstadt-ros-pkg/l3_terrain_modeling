@@ -22,6 +22,8 @@ bool SensorPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
   double rate = param("rate", 0.0, true);
   process_intervall_ = rate > 0.0 ? static_cast<uint64_t>(1000.0 / rate) : 0llu;
 
+  enable_timing_ = param("enable_timing", false, true);
+
   // set initial sensor pose
   sensor_pose_.header.frame_id = getMapFrame();
   sensor_pose_.header.stamp = ros::Time::now();
@@ -80,5 +82,33 @@ void SensorPlugin::process(const Time& time, UpdatedHandles& updates)
 
   // call processes
   process_chain_->process(timer_, updates, this);
+
+  // print statistics
+  if (enable_timing_)
+  {
+    // print filter chain timing
+    if (filter_chain_->size() > 0)
+    {
+      double timing = 0.0;
+      std::string timing_string;
+      filter_chain_->call([&](ProcessorPlugin::Ptr process) { timing += process->getTotalTiming(); timing_string += process->getTimingString(); });
+      timing_string = "\n[" + getName() + "] Filter chain chain timing:\n" + timing_string
+                      + "------------------------------------------------\n"
+                      + "Total: " + std::to_string(timing * 1000.0) + " ms";
+      ROS_INFO("%s", timing_string.c_str());
+    }
+
+    // print process chain timing
+    if (process_chain_->size() > 0)
+    {
+      double timing = 0.0;
+      std::string timing_string;
+      process_chain_->call([&](ProcessorPlugin::Ptr process) { timing += process->getTotalTiming(); timing_string += process->getTimingString(); });
+      timing_string = "\n[" + getName() + "] Process chain timing:\n" + timing_string
+                      + "------------------------------------------------\n"
+                      + "Total: " + std::to_string(timing * 1000.0) + " ms";
+      ROS_INFO("%s", timing_string.c_str());
+    }
+  }
 }
 }  // namespace l3_terrain_modeling

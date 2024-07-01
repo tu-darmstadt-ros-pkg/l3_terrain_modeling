@@ -69,6 +69,28 @@ public:
   }
 
   /**
+   * @brief Returns the timing of the last process call in milliseconds.
+   * @return Timing in milliseconds
+   */
+  inline double getTiming() const
+  {
+    return enable_timing_ ? std::chrono::duration<double>(process_end_ - process_start_).count() : 0.0;
+  }
+
+  /**
+   * @brief Returns the total timing of this plugin and all its sub-plugins.
+   * @return Total timing in milliseconds
+   */
+  double getTotalTiming() const;
+
+  /**
+   * @brief Returns the timing string of this plugin and all its sub-plugins.
+   * @param level Indentation level
+   * @return Timing string
+   */
+  std::string getTimingString(unsigned int level = 0) const;
+
+  /**
    * @brief Triggers processing of this plugin. Afterward subsequent processes are called.
    * Processing is only performed when a pre-configured time is elapsed.
    * @param timer Timing data provided by the caller
@@ -144,5 +166,9 @@ private:
 
   uint64_t throttle_intervall_;           // in [msec]
   mutable uint64_t last_processed_time_;  // in [msec]
+
+  bool enable_timing_ = false;
+  std::chrono::high_resolution_clock::time_point process_start_;
+  std::chrono::high_resolution_clock::time_point process_end_;
 };
 }  // namespace l3_terrain_modeling
