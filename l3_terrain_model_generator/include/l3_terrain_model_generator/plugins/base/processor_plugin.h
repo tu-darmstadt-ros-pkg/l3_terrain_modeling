@@ -31,6 +31,7 @@
 #include <vigir_pluginlib/plugin.h>
 
 #include <l3_libs/types/types.h>
+#include <l3_libs/profiler.h>
 
 #include <l3_terrain_model_generator/typedefs.h>
 #include <l3_terrain_model_generator/plugins/base/sensor_plugin.h>
@@ -69,26 +70,22 @@ public:
   }
 
   /**
-   * @brief Returns the timing of the last process call in milliseconds.
-   * @return Timing in milliseconds
+   * @brief Returns the processing chain of this plugin.
+   * @return Processing chain
    */
-  inline double getTiming() const
+  inline l3::SharedPtr<const ProcessChain> getProcessChain() const
   {
-    return enable_timing_ ? std::chrono::duration<double>(process_end_ - process_start_).count() : 0.0;
+    return process_chain_;
   }
 
   /**
-   * @brief Returns the total timing of this plugin and all its sub-plugins.
-   * @return Total timing in milliseconds
+   * @brief Returns the processing chain of this plugin.
+   * @return Processing chain
    */
-  double getTotalTiming() const;
-
-  /**
-   * @brief Returns the timing string of this plugin and all its sub-plugins.
-   * @param level Indentation level
-   * @return Timing string
-   */
-  std::string getTimingString(unsigned int level = 0) const;
+  inline const l3::Profiler& getProfiler() const
+  {
+    return profiler_;
+  }
 
   /**
    * @brief Triggers processing of this plugin. Afterward subsequent processes are called.
@@ -168,7 +165,6 @@ private:
   mutable uint64_t last_processed_time_;  // in [msec]
 
   bool enable_timing_ = false;
-  std::chrono::high_resolution_clock::time_point process_start_;
-  std::chrono::high_resolution_clock::time_point process_end_;
+  l3::Profiler profiler_;
 };
 }  // namespace l3_terrain_modeling

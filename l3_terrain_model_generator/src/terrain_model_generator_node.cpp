@@ -47,12 +47,12 @@ void TerrainModelGeneratorNode::reset()
   terrain_model_generator_.reset();
 }
 
-void TerrainModelGeneratorNode::resetCb(const std_msgs::Empty::ConstPtr /*empty*/)
+void TerrainModelGeneratorNode::resetCb(std_msgs::Empty::ConstPtr /*empty*/)
 {
   reset();
 }
 
-void TerrainModelGeneratorNode::sysCommandCb(const std_msgs::String::ConstPtr command)
+void TerrainModelGeneratorNode::sysCommandCb(std_msgs::String::ConstPtr command)
 {
   if (command->data == clear_mapping_command_)
     reset();

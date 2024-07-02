@@ -2,6 +2,7 @@
 
 #include <l3_libs/conversions/l3_msg_std_conversions.h>
 
+#include <l3_terrain_model_generator/utils/helper.h>
 #include <l3_terrain_model_generator/utils/utils.h>
 #include <l3_terrain_model_generator/plugins/aggregator/process_chain.h>
 
@@ -88,27 +89,11 @@ void SensorPlugin::process(const Time& time, UpdatedHandles& updates)
   {
     // print filter chain timing
     if (filter_chain_->size() > 0)
-    {
-      double timing = 0.0;
-      std::string timing_string;
-      filter_chain_->call([&](ProcessorPlugin::Ptr process) { timing += process->getTotalTiming(); timing_string += process->getTimingString(); });
-      timing_string = "\n[" + getName() + "] Filter chain chain timing:\n" + timing_string
-                      + "------------------------------------------------\n"
-                      + "Total: " + std::to_string(timing * 1000.0) + " ms";
-      ROS_INFO("%s", timing_string.c_str());
-    }
+      ROS_INFO("%s", getTotalTimingString(this->getName(), filter_chain_).c_str());
 
     // print process chain timing
     if (process_chain_->size() > 0)
-    {
-      double timing = 0.0;
-      std::string timing_string;
-      process_chain_->call([&](ProcessorPlugin::Ptr process) { timing += process->getTotalTiming(); timing_string += process->getTimingString(); });
-      timing_string = "\n[" + getName() + "] Process chain timing:\n" + timing_string
-                      + "------------------------------------------------\n"
-                      + "Total: " + std::to_string(timing * 1000.0) + " ms";
-      ROS_INFO("%s", timing_string.c_str());
-    }
+      ROS_INFO("%s", getTotalTimingString(this->getName(), process_chain_).c_str());
   }
 }
 }  // namespace l3_terrain_modeling
