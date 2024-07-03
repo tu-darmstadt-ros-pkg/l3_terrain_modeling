@@ -139,10 +139,19 @@ struct Timer
 
 struct GridCell
 {
+  using Ptr = l3::SharedPtr<GridCell>;
+  using ConstPtr = l3::SharedPtr<const GridCell>;
+
   GridCell()
     : position(0.0, 0.0, 0.0)
     , i_value(0)
     , f_value(0.0f)
+  {}
+
+  GridCell(double x, double y, double z, int i_value, float f_value)
+    : position(x, y, z)
+    , i_value(i_value)
+    , f_value(f_value)
   {}
 
   GridCell(const l3::Vector3& position, int value)
@@ -164,9 +173,12 @@ struct GridCell
 
 L3_STATIC_ASSERT_MOVEABLE(GridCell)
 
+using GridCellList = std::vector<GridCell::Ptr>;
+using GridCellConstList = std::vector<GridCell::ConstPtr>;
+
 struct GridCellUpdates
 {
   std_msgs::Header header;
-  std::vector<GridCell> cells;
+  GridCellConstList cells;
 };
 }  // namespace l3_terrain_modeling

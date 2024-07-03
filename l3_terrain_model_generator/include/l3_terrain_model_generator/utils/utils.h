@@ -58,6 +58,23 @@ void getBoundary(const Container<Type, std::allocator<Type>>& container, l3::Vec
   }
 }
 
+template <template<class, class> class Container, class Type>
+void getBoundaryPtr(const Container<Type, std::allocator<Type>>& container, l3::Vector3& min, l3::Vector3& max)
+{
+  min.x() = min.y() = min.z() = std::numeric_limits<double>::max();
+  max.x() = max.y() = max.z() = -std::numeric_limits<double>::max();
+
+  for (Type vec : container)
+  {
+    min.x() = std::min(min.x(), vec->x());
+    min.y() = std::min(min.y(), vec->y());
+    min.z() = std::min(min.z(), vec->z());
+    max.x() = std::max(max.x(), vec->x());
+    max.y() = std::max(max.y(), vec->y());
+    max.z() = std::max(max.z(), vec->z());
+  }
+}
+
 void resize(grid_map::GridMap& grid_map, const l3::Vector3& min, const l3::Vector3& max);
 
 template <typename T>
