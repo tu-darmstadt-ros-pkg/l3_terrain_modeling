@@ -19,8 +19,7 @@ bool PeriodicProcess::initialize(const vigir_generic_params::ParameterSet& param
 
 void PeriodicProcess::timerCb(const ros::TimerEvent& event)
 {
-  UpdatedHandles handles;
-  process(Timer(event), handles);
+  process(l3::makeShared<ProcessingInfo>(Timer(event), l3::makeShared<UpdatedHandles>()));
 }
 }  // namespace l3_terrain_modeling
 

@@ -47,8 +47,8 @@ namespace l3_terrain_modeling
  * @param map_frame (default: "map") Frame in which the data should be represented
  * @param auto_update_sensor_pose (default: true) Tries to update sensor pose based on tf
  * @param rate (default: 0.0) Maximum rate at which the input data should be processed, 0.0 for no limit
- * @param input_data_name (default: "cloud") Data name as found in the DataManager
- * @param point_type Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
+ * @param output_data_name (default: "cloud") Data name as found in the DataManager
+ * @param point_type (default: "PointXYZ") Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
  */
 class PointCloudSensorPlugin : public SensorPlugin
 {
@@ -105,8 +105,7 @@ protected:
     lock.reset();
 
     // call default pipeline
-    UpdatedHandles updates = { cloud_pcl_handle_->handle() };
-    SensorPlugin::process(time, updates);
+    SensorPlugin::process(time, l3::makeShared<UpdatedHandles>(std::initializer_list<DataHandle::ConstPtr>{ cloud_pcl_handle_->handle() }));
   }
 
   PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;

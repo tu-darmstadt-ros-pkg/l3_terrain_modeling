@@ -61,7 +61,14 @@ using GridMapConstPtr = l3::SharedPtr<const grid_map::GridMap>;
 class UpdatedHandles
 {
 public:
+  // typedefs
+  typedef l3::SharedPtr<UpdatedHandles> Ptr;
+  typedef l3::SharedPtr<const UpdatedHandles> ConstPtr;
+
   UpdatedHandles() = default;
+  UpdatedHandles(const UpdatedHandles& other)
+    : handles_(other.handles_)
+  {}
   UpdatedHandles(std::initializer_list<DataHandle::ConstPtr> list)
     : handles_(list)
   {}

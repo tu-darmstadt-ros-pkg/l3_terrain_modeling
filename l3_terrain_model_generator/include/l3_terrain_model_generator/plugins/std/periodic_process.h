@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 
 #include <l3_terrain_model_generator/plugins/base/processor_plugin.h>
+#include <l3_terrain_model_generator/plugins/aggregator/process_chain.h>
 
 namespace l3_terrain_modeling
 {
