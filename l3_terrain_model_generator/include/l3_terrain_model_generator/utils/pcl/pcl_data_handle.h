@@ -37,7 +37,7 @@
 
 // check PCL version
 #if PCL_VERSION_COMPARE(>=, 1, 10, 0)
-#define POINTXYZI_SUPPORT
+#define PCL_1_10_SUPPORT
 #endif
 
 namespace l3_terrain_modeling
@@ -46,9 +46,8 @@ enum PointType
 {
   Invalid = -1,
   PointXYZ,
-#ifdef POINTXYZI_SUPPORT
   PointXYZI,
-#endif
+  PointXYZL,
   PointXYZRGB,
   PointNormal
 };
@@ -251,8 +250,44 @@ public:
    * @brief Lambda function caller to generically call a specific member function
    * of the internally stored pcl-based object without manually deducing the internal
    * point type.
+   * Example: handle.dispatch([](auto type_trait) { boost::make_shared<pcl::PointCloud<decltype(type_trait)>>(); })
+   * @param fun Functor to call
+   */
+  template <class Function>
+  void dispatch(Function fun) const
+  {
+    if (handle_)
+    {
+      switch (pointType())
+      {
+        case PointType::PointXYZ:
+          fun(pcl::PointXYZ());
+          break;
+        case PointType::PointXYZI:
+          fun(pcl::PointXYZI());
+          break;
+        case PointType::PointXYZL:
+          fun(pcl::PointXYZL());
+          break;
+        case PointType::PointXYZRGB:
+          fun(pcl::PointXYZRGB());
+          break;
+        case PointType::PointNormal:
+          fun(pcl::PointNormal());
+          break;
+        default:
+          ROS_WARN("Invalid dispatching attempt of data \"%s\" (\"%s\")!", name().c_str(), type().c_str());
+          break;
+      }
+    }
+  }
+
+  /**
+   * @brief Lambda function caller to generically call a specific member function
+   * of the internally stored pcl-based object without manually deducing the internal
+   * point type.
    * Calling is thread-safe due to auto-locking of the data's mutex based on given lock type.
-   * Example: handle.call<l3::SharedLock>([](auto& pcl, auto type_trait) { pcl->trigger(); })
+   * Example: handle.dispatch<l3::SharedLock>([](auto& pcl, auto type_trait) { pcl->trigger(); })
    * @param Lock Lock type to use, can be either l3::SharedLock or l3::UniqueLock
    * @param fun Functor to call
    */
@@ -267,11 +302,12 @@ public:
         case PointType::PointXYZ:
           fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZ>>>(lock), pcl::PointXYZ());
           break;
-#ifdef POINTXYZI_SUPPORT
         case PointType::PointXYZI:
           fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZI>>>(lock), pcl::PointXYZI());
           break;
-#endif
+        case PointType::PointXYZL:
+          fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZL>>>(lock), pcl::PointXYZL());
+          break;
         case PointType::PointXYZRGB:
           fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZRGB>>>(lock), pcl::PointXYZRGB());
           break;
@@ -300,10 +336,10 @@ protected:
     {
       case PointType::PointXYZ:
         return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZ>>(boost::forward<Args>(args)...));
-#ifdef POINTXYZI_SUPPORT
       case PointType::PointXYZI:
         return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZI>>(boost::forward<Args>(args)...));
-#endif
+      case PointType::PointXYZL:
+        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZL>>(boost::forward<Args>(args)...));
       case PointType::PointXYZRGB:
         return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZRGB>>(boost::forward<Args>(args)...));
       case PointType::PointNormal:
@@ -323,10 +359,10 @@ protected:
   {
     if (handle->isType<typename PclType<pcl::PointXYZ>::Ptr>())
       return PointType::PointXYZ;
-#ifdef POINTXYZI_SUPPORT
     else if (handle->isType<typename PclType<pcl::PointXYZI>::Ptr>())
       return PointType::PointXYZI;
-#endif
+    else if (handle->isType<typename PclType<pcl::PointXYZL>::Ptr>())
+      return PointType::PointXYZL;
     else if (handle->isType<typename PclType<pcl::PointXYZRGB>::Ptr>())
       return PointType::PointXYZRGB;
     else if (handle->isType<typename PclType<pcl::PointNormal>::Ptr>())
