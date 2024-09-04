@@ -231,7 +231,7 @@ bool PclGridMapGeneratorPlugin::postInitialize(const vigir_generic_params::Param
   if (!GridMapGeneratorPlugin::postInitialize(params))
     return false;
 
-  GET_INPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
+  GET_INPUT_PCL_HANDLE("data", "cloud", "PointXYZ", cloud_pcl_handle_);
 
   input_handle_ = cloud_pcl_handle_->handle();
 

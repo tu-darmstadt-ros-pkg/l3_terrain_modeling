@@ -184,6 +184,7 @@ typename pcl::PointCloud<PointT>::Ptr filterMlsSmooth(typename pcl::PointCloud<P
   if (cloud->isOrganized())
     ROS_WARN_ONCE("[filterMlsSmooth] Cloud is not orgranized after smoothing. This warning is printed only once.");
 
+#ifdef PCL_1_10_SUPPORT
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
   typename pcl::search::KdTree<PointT>::Ptr tree(new pcl::search::KdTree<PointT>());
   pcl::MovingLeastSquares<PointT, PointT> mls;
@@ -204,6 +205,10 @@ typename pcl::PointCloud<PointT>::Ptr filterMlsSmooth(typename pcl::PointCloud<P
   mls.process(*cloud_filtered);
 
   return cloud_filtered;
+#else
+  ROS_ERROR("[filterMlsSmooth] PointXYZI is not supported!");
+  return boost::make_shared<typename pcl::PointCloud<PointT>>();
+#endif
 }
 
 template <typename PointT>

@@ -62,7 +62,7 @@
   GET_INPUT_HANDLE(Type, "data", DefaultHandleName, Handle)
 
 /**
- * @brief Helper macros to get handle to existing pointcloud data.
+ * @brief Helper macros to get (new) handle to pointcloud data.
  * The pointcloud type is set and cannot be overriden by the parameter set.
  * @param ParamKey Parameter key to look up for alternative handle name in the parameter set (located in "data/in/<ParamKey>")
  * @param DefaultHandleName Default handle name
@@ -76,14 +76,14 @@
     (Handle) = PclDataHandle<pcl::PointCloud>::makeHandle(this, input_data_name, PointType);                           \
     if (!(Handle))                                                                                                     \
     {                                                                                                                  \
-      ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data!", getName().c_str(),                     \
-                input_data_name.c_str());                                                                              \
+      ROS_ERROR("[%s] Data handle \"%s\" seems not to contain valid pcl data! Expected type: %s.", getName().c_str(),  \
+                input_data_name.c_str(), std::string(PointType).c_str());                                              \
       return false;                                                                                                    \
     }                                                                                                                  \
   }
 
 /**
- * @brief Helper macros to get handle to existing pointcloud data.
+ * @brief Helper macros to get (new) handle to pointcloud data.
  * The pointcloud type is set and cannot be overriden by the parameter set. Assumes that the parameter key is "data".
  * @param DefaultHandleName Default handle name
  * @param PointType Defines pointcloud type (e.g. PointXYZ)
@@ -93,7 +93,7 @@
   GET_INPUT_TYPED_PCL_HANDLE("data", DefaultHandleName, PointType, Handle)
 
 /**
- * @brief Helper macros to get handle to existing data.
+ * @brief Helper macros to get (new) handle to pointcloud data.
  * @param ParamKey Parameter key to look up for alternative handle name in the parameter set (located in "data/in/<ParamKey>")
  * @param DefaultHandleName Default handle name
  * @param DefaultPointType Defines pointcloud type (e.g. PointXYZ). This can be overriden by the parameter located in "data/in/<ParamKey>_point_type"
@@ -107,7 +107,8 @@
   }
 
 /**
- * @brief Helper macros to get handle to existing data. Assumes that the parameter key is "data" and the default point type is "PointXYZ".
+ * @brief Helper macros to get (new) handle to pointcloud data. Assumes that the
+ * parameter key is "data" and the default point type is "PointXYZ".
  * @param DefaultHandleName Default handle name
  * @param Handle [Out] handle
  */
@@ -134,7 +135,7 @@
   }
 
 /**
- * @brief Helper macros to get handle to existing data. Assumes that the parameter key is "data".
+ * @brief Helper macros to get (new) handle to data. Assumes that the parameter key is "data".
  * @param Type Data type accessed by the handle
  * @param DefaultHandleName Default handle name
  * @param Handle [Out] handle
@@ -143,6 +144,14 @@
   GET_OUTPUT_HANDLE(Data, "data", DefaultHandleName, Handle)
 
 /* Helper macros to create new pcl handle. */
+
+/**
+ * @brief Helper macros to get (new) handle to pointcloud data.
+ * @param ParamKey Parameter key to look up for alternative handle name in the parameter set (located in "data/out/<ParamKey>")
+ * @param DefaultHandleName Default handle name
+ * @param PointType Defines pointcloud type (e.g. PointXYZ)
+ * @param Handle [Out] handle
+ */
 #define GET_OUTPUT_TYPED_PCL_HANDLE(ParamKey, DefaultHandleName, PointType, Handle)                                    \
   {                                                                                                                    \
     const std::string& output_data_name =                                                                              \
@@ -151,15 +160,27 @@
     if (!(Handle))                                                                                                     \
     {                                                                                                                  \
       ROS_ERROR("[%s] Cannot create pcl handle. Unsupported point type: \"%s\"", getName().c_str(),                    \
-                l3::getTypeName(PointType).c_str());                                                                   \
+                std::string(PointType).c_str());                                                                       \
       return false;                                                                                                    \
     }                                                                                                                  \
   }
 
+/**
+ * @brief Helper macros to get (new) handle to pointcloud data. Assumes that the parameter key is "data".
+ * @param DefaultHandleName Default handle name
+ * @param PointType Defines pointcloud type (e.g. PointXYZ)
+ * @param Handle [Out] handle
+ */
 #define GET_OUTPUT_TYPED_PCL_HANDLE_DEFAULT(DefaultHandleName, PointType, Handle)                                      \
   GET_OUTPUT_TYPED_PCL_HANDLE("data", DefaultHandleName, PointType, Handle)
 
-/* Helper macros to create new pcl handle. */
+/**
+ * @brief Helper macros to get (new) handle to pointcloud data.
+ * @param ParamKey Parameter key to look up for alternative handle name in the parameter set (located in "data/out/<ParamKey>")
+ * @param DefaultHandleName Default handle name
+ * @param DefaultPointType Defines pointcloud type (e.g. PointXYZ). This can beoverriden by the parameter located in "data/out/<ParamKey>_point_type"
+ * @param Handle [Out] handle
+ */
 #define GET_OUTPUT_PCL_HANDLE(ParamKey, DefaultHandleName, DefaultPointType, Handle)                                   \
   {                                                                                                                    \
     const std::string& point_type = l3_terrain_modeling::getOutputDataParam(                                           \
@@ -167,5 +188,11 @@
     GET_OUTPUT_TYPED_PCL_HANDLE(ParamKey, DefaultHandleName, point_type, Handle)                                       \
   }
 
+/**
+ * @brief Helper macros to get (new) handle to pointcloud data. Assumes that the
+ * parameter key is "data" and the default point type is "PointXYZ".
+ * @param DefaultHandleName Default handle name
+ * @param Handle [Out] handle
+ */
 #define GET_OUTPUT_PCL_HANDLE_DEFAULT(DefaultHandleName, Handle)                                                       \
   GET_OUTPUT_TYPED_PCL_HANDLE_DEFAULT(DefaultHandleName, "PointXYZ", Handle)

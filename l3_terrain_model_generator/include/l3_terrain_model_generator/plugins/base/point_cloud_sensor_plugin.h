@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 
 #include <pcl_ros/transforms.h>
+#include <pcl_ros/impl/transforms.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 
 #include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
@@ -47,8 +48,8 @@ namespace l3_terrain_modeling
  * @param map_frame (default: "map") Frame in which the data should be represented
  * @param auto_update_sensor_pose (default: true) Tries to update sensor pose based on tf
  * @param rate (default: 0.0) Maximum rate at which the input data should be processed, 0.0 for no limit
- * @param output_data_name (default: "cloud") Data name as found in the DataManager
- * @param point_type (default: "PointXYZ") Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
+ * @param data/out/data (default: "cloud") Data name as found in the DataManager
+ * @param data/out/data_point_type (default: "PointXYZ") Point type the sensor should process. Possible values: "PointXYZ", "PointXYZRGB"
  */
 class PointCloudSensorPlugin : public SensorPlugin
 {

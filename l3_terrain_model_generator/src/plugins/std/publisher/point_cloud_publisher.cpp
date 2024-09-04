@@ -34,7 +34,7 @@ bool PointCloudPublisher::postInitialize(const vigir_generic_params::ParameterSe
   if (!PublisherPlugin::postInitialize(params))
     return false;
 
-  GET_INPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
+  GET_INPUT_PCL_HANDLE("data", "cloud", "PointXYZ", cloud_pcl_handle_);
 
   return true;
 }

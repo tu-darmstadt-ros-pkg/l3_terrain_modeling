@@ -6,10 +6,10 @@ PointType dispatchPointType(const std::string& point_type)
 {
   if (point_type == "PointXYZ")
     return PointType::PointXYZ;
-#ifdef POINTXYZI_SUPPORT
   else if (point_type == "PointXYZI")
     return PointType::PointXYZI;
-#endif
+  else if (point_type == "PointXYZL")
+    return PointType::PointXYZL;
   else if (point_type == "PointXYZRGB")
     return PointType::PointXYZRGB;
   else if (point_type == "PointNormal")
@@ -24,10 +24,10 @@ std::string toString(const PointType& point_type)
   {
     case PointType::PointXYZ:
       return "PointXYZ";
-#ifdef POINTXYZI_SUPPORT
     case PointType::PointXYZI:
       return "PointXYZI";
-#endif
+    case PointType::PointXYZL:
+      return "PointXYZL";
     case PointType::PointXYZRGB:
       return "PointXYZRGB";
     case PointType::PointNormal:

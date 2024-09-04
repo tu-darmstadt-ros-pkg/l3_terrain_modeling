@@ -12,12 +12,12 @@ bool GenericRGBDSensor::initialize(const vigir_generic_params::ParameterSet& par
     return false;
 
   std::string topic = param("topic", std::string("cloud"), true);
-  pointcloud_sub_ = nh_.subscribe(topic, 1, &GenericRGBDSensor::pointcloudCb, this);
+  pointcloud_sub_ = nh_.subscribe(topic, 1, &GenericRGBDSensor::pointCloudCb, this);
 
   return true;
 }
 
-void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2& msg)
+void GenericRGBDSensor::pointCloudCb(const sensor_msgs::PointCloud2& msg)
 {
   // consider processing rate
   if (!canProcess(Timer::timeFromRos(msg.header.stamp)))
@@ -29,32 +29,17 @@ void GenericRGBDSensor::pointcloudCb(const sensor_msgs::PointCloud2& msg)
   if (msg.height == 1)
     ROS_WARN_ONCE("[%s] Received unorganized data. This warning is printed only once.", getName().c_str());
 
-  // extract xyzrbg pointcloud if possible
-  for (const sensor_msgs::PointField& field : msg.fields)
+  if (cloud_pcl_handle_)
   {
-    if (field.name == "rgb" || field.name == "rgba")
+    cloud_pcl_handle_->dispatch([&](auto type_trait)
     {
-      if (cloud_pcl_handle_->isPointType<pcl::PointXYZRGB>())
-      {
-        pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZRGB>>();
-        pcl::fromROSMsg(msg, *cloud);
-        process<pcl::PointXYZRGB>(cloud);
-        return;
-      }
-      else
-        ROS_WARN_ONCE("[%s] Received colored pointcloud but sensor plugin is not configured to handle rgb data. This warning is printed only once.", getName().c_str());
-    }
-  }
-
-  // otherwise extract xyz pointcloud
-  if (cloud_pcl_handle_->isPointType<pcl::PointXYZ>())
-  {
-    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
-    pcl::fromROSMsg(msg, *cloud);
-    process<pcl::PointXYZ>(cloud);
+      typename pcl::PointCloud<decltype(type_trait)>::Ptr cloud = boost::make_shared<pcl::PointCloud<decltype(type_trait)>>();
+      pcl::fromROSMsg(msg, *cloud);
+      process<decltype(type_trait)>(cloud);
+    });
   }
   else
-    ROS_ERROR("[%s] Received non-colored pointcloud but sensor plugin is configured to handle colored pointclouds!", getName().c_str());
+    ROS_ERROR("[%s] Cloud handle is not set!", getName().c_str());
 }
 }  // namespace l3_terrain_modeling
 

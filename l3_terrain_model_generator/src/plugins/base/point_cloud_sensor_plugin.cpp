@@ -11,7 +11,7 @@ bool PointCloudSensorPlugin::initialize(const vigir_generic_params::ParameterSet
   if (!SensorPlugin::initialize(params))
     return false;
 
-  GET_OUTPUT_PCL_HANDLE_DEFAULT("cloud", cloud_pcl_handle_);
+  GET_OUTPUT_PCL_HANDLE("data", "cloud", "PointXYZ", cloud_pcl_handle_);
 
   return true;
 }
