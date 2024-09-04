@@ -180,12 +180,14 @@ struct GridCell
 
 L3_STATIC_ASSERT_MOVEABLE(GridCell)
 
-using GridCellList = std::vector<GridCell::Ptr>;
-using GridCellConstList = std::vector<GridCell::ConstPtr>;
+using GridCellList = std::vector<GridCell>;
+using GridCellConstList = std::vector<const GridCell>;
+using GridCellPtrList = std::vector<GridCell::Ptr>;
+using GridCellPtrConstList = std::vector<GridCell::ConstPtr>;
 
 struct GridCellUpdates
 {
   std_msgs::Header header;
-  GridCellConstList cells;
+  GridCellList cells;
 };
 }  // namespace l3_terrain_modeling
