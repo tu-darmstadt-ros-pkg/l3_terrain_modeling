@@ -42,7 +42,7 @@ void GroundLevelMapGenerator::reset()
   GeneratorPlugin::reset();
 
   l3::UniqueLockPtr grid_map_lock;
-  grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
+//  grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(grid_map_lock);
 //  grid_map.clear(NORMAL_LAYER_PREFIX + "x");
 //  grid_map.clear(NORMAL_LAYER_PREFIX + "y");
 //  grid_map.clear(NORMAL_LAYER_PREFIX + "z");
@@ -75,11 +75,11 @@ void GroundLevelMapGenerator::generateGroundLevelMap()
   }
 
   // determine min and max coordinatesss
-  double min_x, max_x;
-  double min_y, max_y;
+  // double min_x, max_x;
+  // double min_y, max_y;
 
-  min_x = min_y = std::numeric_limits<double>::max();
-  max_x = max_y = std::numeric_limits<double>::min();
+  // min_x = min_y = std::numeric_limits<double>::max();
+  // max_x = max_y = std::numeric_limits<double>::min();
 
   // add data from gradients point cloud
   if (!cloud_gradients->empty())
@@ -87,7 +87,7 @@ void GroundLevelMapGenerator::generateGroundLevelMap()
     ROS_INFO("...adding gradients");
     for (size_t i = 0; i < cloud_gradients->size(); i++)
     {
-      const pcl::PointXYZI& p = cloud_gradients->at(i);
+      // const pcl::PointXYZI& p = cloud_gradients->at(i);
 
       //      if (ignore_near)
       //      {
@@ -95,7 +95,7 @@ void GroundLevelMapGenerator::generateGroundLevelMap()
       //          continue;
       //      }
 
-      int idx = 0;
+      // int idx = 0;
       //      if (GridMap::getGridMapIndex(*grid_map_, p.x, p.y, idx))
       //        grid_map_->data.at(idx) = std::max(grid_map_->data.at(idx), (int8_t)floor((1.0 - p.intensity) * 100));
     }

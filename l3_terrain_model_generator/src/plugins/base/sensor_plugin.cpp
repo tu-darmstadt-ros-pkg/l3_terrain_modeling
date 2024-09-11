@@ -23,6 +23,8 @@ bool SensorPlugin::loadParams(const vigir_generic_params::ParameterSet& params)
   double rate = param("rate", 0.0, true);
   process_intervall_ = rate > 0.0 ? static_cast<uint64_t>(1000.0 / rate) : 0llu;
 
+  wait_for_all_ = param("wait_for_all", true, true);
+
   enable_timing_ = param("enable_timing", false, true);
 
   // set initial sensor pose
@@ -62,7 +64,7 @@ void SensorPlugin::updateSensorPose(const Time& time)
   getTransformAsPose(tf_buffer_, getMapFrame(), sensor_frame_id_, ros_time, sensor_pose_);
 }
 
-void SensorPlugin::process(const Time& time, UpdatedHandles& updates)
+void SensorPlugin::process(const Time& time, UpdatedHandles::Ptr updates)
 {
   // consider processing rate
   if (canProcess(time))
@@ -78,11 +80,13 @@ void SensorPlugin::process(const Time& time, UpdatedHandles& updates)
   if (canAutoUpdateSensorPose())
     updateSensorPose(time);
 
+  ProcessingInfo::Ptr info = l3::makeShared<ProcessingInfo>(timer_, updates, nullptr, this);
+
   // apply filter
-  filter_chain_->process(timer_, updates, this);
+  filter_chain_->process(info);
 
   // call processes
-  process_chain_->process(timer_, updates, this);
+  process_chain_->process(info, wait_for_all_);
 
   // print statistics
   if (enable_timing_)

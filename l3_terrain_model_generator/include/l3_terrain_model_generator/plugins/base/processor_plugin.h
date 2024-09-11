@@ -28,6 +28,8 @@
 
 #pragma once
 
+#include <boost/thread.hpp>
+
 #include <vigir_pluginlib/plugin.h>
 
 #include <l3_libs/types/types.h>
@@ -41,6 +43,7 @@
 namespace l3_terrain_modeling
 {
 // forward declaration
+class ProcessingInfo;
 class ProcessChain;
 
 class ProcessorPlugin : public vigir_pluginlib::Plugin
@@ -52,7 +55,7 @@ public:
 
   ProcessorPlugin(const std::string& name);
 
-  virtual ~ProcessorPlugin() = default;
+  virtual ~ProcessorPlugin();
 
   virtual void reset()
   {
@@ -67,6 +70,11 @@ public:
   bool isUnique() const final
   {
     return false;
+  }
+
+  bool isAsync() const
+  {
+    return run_async_;
   }
 
   /**
@@ -90,13 +98,18 @@ public:
   /**
    * @brief Triggers processing of this plugin. Afterward subsequent processes are called.
    * Processing is only performed when a pre-configured time is elapsed.
-   * @param timer Timing data provided by the caller
-   * @param updates Pointers of data handles whose data have been updated
-   * @param sensor Sensor on which the data is based (may be nullptr)
+   * @param data Data to be processed
+   * @param caller_chain Chain that called this process; can be nullptr
    */
-  void process(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor = nullptr);
+  void process(l3::SharedPtr<ProcessingInfo> info, ProcessChain* caller_chain = nullptr);
 
 protected:
+  /**
+   * @brief Triggers processing of this plugin asynchronously. Afterward subsequent processes are called
+   * in a separate thread.
+   */
+  void processAsync();
+
   /**
    * @brief Method stub for concrete implementation of this process plugin.
    * This method is automatically called by process(...).
@@ -159,12 +172,27 @@ protected:
   mutable l3::Mutex mutex_;
 
 private:
+  void runProcessChain();
+
   l3::SharedPtr<ProcessChain> process_chain_;
 
   uint64_t throttle_intervall_;           // in [msec]
   mutable uint64_t last_processed_time_;  // in [msec]
 
-  bool enable_timing_ = false;
+  // variables for async processing
+  bool wait_for_all_; // wait for all processes called by this plugin to finish
+  bool run_async_;
+  std::atomic<bool> exit_;
+
+  mutable boost::mutex run_mutex_;       // mutex to block out calls to processAsync if another call is still running
+  boost::condition_variable run_cv_;
+
+  boost::thread worker_thread_;
+  bool is_running_;
+  l3::SharedPtr<ProcessingInfo> run_info_;
+
+  // variables for timing
+  bool enable_timing_;
   l3::Profiler profiler_;
 };
 }  // namespace l3_terrain_modeling

@@ -121,13 +121,13 @@ protected:
   }
 
   /**
-   * @brief Main processing callback that must be called by concerete sensor implementation
+   * @brief Main processing callback that must be called by concrete sensor implementation
    * to trigger processing of new data.
    * Calls also updateSensorPose(...).
    * @param time Current time [msec]
    * @param updates Pointers of data handles whose data have been updated
    */
-  void process(const Time& time, UpdatedHandles& updates);
+  void process(const Time& time, UpdatedHandles::Ptr updates);
 
   /**
    * @brief Returns state if auto sensor update should be used
@@ -200,6 +200,9 @@ private:
   uint64_t process_intervall_;            // in [msec]
   mutable uint64_t last_processed_time_;  // in [msec]
 
-  bool enable_timing_ = false;
+  // variables for multi-threading
+  bool wait_for_all_;
+
+  bool enable_timing_;
 };
 }  // namespace l3_terrain_modeling

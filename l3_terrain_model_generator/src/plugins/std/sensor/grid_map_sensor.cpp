@@ -51,8 +51,8 @@ void GridMapSensor::gridMapCb(const grid_map_msgs::GridMap& msg)
       [&](auto& cloud, auto type_trait) { pcl::fromROSMsg(point_cloud_msg, *cloud); });
 
   // call default processing pipeline
-  UpdatedHandles updates = { cloud_pcl_handle_->handle() };
-  SensorPlugin::process(Timer::timeFromRos(point_cloud_msg.header.stamp), updates);
+  SensorPlugin::process(Timer::timeFromRos(point_cloud_msg.header.stamp),
+                        l3::makeShared<UpdatedHandles>(std::initializer_list<DataHandle::ConstPtr>{ cloud_pcl_handle_->handle() }));
 }
 }  // namespace l3_terrain_modeling
 

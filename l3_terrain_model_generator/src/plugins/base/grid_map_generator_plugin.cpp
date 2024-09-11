@@ -218,7 +218,7 @@ std_msgs::Header GridCellGridMapGeneratorPlugin::getDataHeader()
 void GridCellGridMapGeneratorPlugin::getDataBoundary(l3::Vector3& min, l3::Vector3& max)
 {
   l3::SharedLockPtr lock;
-  getBoundaryPtr(input_handle_->value<GridCellUpdates>(lock).cells, min, max);
+  getBoundary(input_handle_->value<GridCellUpdates>(lock).cells, min, max);
 }
 
 
