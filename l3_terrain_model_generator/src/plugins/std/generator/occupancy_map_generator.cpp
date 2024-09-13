@@ -77,6 +77,8 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
   grid_map::GridMapRosConverter::toOccupancyGrid(grid_map, layer_, ref_height + min_height_,
                                                  ref_height + max_height_, occupancy_map);
 
+  occupancy_map.info.origin.position.z = ref_height;
+
   // generate binary occupancy grid
   if (binarize_)
   {
