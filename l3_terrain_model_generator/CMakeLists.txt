@@ -107,6 +107,7 @@ set(HEADERS
   include/${PROJECT_NAME}/utils/data_manager.h
   include/${PROJECT_NAME}/utils/helper.h
   include/${PROJECT_NAME}/utils/macros.h
+  include/${PROJECT_NAME}/utils/math.h
   include/${PROJECT_NAME}/utils/utils.h
   include/${PROJECT_NAME}/point_cloud_portioner_node.h
   include/${PROJECT_NAME}/terrain_model_generator_node.h
@@ -159,6 +160,7 @@ set(SOURCES
   src/utils/data_handle.cpp
   src/utils/data_manager.cpp
   src/utils/helper.cpp
+  src/utils/math.cpp
   src/utils/utils.cpp
   src/terrain_model_generator.cpp
 )
