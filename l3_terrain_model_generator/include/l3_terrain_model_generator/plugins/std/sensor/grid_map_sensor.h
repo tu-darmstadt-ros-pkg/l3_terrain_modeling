@@ -65,9 +65,14 @@ public:
 private:
   void gridMapCb(const grid_map_msgs::GridMap& msg);
 
+  DataHandle::Ptr grid_map_handle_;
+  DataHandle::Ptr grid_cell_updates_handle_;
   PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
 
   std::string layer_;
+
+  bool provide_grid_cell_updates_;
+  bool provide_cloud_;
 
   ros::Subscriber grid_map_sub_;
 };
