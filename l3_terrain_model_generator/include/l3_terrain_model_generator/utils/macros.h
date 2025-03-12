@@ -117,7 +117,7 @@
 
 /**
  * @brief Helper macros to get handle to existing data.
- * @param Type Data type accessed by the handle
+ * @param Data Default Data to initialize the handle if not found
  * @param ParamKey Parameter key to look up for alternative handle name in the parameter set (located in "data/out/<ParamKey>")
  * @param DefaultHandleName Default handle name
  * @param Handle [Out] handle
@@ -136,7 +136,7 @@
 
 /**
  * @brief Helper macros to get (new) handle to data. Assumes that the parameter key is "data".
- * @param Type Data type accessed by the handle
+ * @param Data Default Data to initialize the handle if not found
  * @param DefaultHandleName Default handle name
  * @param Handle [Out] handle
  */
