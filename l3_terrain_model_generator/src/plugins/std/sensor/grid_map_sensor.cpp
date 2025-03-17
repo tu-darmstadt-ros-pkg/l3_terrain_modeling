@@ -78,11 +78,7 @@ void GridMapSensor::gridMapCb(const grid_map_msgs::GridMap& msg)
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);
   grid_map::GridMapRosConverter::fromMessage(msg, grid_map, { input_layer_ });
   if (input_layer_ != output_layer_)
-  {
-    if (grid_map.exists(output_layer_))
-      ROS_WARN_THROTTLE(1.0, "[%s] Output layer \"%s\" already exists in grid map!", getName().c_str(), output_layer_.c_str());
-    grid_map.add(output_layer_, grid_map[input_layer_]);
-  }
+    grid_map.add(output_layer_, grid_map.get(input_layer_));
 
   l3::SharedPtr<UpdatedHandles> updated_handles = l3::makeShared<UpdatedHandles>(std::initializer_list<DataHandle::ConstPtr>{ grid_map_handle_ });
 
