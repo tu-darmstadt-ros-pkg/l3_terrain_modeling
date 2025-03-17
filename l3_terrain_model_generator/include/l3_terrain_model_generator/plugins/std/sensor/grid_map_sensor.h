@@ -69,7 +69,8 @@ private:
   DataHandle::Ptr grid_cell_updates_handle_;
   PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
 
-  std::string layer_;
+  std::string input_layer_;
+  std::string output_layer_;
 
   bool provide_grid_cell_updates_;
   bool provide_cloud_;
