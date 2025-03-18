@@ -13,8 +13,8 @@ bool GridMapSensor::loadParams(const vigir_generic_params::ParameterSet& params)
   if (!SensorPlugin::loadParams(params))
     return false;
 
-  input_layer_ = param("in_layer", ELEVATION_LAYER, true);
-  output_layer_ = param("out_layer", output_layer_, true);
+  in_layer_ = param("in_layer", ELEVATION_LAYER, true);
+  out_layer_ = param("out_layer", out_layer_, true);
   provide_grid_cell_updates_ = param("provide_grid_cell_updates", false, true);
   provide_cloud_ = param("provide_cloud", false, true);
 
@@ -76,9 +76,9 @@ void GridMapSensor::gridMapCb(const grid_map_msgs::GridMap& msg)
   // convert msg to grid map
   l3::UniqueLockPtr lock;
   grid_map::GridMap& grid_map = grid_map_handle_->value<grid_map::GridMap>(lock);
-  grid_map::GridMapRosConverter::fromMessage(msg, grid_map, { input_layer_ });
-  if (input_layer_ != output_layer_)
-    grid_map.add(output_layer_, grid_map.get(input_layer_));
+  grid_map::GridMapRosConverter::fromMessage(msg, grid_map, { in_layer_ });
+  if (in_layer_ != out_layer_)
+    grid_map.add(out_layer_, grid_map.get(in_layer_));
 
   l3::SharedPtr<UpdatedHandles> updated_handles = l3::makeShared<UpdatedHandles>(std::initializer_list<DataHandle::ConstPtr>{ grid_map_handle_ });
 
@@ -100,7 +100,7 @@ void GridMapSensor::gridMapCb(const grid_map_msgs::GridMap& msg)
       GridCell cell;
       cell.position.x() = position.x();
       cell.position.y() = position.y();
-      cell.position.z() = grid_map.at(input_layer_, index);
+      cell.position.z() = grid_map.at(in_layer_, index);
 
       grid_cell_updates.cells.push_back(cell);
     }
@@ -112,7 +112,7 @@ void GridMapSensor::gridMapCb(const grid_map_msgs::GridMap& msg)
   if (provide_cloud_)
   {
     sensor_msgs::PointCloud2 point_cloud_msg;
-    grid_map::GridMapRosConverter::toPointCloud(grid_map, input_layer_, point_cloud_msg);
+    grid_map::GridMapRosConverter::toPointCloud(grid_map, in_layer_, point_cloud_msg);
     point_cloud_msg.header.frame_id = getMapFrame();
     point_cloud_msg.header.stamp = ros::Time::now();
 
