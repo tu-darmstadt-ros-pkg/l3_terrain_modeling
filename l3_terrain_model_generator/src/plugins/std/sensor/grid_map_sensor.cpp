@@ -13,8 +13,8 @@ bool GridMapSensor::loadParams(const vigir_generic_params::ParameterSet& params)
   if (!SensorPlugin::loadParams(params))
     return false;
 
-  input_layer_ = param("input_layer", ELEVATION_LAYER, true);
-  output_layer_ = param("output_layer", output_layer_, true);
+  input_layer_ = param("in_layer", ELEVATION_LAYER, true);
+  output_layer_ = param("out_layer", output_layer_, true);
   provide_grid_cell_updates_ = param("provide_grid_cell_updates", false, true);
   provide_cloud_ = param("provide_cloud", false, true);
 
