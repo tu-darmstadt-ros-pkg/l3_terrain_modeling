@@ -65,6 +65,12 @@
 
   <!-- Generator plugins -->
 
+  <class name="copy_map_layer_generator" type="l3_terrain_modeling::CopyMapLayerGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
+    <description>
+      Copies over a layer to another layer within a grid map.
+    </description>
+  </class>
+
   <class name="elevation_map_generator" type="l3_terrain_modeling::ElevationMapGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Generates a elevation map based on input point cloud.
