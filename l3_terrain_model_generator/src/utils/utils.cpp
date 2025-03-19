@@ -6,8 +6,14 @@ namespace l3_terrain_modeling
 {
 bool getTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& target_frame, const std::string& source_frame, const ros::Time& time, l3::Pose& pose)
 {
+  if (tf::strip_leading_slash(source_frame) == tf::strip_leading_slash(target_frame))
+  {
+    pose = l3::Pose();
+    return true;
+  }
+
   std::string error_msg;
-  if (tf_buffer.canTransform(target_frame, source_frame, time, ros::Duration(0.1), &error_msg))
+  if (tf_buffer.canTransform(target_frame, source_frame, time, ros::Duration(1.0), &error_msg))
   {
     geometry_msgs::TransformStamped transform_msg = tf_buffer.lookupTransform(target_frame, source_frame, time);
     l3::transformMsgToL3(transform_msg.transform, pose);

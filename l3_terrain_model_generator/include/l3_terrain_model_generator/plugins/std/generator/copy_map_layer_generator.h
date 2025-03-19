@@ -1,5 +1,5 @@
 //=================================================================================================
-// Copyright (c) 2023, Alexander stumpf, Felix Sternkopf, TU Darmstadt
+// Copyright (c) 2025, Alexander Stumpf, TU Darmstadt
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without
@@ -28,53 +28,28 @@
 
 #pragma once
 
-#include <ros/ros.h>
-
-#include <sensor_msgs/PointCloud2.h>
-
-#include <pcl_ros/transforms.h>
-#include <pcl_conversions/pcl_conversions.h>
-
-#include <grid_map_ros/grid_map_ros.hpp>
-
-#include <l3_terrain_model_generator/plugins/base/sensor_plugin.h>
-#include <l3_terrain_model_generator/utils/pcl/pcl_data_handle.h>
+#include <l3_terrain_model_generator/plugins/base/generator_plugin.h>
 
 namespace l3_terrain_modeling
 {
-/**
- * @brief The GridMapSensor represents a fake sensor that publishes the
- * map data from a greyscale image.
- * @param topic (default: "image") Topic name to subscribe at
- * @param input_data (default: "cloud") Data name as found in the DataManager
- * @param map_frame (default: "map") Frame in which the data is represented
- */
-class GridMapSensor : public SensorPlugin
+class CopyMapLayerGenerator : public GeneratorPlugin
 {
 public:
   // typedefs
-  typedef l3::SharedPtr<GridMapSensor> Ptr;
-  typedef l3::SharedPtr<const GridMapSensor> ConstPtr;
+  typedef l3::SharedPtr<CopyMapLayerGenerator> Ptr;
+  typedef l3::SharedPtr<const CopyMapLayerGenerator> ConstPtr;
 
-  GridMapSensor();
+  CopyMapLayerGenerator();
 
   bool loadParams(const vigir_generic_params::ParameterSet& params) override;
 
-  bool initialize(const vigir_generic_params::ParameterSet& params) override;
+  bool postInitialize(const vigir_generic_params::ParameterSet& params) override;
 
-private:
-  void gridMapCb(const grid_map_msgs::GridMap& msg);
+protected:
+  void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor) override;
 
   DataHandle::Ptr grid_map_handle_;
-  DataHandle::Ptr grid_cell_updates_handle_;
-  PclDataHandle<pcl::PointCloud>::Ptr cloud_pcl_handle_;
-
   std::string in_layer_;
   std::string out_layer_;
-
-  bool provide_grid_cell_updates_;
-  bool provide_cloud_;
-
-  ros::Subscriber grid_map_sub_;
 };
 }  // namespace l3_terrain_modeling

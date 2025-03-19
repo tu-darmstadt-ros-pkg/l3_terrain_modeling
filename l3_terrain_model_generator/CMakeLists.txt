@@ -77,6 +77,7 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/std/filter/pcl_pass_through_ellipse_filter.h
   include/${PROJECT_NAME}/plugins/std/filter/pcl_statistical_outlier_filter.h
   include/${PROJECT_NAME}/plugins/std/filter/pcl_voxel_grid_filter.h
+  include/${PROJECT_NAME}/plugins/std/generator/copy_map_layer_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/edges_cloud_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/elevation_map_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/gradients_cloud_generator.h
@@ -131,6 +132,7 @@ set(SOURCES
   src/plugins/std/filter/pcl_pass_through_ellipse_filter.cpp
   src/plugins/std/filter/pcl_statistical_outlier_filter.cpp
   src/plugins/std/filter/pcl_voxel_grid_filter.cpp
+  src/plugins/std/generator/copy_map_layer_generator.cpp
   src/plugins/std/generator/edges_cloud_generator.cpp
   src/plugins/std/generator/elevation_map_generator.cpp
   src/plugins/std/generator/gradients_cloud_generator.cpp
