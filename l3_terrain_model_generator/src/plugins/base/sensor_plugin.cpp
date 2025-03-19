@@ -61,7 +61,7 @@ bool SensorPlugin::postInitialize(const vigir_generic_params::ParameterSet& para
 void SensorPlugin::updateSensorPose(const Time& time)
 {
   ros::Time ros_time = Timer::timeToRos(time);
-  getTransformAsPose(tf_buffer_, getMapFrame(), sensor_frame_id_, ros_time, sensor_pose_);
+  getTransformAsPose(tf_buffer_, getMapFrame(), getSensorFrame(), ros_time, sensor_pose_);
 }
 
 void SensorPlugin::process(const Time& time, UpdatedHandles::Ptr updates)

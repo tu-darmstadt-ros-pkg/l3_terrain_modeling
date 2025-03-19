@@ -76,7 +76,7 @@ public:
 
   /**
    * @brief Returns configured sensor frame, which represents the location of the sensor
-   * devive and thus the origin of the data.
+   * device and thus the origin of the data.
    * @return Sensor frame id
    */
   inline const std::string& getSensorFrame() const { return sensor_frame_id_; }
