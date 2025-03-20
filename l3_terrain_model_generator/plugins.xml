@@ -33,6 +33,12 @@
 
   <!-- Filter plugins -->
 
+  <class name="grid_map_crop_filter" type="l3_terrain_modeling::GridMapCropFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
+    <description>
+      Crops the input grid map based on given limits.
+    </description>
+  </class>
+
   <class name="pcl_mls_smooth_filter" type="l3_terrain_modeling::PclMlsSmoothFilter" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Smoothes the pointcloud based on the neighboring data within a given radius.
