@@ -66,12 +66,14 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/aggregator/sensors.h
   include/${PROJECT_NAME}/plugins/base/filter_plugin.h
   include/${PROJECT_NAME}/plugins/base/generator_plugin.h
+  include/${PROJECT_NAME}/plugins/base/grid_map_filter_plugin.h
   include/${PROJECT_NAME}/plugins/base/grid_map_generator_plugin.h
   include/${PROJECT_NAME}/plugins/base/point_cloud_filter_plugin.h
   include/${PROJECT_NAME}/plugins/base/point_cloud_sensor_plugin.h
   include/${PROJECT_NAME}/plugins/base/processor_plugin.h
   include/${PROJECT_NAME}/plugins/base/publisher_plugin.h
   include/${PROJECT_NAME}/plugins/base/sensor_plugin.h
+  include/${PROJECT_NAME}/plugins/std/filter/grid_map_crop_filter.h
   include/${PROJECT_NAME}/plugins/std/filter/pcl_mls_smooth_filter.h
   include/${PROJECT_NAME}/plugins/std/filter/pcl_pass_through_box_filter.h
   include/${PROJECT_NAME}/plugins/std/filter/pcl_pass_through_ellipse_filter.h
@@ -121,12 +123,14 @@ set(SOURCES
   src/plugins/aggregator/sensors.cpp
   src/plugins/base/filter_plugin.cpp
   src/plugins/base/generator_plugin.cpp
+  src/plugins/base/grid_map_filter_plugin.cpp
   src/plugins/base/grid_map_generator_plugin.cpp
   src/plugins/base/point_cloud_filter_plugin.cpp
   src/plugins/base/point_cloud_sensor_plugin.cpp
   src/plugins/base/processor_plugin.cpp
   src/plugins/base/publisher_plugin.cpp
   src/plugins/base/sensor_plugin.cpp
+  src/plugins/std/filter/grid_map_crop_filter.cpp
   src/plugins/std/filter/pcl_mls_smooth_filter.cpp
   src/plugins/std/filter/pcl_pass_through_box_filter.cpp
   src/plugins/std/filter/pcl_pass_through_ellipse_filter.cpp
