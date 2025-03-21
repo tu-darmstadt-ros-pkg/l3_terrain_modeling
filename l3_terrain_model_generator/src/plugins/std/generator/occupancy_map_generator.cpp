@@ -73,6 +73,13 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
   else if (sensor)
     ref_height = sensor->getSensorPose().data.z();
 
+  // check if layer exists
+  if (!grid_map.exists(layer_))
+  {
+    ROS_WARN_THROTTLE(5.0, "[%s] Layer \"%s\" does not exist in grid map!", getName().c_str(), layer_.c_str());
+    return;
+  }
+
   // convert grid map to occupancy grid
   grid_map::GridMapRosConverter::toOccupancyGrid(grid_map, layer_, ref_height + min_height_,
                                                  ref_height + max_height_, occupancy_map);
