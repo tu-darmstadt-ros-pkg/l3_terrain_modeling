@@ -41,6 +41,8 @@ namespace l3_terrain_modeling
 bool getTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& target_frame, const std::string& source_frame, const ros::Time& time, l3::Pose& pose);
 bool getTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& target_frame, const std::string& source_frame, const ros::Time& time, l3::StampedPose& pose);
 
+bool getDeltaTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& target_frame, const std::string& fixed_frame, const ros::Time& time_past, const ros::Time& time_future, l3::StampedPose& pose);
+
 template <template<class, class> class Container, class Type>
 void getBoundary(const Container<Type, std::allocator<Type>>& container, l3::Vector3& min, l3::Vector3& max)
 {

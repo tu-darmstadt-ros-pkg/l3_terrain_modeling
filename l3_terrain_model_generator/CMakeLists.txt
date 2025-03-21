@@ -83,6 +83,7 @@ set(HEADERS
   include/${PROJECT_NAME}/plugins/std/generator/edges_cloud_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/elevation_map_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/gradients_cloud_generator.h
+  include/${PROJECT_NAME}/plugins/std/generator/grid_map_pose_updater.h
   include/${PROJECT_NAME}/plugins/std/generator/ground_level_map_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/normals_cloud_generator.h
   include/${PROJECT_NAME}/plugins/std/generator/occupancy_map_generator.h
@@ -140,6 +141,7 @@ set(SOURCES
   src/plugins/std/generator/edges_cloud_generator.cpp
   src/plugins/std/generator/elevation_map_generator.cpp
   src/plugins/std/generator/gradients_cloud_generator.cpp
+  src/plugins/std/generator/grid_map_pose_updater.cpp
   src/plugins/std/generator/ground_level_map_generator.cpp
   src/plugins/std/generator/normals_cloud_generator.cpp
   src/plugins/std/generator/occupancy_map_generator.cpp

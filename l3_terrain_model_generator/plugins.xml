@@ -83,6 +83,12 @@
     </description>
   </class>
 
+  <class name="grid_map_pose_updater" type="l3_terrain_modeling::GridMapPoseUpdater" base_class_type="l3_terrain_modeling::ProcessorPlugin">
+    <description>
+      Updates the pose of the grid map. Hereby, the map is also shifted accordingly.
+    </description>
+  </class>
+
   <class name="normals_cloud_generator" type="l3_terrain_modeling::NormalsCloudGenerator" base_class_type="l3_terrain_modeling::ProcessorPlugin">
     <description>
       Generates a surface normals using PCA based on input point cloud.

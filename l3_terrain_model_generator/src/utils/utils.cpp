@@ -38,6 +38,23 @@ bool getTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& tar
     return false;
 }
 
+bool getDeltaTransformAsPose(const tf2_ros::Buffer& tf_buffer, const std::string& target_frame, const std::string& fixed_frame, const ros::Time& time_past, const ros::Time& time_future, l3::StampedPose& pose)
+{
+  l3::Pose pose_past;
+  if (!getTransformAsPose(tf_buffer, target_frame, fixed_frame, time_past, pose_past))
+    return false;
+
+  l3::Pose pose_future;
+  if (!getTransformAsPose(tf_buffer, target_frame, fixed_frame, time_future, pose_future))
+    return false;
+
+  pose.data = pose_past.inverse() * pose_future;
+  pose.header.frame_id = target_frame;
+  pose.header.stamp = time_future;
+
+  return true;
+}
+
 void resize(grid_map::GridMap& grid_map, const l3::Vector3& min, const l3::Vector3& max)
 {
   grid_map::Length length = grid_map.getLength();
