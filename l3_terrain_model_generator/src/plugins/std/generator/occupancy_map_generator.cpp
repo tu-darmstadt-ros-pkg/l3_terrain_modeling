@@ -20,6 +20,7 @@ bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
 
   layer_ = param("layer", ELEVATION_LAYER, true);
 
+  use_z_ref_frame_ = param("use_z_ref_frame", true, true);
   z_ref_frame_id_ = param("z_ref_frame", std::string(), true);
 
   min_height_ = param("min_height", -0.1, true);
@@ -61,17 +62,20 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
 
   // determine z reference height
   float ref_height = 0.0;
-  if (!z_ref_frame_id_.empty())
+  if (use_z_ref_frame_)
   {
-    l3::Pose z_ref_pose;
-    if (getTransformAsPose(tf_buffer_, grid_map.getFrameId(), z_ref_frame_id_, ros::Time().fromNSec(grid_map.getTimestamp()), z_ref_pose))
-      ref_height = z_ref_pose.z();
-    else
-      ROS_WARN("[%s] Failed to adjust occupancy map z position to reference frame \"%s\"!", getName().c_str(),
-               z_ref_frame_id_.c_str());
+    if (!z_ref_frame_id_.empty())
+    {
+      l3::Pose z_ref_pose;
+      if (getTransformAsPose(tf_buffer_, grid_map.getFrameId(), z_ref_frame_id_, ros::Time().fromNSec(grid_map.getTimestamp()), z_ref_pose))
+        ref_height = z_ref_pose.z();
+      else
+        ROS_WARN("[%s] Failed to adjust occupancy map z position to reference frame \"%s\"!", getName().c_str(),
+                z_ref_frame_id_.c_str());
+    }
+    else if (sensor)
+      ref_height = sensor->getSensorPose().data.z();
   }
-  else if (sensor)
-    ref_height = sensor->getSensorPose().data.z();
 
   // check if layer exists
   if (!grid_map.exists(layer_))

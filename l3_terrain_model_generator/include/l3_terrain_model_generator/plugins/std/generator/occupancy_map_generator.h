@@ -61,6 +61,7 @@ protected:
   // parameters
   std::string layer_;
 
+  bool use_z_ref_frame_;
   std::string z_ref_frame_id_;
   float min_height_;
   float max_height_;
