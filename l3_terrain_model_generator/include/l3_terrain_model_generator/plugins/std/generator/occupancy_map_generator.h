@@ -77,7 +77,8 @@ protected:
   float max_height_;
 
   bool binarize_;
-  int binary_threshold_;
+  int upper_threshold_;
+  int lower_threshold_;
 
   bool publish_debug_map_;
 
