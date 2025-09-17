@@ -54,6 +54,8 @@ public:
 protected:
   void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor);
 
+  void initializeOccupancyMap(nav_msgs::OccupancyGrid& occupancy_map, const grid_map::GridMap& grid_map) const;
+
   void toBinaryOccupancyGrid(nav_msgs::OccupancyGrid& occupancy_map) const;
 
   tf2_ros::Buffer tf_buffer_;

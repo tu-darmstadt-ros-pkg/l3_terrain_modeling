@@ -92,14 +92,6 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
   // transform to reference frame if required
   if (use_z_ref_frame_ && transform_to_ref_frame_)
   {
-    // create a new grid map with the same size and resolution
-    grid_map::GridMap transformed_grid_map;
-    transformed_grid_map.setGeometry(grid_map.getLength(), grid_map.getResolution(), grid_map.getPosition());
-    transformed_grid_map.setStartIndex(grid_map.getStartIndex());
-    transformed_grid_map.setFrameId(grid_map.getFrameId());
-    transformed_grid_map.setTimestamp(grid_map.getTimestamp());
-    transformed_grid_map.add(layer_, grid_map.get(layer_));
-
     // create debug map if required
     if (publish_debug_map_)
     {
@@ -108,6 +100,7 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
       debug_grid_map_.setStartIndex(grid_map.getStartIndex());
       debug_grid_map_.setFrameId(grid_map.getFrameId());
       debug_grid_map_.setTimestamp(grid_map.getTimestamp());
+      debug_grid_map_.add(layer_, grid_map.get(layer_));
       debug_grid_map_.add("debug_threshold_plane");
     }
 
@@ -116,52 +109,53 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
     Eigen::Vector3d n = ref_pose.rotation().col(2);
 
     // Plane equation: z = a*x + b*y + c
-    double a = -n.x() / n.z();
-    double b = -n.y() / n.z();
-    double c = t.z() + (n.x() / n.z()) * t.x() + (n.y() / n.z()) * t.y();
+    float a = -n.x() / n.z();
+    float b = -n.y() / n.z();
+    float c = t.z() + (n.x() / n.z()) * t.x() + (n.y() / n.z()) * t.y();
 
-    // Collect valid cells
-    std::vector<grid_map::Index> indices;
-    std::vector<grid_map::Position> positions;
-    indices.reserve(transformed_grid_map.getSize().prod());
-    positions.reserve(transformed_grid_map.getSize().prod());
+    // initialize occupancy map
+    size_t n_cells = grid_map.getSize().prod();
+    initializeOccupancyMap(occupancy_map, grid_map);
 
-    for (grid_map::GridMapIterator it(transformed_grid_map); !it.isPastEnd(); ++it)
+    for (grid_map::GridMapIterator it(grid_map); !it.isPastEnd(); ++it)
     {
-      if (!transformed_grid_map.isValid(*it, layer_))
+      if (!grid_map.isValid(*it, layer_))
         continue;
 
       grid_map::Position pos;
-      transformed_grid_map.getPosition(*it, pos);
+      grid_map.getPosition(*it, pos);
 
-      indices.push_back(*it);
-      positions.push_back(pos);
-    }
+      // plane value at this cell
+      float plane_z = a * pos.x() + b * pos.y() + c;
 
-    // Vectorized Z computation; We avoid heap allocations (using big Eigen Matrix) for small N
-    const size_t N = positions.size();
-    Eigen::VectorXd Z(N);
+      // adjusted value: difference between cell value and plane
+      int occ_value;
+      float z = grid_map.at(layer_, *it);
 
-    for (size_t i = 0; i < N; ++i)
-    {
-      Z(i) = a * positions[i].x() + b * positions[i].y() + c;
-    }
+      if (!std::isfinite(z))
+        occ_value = 0;
+      else
+      {
+        z -= plane_z;
 
-    // Write back to grid map
-    for (size_t i = 0; i < N; ++i)
-    {
-      transformed_grid_map.at(layer_, indices[i]) -= Z(i);
+        // normalize into occupancy grid value [0,100]
+        if (z < min_height_ || z > max_height_)
+          occ_value = 100;
+        else
+          occ_value = static_cast<int>(100.0f * (z - min_height_) / (max_height_ - min_height_));
+      }
 
+      // map iterator to flat index in OccupancyGrid
+      const size_t idx = grid_map::getLinearIndexFromIndex(it.getUnwrappedIndex(), grid_map.getSize());
+      occupancy_map.data[n_cells - idx - 1] = occ_value;
+
+      // Write debug grid map if required
       if (publish_debug_map_)
-        debug_grid_map_.at("debug_threshold_plane", indices[i]) = Z(i);
+      {
+        debug_grid_map_.at(layer_, *it) -= plane_z;
+        debug_grid_map_.at("debug_threshold_plane", *it) = plane_z;
+      }
     }
-
-    // copy layer to debug map if enabled
-    if (publish_debug_map_)
-      debug_grid_map_.add(layer_, transformed_grid_map.get(layer_));
-
-    // convert to occupancy grid
-    grid_map::GridMapRosConverter::toOccupancyGrid(transformed_grid_map, layer_, min_height_, max_height_, occupancy_map);
   }
   else
   {
@@ -186,6 +180,27 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
     grid_map::GridMapRosConverter::toMessage(debug_grid_map_, msg);
     debug_grid_map_pub_.publish(msg);
   }
+}
+
+
+void OccupancyMapGenerator::initializeOccupancyMap(nav_msgs::OccupancyGrid& occupancy_map, const grid_map::GridMap& grid_map) const
+{
+  occupancy_map.header.frame_id = grid_map.getFrameId();
+  occupancy_map.header.stamp.fromNSec(grid_map.getTimestamp());
+  occupancy_map.info.map_load_time = occupancy_map.header.stamp;  // Same as header stamp as we do not load the map.
+  occupancy_map.info.resolution = grid_map.getResolution();
+  occupancy_map.info.width = grid_map.getSize()(0);
+  occupancy_map.info.height = grid_map.getSize()(1);
+  grid_map::Position position = grid_map.getPosition() - 0.5 * grid_map.getLength().matrix();
+  occupancy_map.info.origin.position.x = position.x();
+  occupancy_map.info.origin.position.y = position.y();
+  occupancy_map.info.origin.position.z = 0.0;
+  occupancy_map.info.origin.orientation.x = 0.0;
+  occupancy_map.info.origin.orientation.y = 0.0;
+  occupancy_map.info.origin.orientation.z = 0.0;
+  occupancy_map.info.origin.orientation.w = 1.0;
+  occupancy_map.data.clear();
+  occupancy_map.data.resize(grid_map.getSize().prod());
 }
 
 void OccupancyMapGenerator::toBinaryOccupancyGrid(nav_msgs::OccupancyGrid& occupancy_map) const
