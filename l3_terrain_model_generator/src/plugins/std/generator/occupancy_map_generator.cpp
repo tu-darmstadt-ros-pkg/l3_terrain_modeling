@@ -119,15 +119,6 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
 
     for (grid_map::GridMapIterator it(grid_map); !it.isPastEnd(); ++it)
     {
-      if (!grid_map.isValid(*it, layer_))
-        continue;
-
-      grid_map::Position pos;
-      grid_map.getPosition(*it, pos);
-
-      // plane value at this cell
-      float plane_z = a * pos.x() + b * pos.y() + c;
-
       // adjusted value: difference between cell value and plane
       int occ_value;
       float z = grid_map.at(layer_, *it);
@@ -136,6 +127,11 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
         occ_value = 0;
       else
       {
+        grid_map::Position pos;
+        grid_map.getPosition(*it, pos);
+
+        // plane value at this cell
+        float plane_z = a * pos.x() + b * pos.y() + c;
         z -= plane_z;
 
         // normalize into occupancy grid value [0,100]
@@ -143,18 +139,18 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
           occ_value = 100;
         else
           occ_value = static_cast<int>(100.0f * (z - min_height_) / (max_height_ - min_height_));
+
+        // Write debug grid map if required
+        if (publish_debug_map_)
+        {
+          debug_grid_map_.at(layer_, *it) -= plane_z;
+          debug_grid_map_.at("debug_threshold_plane", *it) = plane_z;
+        }
       }
 
       // map iterator to flat index in OccupancyGrid
       const size_t idx = grid_map::getLinearIndexFromIndex(it.getUnwrappedIndex(), grid_map.getSize());
       occupancy_map.data[n_cells - idx - 1] = occ_value;
-
-      // Write debug grid map if required
-      if (publish_debug_map_)
-      {
-        debug_grid_map_.at(layer_, *it) -= plane_z;
-        debug_grid_map_.at("debug_threshold_plane", *it) = plane_z;
-      }
     }
   }
   else
