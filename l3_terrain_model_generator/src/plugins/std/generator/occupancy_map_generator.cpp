@@ -29,21 +29,27 @@ bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
 
   binarize_ = param("binarize", true, true);
 
-  if (getParam("binary_threshold", upper_threshold_, 50, true))
-    ROS_WARN("[%s] Parameter \"binary_threshold\" is deprecated, please use \"upper_threshold\" and \"lower_threshold\" instead!", getName().c_str());
-
-  // Get thresholds in meters and convert to percentage of the height range
-  float upper_threshold_abs;
-  if (getParam("upper_threshold", upper_threshold_abs, 0.5f, true))  // Upper threshold in meters
-    upper_threshold_ = static_cast<int>(std::round((upper_threshold_abs - min_height_) / (max_height_ - min_height_) * 100.0f));
+  if (getParam("binary_threshold", upper_threshold_, 100, true))
+  {
+    lower_threshold_ = 0;
+  }
   else
-    upper_threshold_ = 100; // Default to 100 if not set
+  {
+    // Get thresholds in meters and convert to percentage of the height range
+    float upper_threshold_abs;
+    if (getParam("upper_threshold", upper_threshold_abs, 0.5f, true))  // Upper threshold in meters
+      upper_threshold_ = static_cast<int>(std::round((upper_threshold_abs - min_height_) / (max_height_ - min_height_) * 100.0f));
+    else
+      upper_threshold_ = 100; // Default to 100 if not set
 
-  float lower_threshold_abs;
-  if (getParam("lower_threshold", lower_threshold_abs, -0.1f, true))  // Lower threshold in meters
-    lower_threshold_ = static_cast<int>(std::round((lower_threshold_abs - min_height_) / (max_height_ - min_height_) * 100.0f));
-  else
-    lower_threshold_ = 0; // Default to 0 if not set
+    float lower_threshold_abs;
+    if (getParam("lower_threshold", lower_threshold_abs, -0.1f, true))  // Lower threshold in meters
+      lower_threshold_ = static_cast<int>(std::round((lower_threshold_abs - min_height_) / (max_height_ - min_height_) * 100.0f));
+    else
+      lower_threshold_ = 0; // Default to 0 if not set
+  }
+
+  ROS_WARN("Thresholds set to: lower = %d, upper = %d", lower_threshold_, upper_threshold_);
 
   publish_debug_map_ = param("publish_debug_map", false, true);
 
