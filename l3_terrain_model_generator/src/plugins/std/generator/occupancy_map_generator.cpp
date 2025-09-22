@@ -2,6 +2,8 @@
 
 #include <grid_map_ros/GridMapRosConverter.hpp>
 
+#include <hector_math/iterators/eigen_iterator.h>
+
 #include <l3_terrain_model/typedefs.h>
 
 namespace l3_terrain_modeling
@@ -114,44 +116,63 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
     float c = t.z() + (n.x() / n.z()) * t.x() + (n.y() / n.z()) * t.y();
 
     // initialize occupancy map
-    size_t n_cells = grid_map.getSize().prod();
+    grid_map::Size size = grid_map.getSize();  // (rows, cols)
+    size_t n_cells = size.prod();
     initializeOccupancyMap(occupancy_map, grid_map);
 
-    for (grid_map::GridMapIterator it(grid_map); !it.isPastEnd(); ++it)
+    // Access the data matrix directly instead of string lookups
+    const Eigen::MatrixXf& data_layer = grid_map.get(layer_);
+
+    // Pointers to debug layers if required
+    Eigen::MatrixXf* debug_layer = nullptr;
+    Eigen::MatrixXf* plane_layer = nullptr;
+
+    if (publish_debug_map_)
     {
-      // adjusted value: difference between cell value and plane
-      int occ_value;
-      float z = grid_map.at(layer_, *it);
-
-      if (!std::isfinite(z))
-        occ_value = 0;
-      else
-      {
-        grid_map::Position pos;
-        grid_map.getPosition(*it, pos);
-
-        // plane value at this cell
-        float plane_z = a * pos.x() + b * pos.y() + c;
-        z -= plane_z;
-
-        // normalize into occupancy grid value [0,100]
-        if (z < min_height_ || z > max_height_)
-          occ_value = 100;
-        else
-          occ_value = static_cast<int>(100.0f * (z - min_height_) / (max_height_ - min_height_));
-
-        // Write debug grid map if required
-        if (publish_debug_map_)
-        {
-          debug_grid_map_.at(layer_, *it) -= plane_z;
-          debug_grid_map_.at("debug_threshold_plane", *it) = plane_z;
-        }
-      }
-
-      // map iterator to flat index in OccupancyGrid
-      const size_t idx = grid_map::getLinearIndexFromIndex(it.getUnwrappedIndex(), grid_map.getSize());
-      occupancy_map.data[n_cells - idx - 1] = occ_value;
+      debug_layer = &debug_grid_map_.get(layer_);
+      plane_layer = &debug_grid_map_.get("debug_threshold_plane");
     }
+
+    // iterate through all cells
+    hector_math::iterateDenseBase(data_layer, [&](int row, int col)
+      {
+        const grid_map::Index index(row, col);
+
+        // adjusted value: difference between cell value and plane
+        int occ_value;
+        float z = data_layer(index(0), index(1));
+
+        if (!std::isfinite(z))
+          occ_value = 0;
+        else
+        {
+          grid_map::Position pos;
+          grid_map.getPosition(index, pos);
+
+          // plane value at this cell
+          float plane_z = a * pos.x() + b * pos.y() + c;
+          z -= plane_z;
+
+          // normalize into occupancy grid value [0,100]
+          if (z < min_height_ || z > max_height_)
+            occ_value = 100;
+          else
+            occ_value = static_cast<int>(100.0f * (z - min_height_) / (max_height_ - min_height_));
+
+          // Write debug grid map if required
+          if (publish_debug_map_)
+          {
+            (*debug_layer)(index(0), index(1)) = z;
+            (*plane_layer)(index(0), index(1)) = plane_z;
+          }
+        }
+
+        // convert index to occpupancy map coordinates; need to unwrap index
+        const size_t idx = grid_map::getLinearIndexFromIndex(grid_map::getIndexFromBufferIndex(index, size, grid_map.getStartIndex()), size);
+        // occupancy map is stored in row-major order starting with bottom left cell
+        occupancy_map.data[n_cells - idx - 1] = occ_value;
+      }
+    );
   }
   else
   {
