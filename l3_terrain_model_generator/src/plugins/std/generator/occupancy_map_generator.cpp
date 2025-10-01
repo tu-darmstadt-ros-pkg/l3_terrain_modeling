@@ -78,7 +78,7 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
     {
       if (!getTransformAsPose(tf_buffer_, grid_map.getFrameId(), ref_frame_id_, ros::Time().fromNSec(grid_map.getTimestamp()), ref_pose))
         ROS_WARN("[%s] Failed to adjust occupancy map z position to reference frame \"%s\"!", getName().c_str(),
-                ref_frame_id_.c_str());
+                 ref_frame_id_.c_str());
     }
     else if (sensor)
       ref_pose = sensor->getSensorPose().data;
@@ -198,7 +198,6 @@ void OccupancyMapGenerator::update(const Timer& timer, UpdatedHandles& updates, 
     debug_grid_map_pub_.publish(msg);
   }
 }
-
 
 void OccupancyMapGenerator::initializeOccupancyMap(nav_msgs::OccupancyGrid& occupancy_map, const grid_map::GridMap& grid_map) const
 {
