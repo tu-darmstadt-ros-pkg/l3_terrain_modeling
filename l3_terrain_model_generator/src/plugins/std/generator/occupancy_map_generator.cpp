@@ -24,6 +24,9 @@ bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
   use_z_ref_frame_ = param("use_z_ref_frame", true, true);
   transform_to_ref_frame_ = param("transform_to_ref_frame", false, true);
 
+  // Thresholding can be either done using absolute height values (in meters), when
+  // upper_threshold and lower_threshold are set. Using the single binary_threshold
+  // represents a threshold in percentage of the height range between min_height and max_height.
   min_height_ = param("min_height", -0.3, true);
   max_height_ = param("max_height", 0.9, true);
 
@@ -48,8 +51,6 @@ bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
     else
       lower_threshold_ = 0; // Default to 0 if not set
   }
-
-  ROS_WARN("Thresholds set to: lower = %d, upper = %d", lower_threshold_, upper_threshold_);
 
   publish_debug_map_ = param("publish_debug_map", false, true);
 
