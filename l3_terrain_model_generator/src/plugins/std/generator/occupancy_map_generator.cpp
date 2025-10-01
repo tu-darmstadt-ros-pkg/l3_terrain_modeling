@@ -24,11 +24,33 @@ bool OccupancyMapGenerator::loadParams(const vigir_generic_params::ParameterSet&
   use_z_ref_frame_ = param("use_z_ref_frame", true, true);
   transform_to_ref_frame_ = param("transform_to_ref_frame", false, true);
 
-  min_height_ = param("min_height", -0.1, true);
+  // Thresholding can be either done using absolute height values (in meters), when
+  // upper_threshold and lower_threshold are set. Using the single binary_threshold
+  // represents a threshold in percentage of the height range between min_height and max_height.
+  min_height_ = param("min_height", -0.3, true);
   max_height_ = param("max_height", 0.9, true);
 
   binarize_ = param("binarize", true, true);
-  binary_threshold_ = param("binary_threshold", 50, true);
+
+  if (getParam("binary_threshold", upper_threshold_, 100, true))
+  {
+    lower_threshold_ = 0;
+  }
+  else
+  {
+    // Get thresholds in meters and convert to percentage of the height range
+    float upper_threshold_abs;
+    if (getParam("upper_threshold", upper_threshold_abs, 0.5f, true))  // Upper threshold in meters
+      upper_threshold_ = static_cast<int>(std::round((upper_threshold_abs - min_height_) / (max_height_ - min_height_) * 100.0f));
+    else
+      upper_threshold_ = 100; // Default to 100 if not set
+
+    float lower_threshold_abs;
+    if (getParam("lower_threshold", lower_threshold_abs, -0.1f, true))  // Lower threshold in meters
+      lower_threshold_ = static_cast<int>(std::round((lower_threshold_abs - min_height_) / (max_height_ - min_height_) * 100.0f));
+    else
+      lower_threshold_ = 0; // Default to 0 if not set
+  }
 
   publish_debug_map_ = param("publish_debug_map", false, true);
 
@@ -223,7 +245,8 @@ void OccupancyMapGenerator::toBinaryOccupancyGrid(nav_msgs::OccupancyGrid& occup
 {
   std::transform(occupancy_map.data.begin(), occupancy_map.data.end(), occupancy_map.data.begin(),
     [this](int8_t value) {
-      return value > binary_threshold_ ? 100 : 0;
+      // Mark as occupied if value is above the upper threshold or below the lower threshold
+      return ((value > 0 && value < lower_threshold_) || value > upper_threshold_) ? 100 : 0;
     }
   );
 }
