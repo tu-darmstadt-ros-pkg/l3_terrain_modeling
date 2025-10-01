@@ -30,6 +30,8 @@
 
 #include <tf2_ros/transform_listener.h>
 
+#include <nav_msgs/OccupancyGrid.h>
+
 #include <l3_terrain_model_generator/plugins/base/generator_plugin.h>
 
 namespace l3_terrain_modeling
@@ -52,21 +54,34 @@ public:
 protected:
   void update(const Timer& timer, UpdatedHandles& updates, const SensorPlugin* sensor);
 
+  void initializeOccupancyMap(nav_msgs::OccupancyGrid& occupancy_map, const grid_map::GridMap& grid_map) const;
+
+  void toBinaryOccupancyGrid(nav_msgs::OccupancyGrid& occupancy_map) const;
+
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
 
   DataHandle::Ptr grid_map_handle_;
   DataHandle::Ptr occupancy_map_handle_;
 
+  grid_map::GridMap debug_grid_map_;
+
   // parameters
   std::string layer_;
 
+  std::string ref_frame_id_;
   bool use_z_ref_frame_;
-  std::string z_ref_frame_id_;
+  bool transform_to_ref_frame_;
+
   float min_height_;
   float max_height_;
 
   bool binarize_;
   int binary_threshold_;
+
+  bool publish_debug_map_;
+
+  // ROS API
+  ros::Publisher debug_grid_map_pub_;
 };
 }  // namespace l3_terrain_modeling

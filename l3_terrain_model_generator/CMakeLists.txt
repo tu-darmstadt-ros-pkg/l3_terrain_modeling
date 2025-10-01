@@ -18,6 +18,7 @@ set(CATKIN_PACKAGE_DEPENDENCIES
   pcl_conversions
   pcl_ros
   grid_map_core
+  hector_math
   vigir_pluginlib
   l3_terrain_model
 )
