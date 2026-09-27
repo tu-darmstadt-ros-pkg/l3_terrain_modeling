@@ -25,7 +25,7 @@ bool GradientsCloudGenerator::initialize(const vigir_generic_params::ParameterSe
   if (!GeneratorPlugin::initialize(params))
     return false;
 
-  GET_OUTPUT_HANDLE_DEFAULT(boost::make_shared<pcl::PointCloud<pcl::PointXYZI>>(), "gradients_cloud", gradients_cloud_handle_);
+  GET_OUTPUT_HANDLE_DEFAULT(pcl::make_shared<pcl::PointCloud<pcl::PointXYZI>>(), "gradients_cloud", gradients_cloud_handle_);
 
   return true;
 }

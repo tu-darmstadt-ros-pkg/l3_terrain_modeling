@@ -93,8 +93,8 @@ public:
   typedef typename OctreeT::LeafNode LeafNode;
   typedef typename OctreeT::BranchNode BranchNode;
 
-  typedef boost::shared_ptr<OctreeVoxelGrid> Ptr;
-  typedef boost::shared_ptr<const OctreeVoxelGrid> ConstPtr;
+  typedef pcl::shared_ptr<OctreeVoxelGrid> Ptr;
+  typedef pcl::shared_ptr<const OctreeVoxelGrid> ConstPtr;
 
   OctreeVoxelGrid(double resolution, double update_weight)
     : pcl::octree::OctreePointCloudVoxelCentroid<PointT, OctreeCentroidContainer<PointT> >(resolution)
@@ -123,7 +123,7 @@ public:
   }
 
   template <template <typename> class PointCloudType, typename InputPointT, typename std::enable_if<std::is_same<InputPointT, PointT>::value>::type* = nullptr>
-  void insertPointCloud(boost::shared_ptr<const PointCloudType<InputPointT>> cloud)
+  void insertPointCloud(pcl::shared_ptr<PointCloudType<InputPointT>> cloud)
   {
     static_assert(std::is_same<InputPointT, PointT>::value);
 
@@ -132,11 +132,11 @@ public:
   }
 
   template <template <typename> class PointCloudType, typename InputPointT, typename std::enable_if<!std::is_same<InputPointT, PointT>::value>::type* = nullptr>
-  void insertPointCloud(boost::shared_ptr<const PointCloudType<InputPointT>> cloud)
+  void insertPointCloud(pcl::shared_ptr<PointCloudType<InputPointT>> cloud)
   {
     static_assert(!std::is_same<InputPointT, PointT>::value);
 
-    typename pcl::PointCloud<PointT>::Ptr copy_cloud = boost::make_shared<pcl::PointCloud<PointT>>();
+    typename pcl::PointCloud<PointT>::Ptr copy_cloud = pcl::make_shared<pcl::PointCloud<PointT>>();
     pcl::copyPointCloud(*cloud, *copy_cloud);
     insertPointCloud(copy_cloud);
   }

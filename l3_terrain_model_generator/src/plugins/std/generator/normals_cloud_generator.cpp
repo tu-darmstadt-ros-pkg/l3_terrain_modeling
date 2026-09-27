@@ -56,7 +56,7 @@ bool NormalsCloudGenerator::initialize(const vigir_generic_params::ParameterSet&
   double update_weight = param("update_weight", 0.75);
 
   GET_OUTPUT_HANDLE_DEFAULT(OctreeVoxelGrid<pcl::PointNormal>(resolution, update_weight), "normals_octree", normals_octree_handle_);
-  GET_OUTPUT_HANDLE_DEFAULT(boost::make_shared<pcl::PointCloud<pcl::PointNormal>>(), "normals_cloud", normals_cloud_handle_);
+  GET_OUTPUT_HANDLE_DEFAULT(pcl::make_shared<pcl::PointCloud<pcl::PointNormal>>(), "normals_cloud", normals_cloud_handle_);
 
   return true;
 }
@@ -121,7 +121,7 @@ void NormalsCloudGenerator::update(const Timer& /*timer*/, UpdatedHandles& updat
     return;
 
   // determine search points
-  pcl::PointCloud<pcl::PointXYZ>::Ptr search_points = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+  pcl::PointCloud<pcl::PointXYZ>::Ptr search_points = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
 
   input_cloud_pcl_handle_->dispatch<l3::SharedLock>([&](auto& cloud, auto type_trait)
   {
@@ -176,7 +176,7 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
   {
     input_octree_pcl_handle_->dispatch<l3::SharedLock>([&](auto& octree, auto type_trait)
     {
-      pcl::PointCloud<pcl::PointXYZ>::Ptr processed_cloud = boost::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
+      pcl::PointCloud<pcl::PointXYZ>::Ptr processed_cloud = pcl::make_shared<pcl::PointCloud<pcl::PointXYZ>>();
       std::vector<float> k_sqr_distances;
 
       octree->radiusSearch(*search_points, 1.2 * ne_radius_, *processed_cloud, k_sqr_distances);
@@ -201,7 +201,7 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
   }
 
   // concat resulting normals with their positions
-  pcl::PointCloud<pcl::PointNormal>::Ptr new_points_with_normals = boost::make_shared<pcl::PointCloud<pcl::PointNormal>>();
+  pcl::PointCloud<pcl::PointNormal>::Ptr new_points_with_normals = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>>();
   pcl::concatenateFields(*search_points, normals_cloud, *new_points_with_normals);
 
   // postprocessing
@@ -228,7 +228,7 @@ void NormalsCloudGenerator::computeNormals(pcl::PointCloud<pcl::PointXYZ>::Ptr s
   }
 
   // apply filtering
-  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered = boost::make_shared<pcl::PointCloud<pcl::PointNormal>>(*new_points_with_normals, indices);
+  pcl::PointCloud<pcl::PointNormal>::Ptr normals_filtered = pcl::make_shared<pcl::PointCloud<pcl::PointNormal>>(*new_points_with_normals, indices);
 
   // update oct-tree
   l3::UniqueLockPtr normals_octree_lock;

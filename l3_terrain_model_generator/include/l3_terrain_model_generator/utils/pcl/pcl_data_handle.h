@@ -196,7 +196,7 @@ public:
    * @return true if types are equal
    */
   template <class PointT>
-  constexpr bool isType(typename boost::shared_ptr<PclType<PointT>> val) const
+  constexpr bool isType(typename pcl::shared_ptr<PclType<PointT>> val) const
   {
     return handle_->isType(val);
   }
@@ -215,7 +215,7 @@ public:
   template <class PointT>
   constexpr bool isPointType() const
   {
-    return handle_->isType<typename boost::shared_ptr<PclType<PointT>>>();
+    return handle_->isType<typename pcl::shared_ptr<PclType<PointT>>>();
   }
 
   /**
@@ -230,9 +230,9 @@ public:
    * @return Reference to internal object pointer
    */
   template <class PointT>
-  inline const typename boost::shared_ptr<PclType<PointT>>& value(l3::SharedLockPtr& lock) const
+  inline const typename pcl::shared_ptr<PclType<PointT>>& value(l3::SharedLockPtr& lock) const
   {
-    return handle_->value<typename boost::shared_ptr<PclType<PointT>>>(lock);
+    return handle_->value<typename pcl::shared_ptr<PclType<PointT>>>(lock);
   }
 
   /**
@@ -241,9 +241,9 @@ public:
    * @return Reference to internal object pointer
    */
   template <class PointT>
-  inline typename boost::shared_ptr<PclType<PointT>>& value(l3::UniqueLockPtr& lock)
+  inline typename pcl::shared_ptr<PclType<PointT>>& value(l3::UniqueLockPtr& lock)
   {
-    return handle_->value<typename boost::shared_ptr<PclType<PointT>>>(lock);
+    return handle_->value<typename pcl::shared_ptr<PclType<PointT>>>(lock);
   }
 
   /**
@@ -300,19 +300,19 @@ public:
       switch (pointType())
       {
         case PointType::PointXYZ:
-          fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZ>>>(lock), pcl::PointXYZ());
+          fun(handle_->value<pcl::shared_ptr<PclType<pcl::PointXYZ>>>(lock), pcl::PointXYZ());
           break;
         case PointType::PointXYZI:
-          fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZI>>>(lock), pcl::PointXYZI());
+          fun(handle_->value<pcl::shared_ptr<PclType<pcl::PointXYZI>>>(lock), pcl::PointXYZI());
           break;
         case PointType::PointXYZL:
-          fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZL>>>(lock), pcl::PointXYZL());
+          fun(handle_->value<pcl::shared_ptr<PclType<pcl::PointXYZL>>>(lock), pcl::PointXYZL());
           break;
         case PointType::PointXYZRGB:
-          fun(handle_->value<boost::shared_ptr<PclType<pcl::PointXYZRGB>>>(lock), pcl::PointXYZRGB());
+          fun(handle_->value<pcl::shared_ptr<PclType<pcl::PointXYZRGB>>>(lock), pcl::PointXYZRGB());
           break;
         case PointType::PointNormal:
-          fun(handle_->value<boost::shared_ptr<PclType<pcl::PointNormal>>>(lock), pcl::PointNormal());
+          fun(handle_->value<pcl::shared_ptr<PclType<pcl::PointNormal>>>(lock), pcl::PointNormal());
           break;
         default:
           ROS_WARN("Invalid dispatching attempt of data \"%s\" (\"%s\")!", name().c_str(), type().c_str());
@@ -335,15 +335,15 @@ protected:
     switch (point_type)
     {
       case PointType::PointXYZ:
-        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZ>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, pcl::make_shared<PclType<pcl::PointXYZ>>(boost::forward<Args>(args)...));
       case PointType::PointXYZI:
-        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZI>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, pcl::make_shared<PclType<pcl::PointXYZI>>(boost::forward<Args>(args)...));
       case PointType::PointXYZL:
-        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZL>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, pcl::make_shared<PclType<pcl::PointXYZL>>(boost::forward<Args>(args)...));
       case PointType::PointXYZRGB:
-        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointXYZRGB>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, pcl::make_shared<PclType<pcl::PointXYZRGB>>(boost::forward<Args>(args)...));
       case PointType::PointNormal:
-        return DataManager::addData(owner, name, boost::make_shared<PclType<pcl::PointNormal>>(boost::forward<Args>(args)...));
+        return DataManager::addData(owner, name, pcl::make_shared<PclType<pcl::PointNormal>>(boost::forward<Args>(args)...));
       default:
         return DataHandle::Ptr();
     }
