@@ -33,7 +33,7 @@ void GenericRGBDSensor::pointCloudCb(const sensor_msgs::PointCloud2& msg)
   {
     cloud_pcl_handle_->dispatch([&](auto type_trait)
     {
-      typename pcl::PointCloud<decltype(type_trait)>::Ptr cloud = boost::make_shared<pcl::PointCloud<decltype(type_trait)>>();
+      typename pcl::PointCloud<decltype(type_trait)>::Ptr cloud = pcl::make_shared<pcl::PointCloud<decltype(type_trait)>>();
       pcl::fromROSMsg(msg, *cloud);
       process<decltype(type_trait)>(cloud);
     });

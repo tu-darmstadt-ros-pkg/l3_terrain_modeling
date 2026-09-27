@@ -31,6 +31,7 @@
 #include <ros/ros.h>
 
 #include <pcl/point_cloud.h>
+#include <pcl/search/kdtree.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/statistical_outlier_removal.h>
@@ -60,7 +61,7 @@ typename pcl::PointCloud<PointT>::Ptr filterDense(typename pcl::PointCloud<Point
   if (!cloud)
   {
     ROS_ERROR("[filterDense] Nullptr to point cloud was given! Fix it immediatly!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   std::vector<int> indices;
@@ -74,7 +75,7 @@ typename pcl::PointCloud<PointT>::Ptr filterDense(typename pcl::PointCloud<Point
       indices.push_back(i);
   }
 
-  return boost::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
+  return pcl::make_shared<pcl::PointCloud<PointT>>(*cloud, indices);
 }
 
 /**
@@ -92,7 +93,7 @@ typename pcl::PointCloud<PointT>::Ptr filterOrganized(typename pcl::PointCloud<P
   if (!cloud)
   {
     ROS_ERROR("[filterOrganized] Nullptr to point cloud was given! Fix it immediatly!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   // generate point with nan fields
@@ -115,7 +116,7 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughBox(typename pcl::PointCl
   if (!cloud)
   {
     ROS_ERROR("[filterPassThroughBox] No point cloud is available!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   typename pcl::PointCloud<PointT>::Ptr cloud_filtered(new pcl::PointCloud<PointT>());
@@ -135,7 +136,7 @@ typename pcl::PointCloud<PointT>::Ptr filterPassThroughEllipse(typename pcl::Poi
   if (!cloud)
   {
     ROS_ERROR("[filterPassThroughEllipse] No point cloud is available!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   // setup filter
@@ -157,7 +158,7 @@ typename pcl::PointCloud<PointT>::Ptr filterVoxelGrid(typename pcl::PointCloud<P
   if (!cloud)
   {
     ROS_ERROR("[filterVoxelGrid] No point cloud is available!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   if (cloud->isOrganized())
@@ -178,7 +179,7 @@ typename pcl::PointCloud<PointT>::Ptr filterMlsSmooth(typename pcl::PointCloud<P
   if (!cloud)
   {
     ROS_ERROR("[filterMlsSmooth] No point cloud is available!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   if (cloud->isOrganized())
@@ -207,7 +208,7 @@ typename pcl::PointCloud<PointT>::Ptr filterMlsSmooth(typename pcl::PointCloud<P
   return cloud_filtered;
 #else
   ROS_ERROR("[filterMlsSmooth] PointXYZI is not supported!");
-  return boost::make_shared<typename pcl::PointCloud<PointT>>();
+  return pcl::make_shared<typename pcl::PointCloud<PointT>>();
 #endif
 }
 
@@ -217,7 +218,7 @@ typename pcl::PointCloud<PointT>::Ptr filterStatisticalOutlier(typename pcl::Poi
   if (!cloud)
   {
     ROS_ERROR("[filterStatisticalOutlier] No point cloud is available!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   if (cloud->isOrganized())
@@ -240,13 +241,13 @@ typename pcl::PointCloud<PointT>::Ptr filterInGridMap(typename pcl::PointCloud<P
   if (!cloud)
   {
     ROS_ERROR("[filterInGridMap] No point cloud is available!");
-    return boost::make_shared<typename pcl::PointCloud<PointT>>();
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>();
   }
 
   if (cloud->header.frame_id != map.getFrameId())
   {
     ROS_ERROR("[filterInGridMap] Cloud (%s) and grid map (%s) frame id are different!", cloud->header.frame_id.c_str(), map.getFrameId().c_str());
-    return boost::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
+    return pcl::make_shared<typename pcl::PointCloud<PointT>>(*cloud);
   }
 
   // setup filter
