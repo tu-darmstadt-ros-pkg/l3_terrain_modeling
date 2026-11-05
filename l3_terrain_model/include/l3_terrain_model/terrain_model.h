@@ -28,6 +28,7 @@
 
 #pragma once
 
+#include <cstdint>  // grid_map_core's TypeDefs.hpp uses uint64_t without including it (GCC 13)
 #include <grid_map_core/GridMap.hpp>
 
 #include <pcl/point_cloud.h>
